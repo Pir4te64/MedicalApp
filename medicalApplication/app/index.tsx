@@ -1,6 +1,9 @@
-import { Text, View } from "react-native";
+import { Text, View, Button } from "react-native";
+import { useRouter } from "expo-router";
 
 export default function Index() {
+  const router = useRouter();
+
   return (
     <View
       style={{
@@ -9,7 +12,11 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-      <Text>Edit app/index.tsx to edit this screensss.</Text>
+      <Text style={{ fontSize: 24, marginBottom: 20 }}>¡Bienvenido!</Text>
+      <Button title="Iniciar Sesión" onPress={() => router.push("/login")} />
+      <View style={{ height: 10 }} />
+      <Button title="Registrarse" onPress={() => router.push("/register")} />
+      <View style={{ height: 10 }} />
     </View>
   );
 }
