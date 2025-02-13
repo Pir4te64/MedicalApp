@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Image } from 'react-native';
-import { Button } from 'react-native-elements'; // Usamos el Button de react-native-elements
+import { Button } from 'react-native-elements';
 import { useRouter } from 'expo-router';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 export default function LoginScreen() {
     const router = useRouter();
@@ -10,29 +11,26 @@ export default function LoginScreen() {
 
     const handleLogin = () => {
         if (email === 'superusuario@gmail.com' && password === '123456') {
-            router.push('/home'); // Redirigir a la pantalla de home
+            router.push('/home'); 
         } else {
             alert('Credenciales incorrectas');
         }
     };
 
     return (
-        <View
-            style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: 10,
-            }}
+        <KeyboardAwareScrollView 
+            contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', padding: 10 }} 
+            enableOnAndroid={true} 
+            extraScrollHeight={20} 
         >
             {/* Imagen en la parte superior */}
             <Image
-                source={require('../assets/images/medico.png')} // Asegúrate de que la ruta sea correcta
+                source={require('../assets/images/login2.png')}
                 style={{
                     width: 200,
                     height: 200,
-                    marginBottom: 30, // Separación de la imagen con el texto
-                    borderRadius: 10, // Bordes redondeados para la imagen
+                    marginBottom: 30,
+                    borderRadius: 10,
                 }}
             />
 
@@ -77,20 +75,20 @@ export default function LoginScreen() {
                 title="Ingresar"
                 onPress={handleLogin}
                 buttonStyle={{
-                    backgroundColor: '#0066cc', // Azul formal
-                    width: '100%', // Ancho completo
-                    borderRadius: 0, // Bordes rectos
+                    backgroundColor: '#0066cc',
+                    width: '100%',
+                    borderRadius: 0,
                     marginBottom: 10,
                 }}
                 containerStyle={{
-                    width: '50%', // Ancho completo
-                    borderRadius: 0, // Bordes rectos
+                    width: '50%',
+                    borderRadius: 0,
                 }}
                 titleStyle={{
-                    fontSize: 18, // Tamaño del texto
-                    textAlign: 'center', // Centrar el texto
+                    fontSize: 18,
+                    textAlign: 'center',
                 }}
             />
-        </View>
+        </KeyboardAwareScrollView>
     );
 }

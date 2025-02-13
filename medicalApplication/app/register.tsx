@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Image } from 'react-native';
-import { Button } from 'react-native-elements'; // Usamos el Button de react-native-elements
+import { Button } from 'react-native-elements';
 import { useRouter } from 'expo-router';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 export default function RegisterScreen() {
     const router = useRouter();
@@ -10,28 +11,24 @@ export default function RegisterScreen() {
     const [password, setPassword] = useState('');
 
     const handleRegister = () => {
-        // Aquí puedes agregar la lógica de registro
         console.log('Registro con:', { name, email, password });
-        router.push('/login'); // Redirige a la pantalla de login después del registro
+        router.push('/login'); 
     };
 
     return (
-        <View
-            style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: 10,
-            }}
+        <KeyboardAwareScrollView
+            contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', padding: 10 }}
+            enableOnAndroid={true}
+            extraScrollHeight={20} 
         >
             {/* Imagen en la parte superior */}
             <Image
-                source={require('../assets/images/medico.png')} // Asegúrate de que la ruta sea correcta
+                source={require('../assets/images/register.png')}
                 style={{
                     width: 200,
                     height: 200,
-                    marginBottom: 30, // Separación de la imagen con el texto
-                    borderRadius: 10, // Bordes redondeados para la imagen
+                    marginBottom: 30,
+                    borderRadius: 10,
                 }}
             />
 
@@ -60,6 +57,8 @@ export default function RegisterScreen() {
                 placeholder="Correo electrónico"
                 value={email}
                 onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
                 style={{
                     width: '80%',
                     padding: 10,
@@ -91,20 +90,20 @@ export default function RegisterScreen() {
                 title="Registrarse"
                 onPress={handleRegister}
                 buttonStyle={{
-                    backgroundColor: '#0066cc', // Azul formal
-                    width: '100%', // Ancho completo
-                    borderRadius: 0, // Bordes rectos
+                    backgroundColor: '#0066cc',
+                    width: '100%',
+                    borderRadius: 0,
                     marginBottom: 10,
                 }}
                 containerStyle={{
-                    width: '50%', // Ancho completo
-                    borderRadius: 0, // Bordes rectos
+                    width: '50%',
+                    borderRadius: 0,
                 }}
                 titleStyle={{
-                    fontSize: 18, // Tamaño del texto
-                    textAlign: 'center', // Centrar el texto
+                    fontSize: 18,
+                    textAlign: 'center',
                 }}
             />
-        </View>
+        </KeyboardAwareScrollView>
     );
 }
