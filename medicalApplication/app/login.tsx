@@ -1,94 +1,34 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Image } from 'react-native';
-import { Button } from 'react-native-elements';
-import { useRouter } from 'expo-router';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import React from "react";
+import { View, Text, Image } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import LoginComponent from "@/components/Login/Login";
 
 export default function LoginScreen() {
-    const router = useRouter();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-
-    const handleLogin = () => {
-        if (email === 'superusuario@gmail.com' && password === '123456') {
-            router.push('/home'); 
-        } else {
-            alert('Credenciales incorrectas');
-        }
-    };
-
-    return (
-        <KeyboardAwareScrollView 
-            contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', padding: 10 }} 
-            enableOnAndroid={true} 
-            extraScrollHeight={20} 
-        >
-            {/* Imagen en la parte superior */}
-            <Image
-                source={require('../assets/images/login2.png')}
-                style={{
-                    width: 200,
-                    height: 200,
-                    marginBottom: 30,
-                    borderRadius: 10,
-                }}
-            />
-
-            {/* Título */}
-            <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 20 }}>
-                Iniciar Sesión
-            </Text>
-
-            {/* Campo de correo electrónico */}
-            <TextInput
-                placeholder="Correo electrónico"
-                value={email}
-                onChangeText={setEmail}
-                style={{
-                    width: '80%',
-                    padding: 10,
-                    borderWidth: 1,
-                    borderRadius: 5,
-                    marginBottom: 15,
-                    fontSize: 16,
-                }}
-            />
-
-            {/* Campo de contraseña */}
-            <TextInput
-                placeholder="Contraseña"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-                style={{
-                    width: '80%',
-                    padding: 10,
-                    borderWidth: 1,
-                    borderRadius: 5,
-                    marginBottom: 15,
-                    fontSize: 16,
-                }}
-            />
-
-            {/* Botón Iniciar Sesión */}
-            <Button
-                title="Ingresar"
-                onPress={handleLogin}
-                buttonStyle={{
-                    backgroundColor: '#0066cc',
-                    width: '100%',
-                    borderRadius: 0,
-                    marginBottom: 10,
-                }}
-                containerStyle={{
-                    width: '50%',
-                    borderRadius: 0,
-                }}
-                titleStyle={{
-                    fontSize: 18,
-                    textAlign: 'center',
-                }}
-            />
-        </KeyboardAwareScrollView>
-    );
+  return (
+    <KeyboardAwareScrollView
+      contentContainerStyle={{
+        flexGrow: 1,
+        justifyContent: "center", // Mantener el contenido centrado verticalmente
+        alignItems: "center", // Centrado horizontalmente
+        paddingBottom: 20, // Para evitar el solapamiento con el teclado
+      }}
+      enableOnAndroid={true}
+      extraScrollHeight={20}
+    >
+      <Image
+        source={require("../assets/images/login2.png")}
+        style={{
+          width: 200,
+          height: 200,
+          marginBottom: 30,
+          marginTop: 30,
+          borderRadius: 10,
+        }}
+      />
+      <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 10 }}>
+        Iniciar Sesión
+      </Text>
+      <LoginComponent /> {/* LoginComponent maneja todo el proceso de login */}
+    </KeyboardAwareScrollView>
+  );
 }
