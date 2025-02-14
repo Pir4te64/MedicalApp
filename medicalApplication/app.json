@@ -15,7 +15,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/medical.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.danistry28.medicalApplication"
     },
     "web": {
       "bundler": "metro",
@@ -36,6 +37,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "c6f2c370-112b-4964-bc80-9f671fbb0d5b"
+      }
     }
   }
 }
