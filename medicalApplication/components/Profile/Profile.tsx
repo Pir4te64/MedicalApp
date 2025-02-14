@@ -30,6 +30,7 @@ const ProfileInfo = () => {
         }
 
         const data = await response.json();
+
         if (data.success) {
           setProfile(data.body);
         } else {
@@ -76,13 +77,25 @@ const ProfileInfo = () => {
           <Text>{`Tipo de Cuenta: ${profile.tipoCuenta}`}</Text>
 
           {profile.afiliados && profile.afiliados.length > 0 ? (
-            <View>
-              <Text>Afiliados:</Text>
+            <View style={{ marginTop: 20 }}>
+              <Text style={{ fontSize: 18, fontWeight: "bold" }}>
+                Afiliados:
+              </Text>
               {profile.afiliados.map((afiliado, index) => (
-                <View key={index}>
+                <View
+                  key={index}
+                  style={{
+                    marginVertical: 5,
+                    padding: 10,
+                    borderWidth: 1,
+                    borderColor: "#ccc",
+                    borderRadius: 5,
+                  }}
+                >
                   <Text>{`Nombre: ${afiliado.nombre}`}</Text>
                   <Text>{`Documento: ${afiliado.documento}`}</Text>
                   <Text>{`Tipo de Usuario: ${afiliado.tipoUsuario}`}</Text>
+                  <Text>{`Tipo de Cuenta: ${afiliado.tipoCuenta}`}</Text>
                 </View>
               ))}
             </View>

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View, Text, BackHandler, Alert } from "react-native";
+import { View, Text, BackHandler, Alert, ScrollView } from "react-native";
 import ProfileInfo from "@/components/Profile/Profile"; // Asegúrate de importar el componente correctamente
 
 export default function ProfileScreen() {
@@ -21,9 +21,16 @@ export default function ProfileScreen() {
   }, []);
 
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text style={{ fontSize: 24 }}>Perfil</Text>
+    <ScrollView
+      contentContainerStyle={{
+        flexGrow: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 20,
+      }}
+    >
+      <Text style={{ fontSize: 24, marginBottom: 20 }}>Perfil</Text>
       <ProfileInfo />
-    </View>
+    </ScrollView>
   );
 }

@@ -15,7 +15,7 @@ export default function HomeLayout() {
       />
 
       <Tabs.Screen
-        name="ProfileScreen" // <-- Agregar aquí
+        name="ProfileScreen"
         options={{
           title: "Perfil",
           tabBarIcon: ({ color, size }) => (
@@ -23,6 +23,18 @@ export default function HomeLayout() {
           ),
         }}
       />
+
+      {/* Nuevo screen para registrar dependientes */}
+      <Tabs.Screen
+        name="RegistrarDependientes"
+        options={{
+          title: "Dependientes",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person-add" size={size} color={color} />
+          ),
+        }}
+      />
+
       <Tabs.Screen
         name="SettingScreen"
         options={{

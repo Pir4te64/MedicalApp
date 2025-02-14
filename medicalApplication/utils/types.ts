@@ -4,6 +4,7 @@ export interface Afiliado {
   nombre: string;
   documento: string;
   tipoUsuario: string;
+  tipoCuenta: string;
 }
 
 export interface Profile {

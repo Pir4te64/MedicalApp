@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Text, View, BackHandler, Alert } from "react-native";
 import LottieView from "lottie-react-native";
+import { useSegments } from "expo-router";
 
 export default function HomeScreen() {
   useEffect(() => {
@@ -19,7 +20,6 @@ export default function HomeScreen() {
 
     return () => backHandler.remove(); // Limpia el listener al salir
   }, []);
-
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       {/* Animación de la mano saludando */}
