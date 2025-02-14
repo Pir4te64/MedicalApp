@@ -1,36 +1,37 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons';  // Asegúrate de que esta importación está correcta
-import HomeScreen from './homeScreen';
-import SettingScreen from './SettingScreen';
-const Tab = createBottomTabNavigator();
+import { Tabs } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function HomeLayout() {
-    return (
-        <Tab.Navigator
-            screenOptions={{
-                tabBarStyle: { backgroundColor: '#fff', borderTopWidth: 0 },
-                tabBarLabelStyle: { fontSize: 12 },
-                tabBarActiveTintColor: 'tomato',
-                tabBarInactiveTintColor: 'gray',
-            }}
-        >
-            <Tab.Screen
-                name="HomeScreen"
-                component={HomeScreen}
-                options={{
-                    tabBarIcon: ({ color }) => <Ionicons name="home" size={24} color={color} />,
-                    title: 'Home',
-                }}
-            />
+  return (
+    <Tabs>
+      <Tabs.Screen
+        name="homeScreen"
+        options={{
+          title: "Inicio",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="home" size={size} color={color} />
+          ),
+        }}
+      />
 
-            <Tab.Screen
-                name="SettingsScreens"
-                component={SettingScreen}
-                options={{
-                    tabBarIcon: ({ color }) => <Ionicons name="settings" size={24} color={color} />,
-                    title: 'Configuraciónes',
-                }}
-            />
-        </Tab.Navigator>
-    );
+      <Tabs.Screen
+        name="ProfileScreen" // <-- Agregar aquí
+        options={{
+          title: "Perfil",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="SettingScreen"
+        options={{
+          title: "Configuración",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="settings" size={size} color={color} />
+          ),
+        }}
+      />
+    </Tabs>
+  );
 }

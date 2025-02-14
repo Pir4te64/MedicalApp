@@ -74,9 +74,9 @@ export default function LoginComponent() {
       }}
     >
       <View style={{ width: "80%" }}>
-        <Text style={{ marginTop: 5 }}>Usuario:</Text>
+        <Text style={{ marginTop: 5 }}>Usuario "(DNI)":</Text>
         <Input
-          placeholder="Nombre de usuario"
+          placeholder="Ingrese su DNI"
           onChangeText={formik.handleChange("username")}
           onBlur={formik.handleBlur("username")}
           value={formik.values.username}
@@ -107,7 +107,7 @@ export default function LoginComponent() {
 
         <Button
           title={isSubmitting ? "Cargando..." : "Ingresar"}
-          onPress={formik.handleSubmit}
+          onPress={() => formik.handleSubmit()}
           disabled={isSubmitting}
           buttonStyle={{
             backgroundColor: "#0066cc",
