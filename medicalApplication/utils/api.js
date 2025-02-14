@@ -4,4 +4,5 @@ export const API = {
   BASE_URL,
   REGISTER: `${BASE_URL}/user/register`,
   LOGIN: `${BASE_URL}/auth/login`,
+  PROFILE: `${BASE_URL}/auth/profile`,
 };

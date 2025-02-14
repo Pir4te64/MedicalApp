@@ -1,28 +1,33 @@
 import React, { useState } from "react";
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  ScrollView,
-  Alert,
-  Platform,
-} from "react-native";
+import { Text, View, TouchableOpacity, ScrollView, Alert } from "react-native";
 import { Input, Button } from "react-native-elements";
 import { useFormik } from "formik";
 import { schemaValidation } from "./Login.data";
 import { API } from "@/utils/api";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import { HOME_ROUTE } from "@/utils/rutas";
 export default function LoginComponent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  interface LoginValues {
+    username: string;
+    password: string;
+  }
 
-  const handleLogin = async (values) => {
+  interface ApiResponse {
+    success: boolean;
+    message?: string;
+    body?: {
+      token: string;
+      refreshToken: string;
+    };
+  }
+
+  const handleLogin = async (values: LoginValues) => {
     setIsSubmitting(true);
     try {
-      // Hacemos la petición sin el token en los headers
-      const response = await fetch(`${API.LOGIN}`, {
+      const response = await fetch(API.LOGIN, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -33,18 +38,23 @@ export default function LoginComponent() {
         }),
       });
 
-      const data = await response.json();
-      console.log(data);
+      const data: ApiResponse = await response.json();
 
       if (response.ok && data.success) {
-        // Guardar tokens según la plataforma
-        if (Platform.OS === "android" || Platform.OS === "ios") {
-          await AsyncStorage.setItem("authToken", data.body.token);
-          await AsyncStorage.setItem("refreshToken", data.body.refreshToken);
-        }
+        // Verificar si los tokens existen
+        const { token, refreshToken } = data.body!;
+        if (token && refreshToken) {
+          // Guardar tokens en AsyncStorage
+          await AsyncStorage.setItem("authToken", token);
+          await AsyncStorage.setItem("refreshToken", refreshToken);
+          console.log("Token guardado correctamente");
 
-        Alert.alert("¡Bienvenido!", "Inicio de sesión exitoso.");
-        router.push("/home");
+          // Mostrar mensaje de éxito
+          Alert.alert("¡Bienvenido!", "Inicio de sesión exitoso.");
+          router.push(HOME_ROUTE);
+        } else {
+          Alert.alert("Error", "No se pudo obtener el token de acceso.");
+        }
       } else {
         Alert.alert("Error", data.message || "Credenciales incorrectas");
       }

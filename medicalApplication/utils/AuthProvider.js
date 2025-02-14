@@ -28,6 +28,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (userToken) => {
     try {
       await AsyncStorage.setItem("token", userToken);
+      console.log("Token guardado:", userToken); // Verifica que el token se guarda correctamente
       setToken(userToken);
     } catch (error) {
       console.error("Error guardando token:", error);

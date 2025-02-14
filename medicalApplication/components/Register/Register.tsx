@@ -60,7 +60,7 @@ const RegisterForm = () => {
           { text: "OK", onPress: () => router.replace("/login") },
         ]);
       } catch (error) {
-        Alert.alert("Error", error.message || "No se pudo registrar");
+        Alert.alert("Error", (error as any).message || "No se pudo registrar");
       } finally {
         setLoading(false); // Oculta indicador de carga
       }
@@ -124,7 +124,7 @@ const RegisterForm = () => {
       <View style={{ width: "80%", alignItems: "center" }}>
         <Button
           title={loading ? "Registrando..." : "Registrarse"}
-          onPress={handleSubmit}
+          onPress={() => handleSubmit()}
           disabled={loading}
           buttonStyle={{
             backgroundColor: "#0066cc",

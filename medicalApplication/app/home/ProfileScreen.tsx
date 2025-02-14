@@ -1,10 +1,29 @@
-import React from "react";
-import { View, Text } from "react-native";
+import React, { useEffect } from "react";
+import { View, Text, BackHandler, Alert } from "react-native";
+import ProfileInfo from "@/components/Profile/Profile"; // Asegúrate de importar el componente correctamente
 
 export default function ProfileScreen() {
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert("Salir", "¿Quieres cerrar la app?", [
+        { text: "Cancelar", style: "cancel" },
+        { text: "Sí", onPress: () => BackHandler.exitApp() },
+      ]);
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
+
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <Text style={{ fontSize: 24 }}>Perfil</Text>
+      <ProfileInfo />
     </View>
   );
 }
