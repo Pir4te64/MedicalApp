@@ -1,14 +1,24 @@
-import React, { useEffect } from "react";
-import { View, Text, BackHandler, Alert, ScrollView } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, ScrollView, BackHandler } from "react-native";
 import ProfileInfo from "@/components/Profile/Profile"; // Asegúrate de importar el componente correctamente
+import CustomAlert from "@/components/Modal/Modal"; // Asegúrate de importar CustomAlert correctamente
 
 export default function ProfileScreen() {
+  const [alertVisible, setAlertVisible] = useState(false);
+
+  // Mostrar el CustomAlert
+  const showAlert = () => {
+    setAlertVisible(true);
+  };
+
+  // Cerrar el CustomAlert
+  const hideAlert = () => {
+    setAlertVisible(false);
+  };
+
   useEffect(() => {
     const backAction = () => {
-      Alert.alert("Salir", "¿Quieres cerrar la app?", [
-        { text: "Cancelar", style: "cancel" },
-        { text: "Sí", onPress: () => BackHandler.exitApp() },
-      ]);
+      showAlert(); // Mostrar el alert personalizado cuando se presione el botón de atrás
       return true;
     };
 
@@ -21,16 +31,26 @@ export default function ProfileScreen() {
   }, []);
 
   return (
-    <ScrollView
-      contentContainerStyle={{
-        flexGrow: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 20,
-      }}
-    >
-      <Text style={{ fontSize: 24, marginBottom: 20 }}>Perfil</Text>
-      <ProfileInfo />
-    </ScrollView>
+    <View style={{ flex: 1 }}>
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          padding: 20,
+        }}
+      >
+        <ProfileInfo />
+      </ScrollView>
+
+      {/* CustomAlert con los parámetros adecuados */}
+      <CustomAlert
+        visible={alertVisible}
+        onClose={hideAlert}
+        title="Salir"
+        message="¿Quieres cerrar la app?"
+        type="error" // Tipo "error" para botón rojo
+      />
+    </View>
   );
 }

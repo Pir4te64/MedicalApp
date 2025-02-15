@@ -57,7 +57,7 @@ export default function LoginComponent() {
           setTimeout(() => {
             setAlertVisible(false);
             router.push("/home/homeScreen");
-          }, 2000);
+          }, 1000);
         } else {
           setAlertMessage("No se pudo obtener el token de acceso.");
           setAlertVisible(true);

@@ -8,6 +8,7 @@ export default function HomeLayout() {
         name="homeScreen"
         options={{
           title: "Inicio",
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home" size={size} color={color} />
           ),
@@ -18,6 +19,7 @@ export default function HomeLayout() {
         name="ProfileScreen"
         options={{
           title: "Perfil",
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person" size={size} color={color} />
           ),
@@ -29,6 +31,8 @@ export default function HomeLayout() {
         name="RegistrarDependientes"
         options={{
           title: "Dependientes",
+          headerShown: false,
+
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person-add" size={size} color={color} />
           ),
@@ -39,6 +43,7 @@ export default function HomeLayout() {
         name="SettingScreen"
         options={{
           title: "Configuración",
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="settings" size={size} color={color} />
           ),
