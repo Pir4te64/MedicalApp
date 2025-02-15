@@ -4,7 +4,6 @@ import {
   ScrollView,
   Text,
   TouchableOpacity,
-  Alert,
   ActivityIndicator,
 } from "react-native";
 import { Input, Button } from "react-native-elements";
@@ -12,10 +11,16 @@ import { useFormik } from "formik";
 import { validationSchema, initialValues } from "./Register.data";
 import { useRouter } from "expo-router";
 import { API } from "@/utils/api";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import CustomAlert from "@/components/Modal/Modal"; // Asegúrate de importar el CustomAlert
 
 const RegisterForm = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState({ title: "", message: "" });
 
   const {
     handleChange,
@@ -29,15 +34,14 @@ const RegisterForm = () => {
     initialValues: initialValues,
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      setLoading(true); // Muestra indicador de carga
+      setLoading(true);
 
       const formData = {
         document: values.document,
-        pseudonym: values.document, // Pseudónimo igual al documento
+        pseudonym: values.document,
         name: values.name,
         password: values.password,
       };
-      console.log(formData);
 
       try {
         const response = await fetch(`${API.REGISTER}`, {
@@ -47,7 +51,6 @@ const RegisterForm = () => {
           },
           body: JSON.stringify(formData),
         });
-        console.log(response);
 
         const data = await response.json();
 
@@ -55,13 +58,19 @@ const RegisterForm = () => {
           throw new Error(data.message || "Error en el registro");
         }
 
-        Alert.alert("Éxito", "Registro exitoso. Ahora puedes iniciar sesión.", [
-          { text: "OK", onPress: () => router.replace("/login") },
-        ]);
+        setAlertMessage({
+          title: "Éxito",
+          message: "Registro exitoso. Ahora puedes iniciar sesión.",
+        });
+        setAlertVisible(true);
       } catch (error) {
-        Alert.alert("Error", (error as any).message || "No se pudo registrar");
+        setAlertMessage({
+          title: "Error",
+          message: (error as Error).message || "No se pudo registrar",
+        });
+        setAlertVisible(true);
       } finally {
-        setLoading(false); // Oculta indicador de carga
+        setLoading(false);
       }
     },
   });
@@ -75,6 +84,19 @@ const RegisterForm = () => {
         alignItems: "center",
       }}
     >
+      {/* Modal de alerta */}
+      <CustomAlert
+        visible={alertVisible}
+        onClose={() => {
+          setAlertVisible(false);
+          if (alertMessage.title === "Éxito") {
+            router.replace("/login");
+          }
+        }}
+        title={alertMessage.title}
+        message={alertMessage.message}
+      />
+
       {/* Campo Documento */}
       <Text style={{ width: "80%", marginBottom: 5 }}>Documento</Text>
       <Input
@@ -82,14 +104,22 @@ const RegisterForm = () => {
         value={values.document}
         onChangeText={(text) => {
           handleChange("document")(text);
-          setFieldValue("pseudonym", text); // Sincroniza pseudónimo con documento
+          setFieldValue("pseudonym", text);
         }}
         onBlur={handleBlur("document")}
         errorMessage={
           touched.document && errors.document ? errors.document : ""
         }
         containerStyle={{ width: "80%", marginBottom: 5 }}
-        inputStyle={{ borderBottomWidth: 1, paddingHorizontal: 10 }}
+        inputStyle={{ paddingHorizontal: 10 }}
+        leftIcon={
+          <MaterialIcons
+            name="assignment-ind"
+            size={24}
+            color="#0066cc"
+            style={{ marginRight: 5 }}
+          />
+        }
       />
 
       {/* Campo Nombre */}
@@ -101,7 +131,15 @@ const RegisterForm = () => {
         onBlur={handleBlur("name")}
         errorMessage={touched.name && errors.name ? errors.name : ""}
         containerStyle={{ width: "80%", marginBottom: 5 }}
-        inputStyle={{ borderBottomWidth: 1, paddingHorizontal: 10 }}
+        inputStyle={{ paddingHorizontal: 10 }}
+        leftIcon={
+          <MaterialIcons
+            name="person"
+            size={24}
+            color="#0066cc"
+            style={{ marginRight: 5 }}
+          />
+        }
       />
 
       {/* Campo Contraseña */}
@@ -111,12 +149,28 @@ const RegisterForm = () => {
         value={values.password}
         onChangeText={handleChange("password")}
         onBlur={handleBlur("password")}
-        secureTextEntry
+        secureTextEntry={!showPassword}
         errorMessage={
           touched.password && errors.password ? errors.password : ""
         }
         containerStyle={{ width: "80%", marginBottom: 5 }}
-        inputStyle={{ borderBottomWidth: 1, paddingHorizontal: 10 }}
+        inputStyle={{ paddingHorizontal: 10 }}
+        leftIcon={
+          <MaterialIcons
+            name="lock"
+            size={24}
+            color="#0066cc"
+            style={{ marginRight: 5 }}
+          />
+        }
+        rightIcon={
+          <MaterialCommunityIcons
+            name={showPassword ? "eye" : "eye-off"}
+            size={24}
+            color="#0066cc"
+            onPress={() => setShowPassword(!showPassword)}
+          />
+        }
       />
 
       {/* Botón Registrarse */}
@@ -144,13 +198,17 @@ const RegisterForm = () => {
 
       {/* Link para ir a login */}
       <View style={{ width: "80%", marginTop: 20, alignItems: "center" }}>
-        <Text style={{ fontSize: 14 }}>
-          <TouchableOpacity onPress={() => router.replace("/login")}>
-            <Text style={{ color: "blue", textDecorationLine: "underline" }}>
-              ¿Ya tienes una cuenta? Inicia sesión aquí
-            </Text>
-          </TouchableOpacity>
-        </Text>
+        <TouchableOpacity onPress={() => router.replace("/login")}>
+          <Text
+            style={{
+              fontSize: 16,
+              color: "blue",
+              textDecorationLine: "underline",
+            }}
+          >
+            ¿Ya tienes una cuenta? Inicia sesión aquí
+          </Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );

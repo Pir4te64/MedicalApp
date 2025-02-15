@@ -1,15 +1,20 @@
 import React, { useState } from "react";
-import { View, ScrollView, Text, Alert, ActivityIndicator } from "react-native";
-import { Input, Button } from "react-native-elements";
+import { View, ScrollView, ActivityIndicator } from "react-native";
+import { Button } from "react-native-elements";
 import { useFormik } from "formik";
 import { validationSchema, initialValues } from "./RegistrarDep.data";
 import { useRouter } from "expo-router";
 import { API } from "@/utils/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import CustomAlert from "@/components/Modal/Modal";
+import CustomInput from "@/components/Registrardependientes/CustomInput"; // Importamos el nuevo componente
 
 const RegisterDependientes = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [modalType, setModalType] = useState<"success" | "error">("success");
 
   const {
     handleChange,
@@ -19,48 +24,40 @@ const RegisterDependientes = () => {
     errors,
     touched,
     setFieldValue,
+    resetForm,
   } = useFormik({
-    initialValues: initialValues,
-    validationSchema: validationSchema,
+    initialValues,
+    validationSchema,
     onSubmit: async (values) => {
       setLoading(true);
-
-      const formData = {
-        document: values.document,
-        pseudonym: values.document, // Pseudónimo igual al documento
-        name: values.name,
-        password: values.password,
-      };
-      console.log(formData);
-
       try {
-        // Obtener el token almacenado, en caso de que sea necesario
         const token = await AsyncStorage.getItem("authToken");
 
         const response = await fetch(`${API.DEPENDIENTE}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            // Agregamos el token si existe
             ...(token && { Authorization: `Bearer ${token}` }),
           },
-          body: JSON.stringify(formData),
+          body: JSON.stringify({
+            document: values.document,
+            pseudonym: values.document,
+            name: values.name,
+            password: values.password,
+          }),
         });
 
         const data = await response.json();
-
-        if (!response.ok) {
+        if (!response.ok)
           throw new Error(data.message || "Error en el registro");
-        }
 
-        // Al registro exitoso, mostramos una alerta personalizada y redirigimos a la pantalla de perfil.
-        Alert.alert(
-          "Registro Exitoso",
-          "Dependiente registrado correctamente.",
-          [{ text: "OK", onPress: () => router.replace("/home/ProfileScreen") }]
-        );
+        setModalType("success");
+        setModalMessage("Dependiente registrado correctamente.");
+        setModalVisible(true);
       } catch (error) {
-        Alert.alert("Error", (error as any).message || "No se pudo registrar");
+        setModalType("error");
+        setModalMessage((error as Error).message || "No se pudo registrar.");
+        setModalVisible(true);
       } finally {
         setLoading(false);
       }
@@ -77,51 +74,44 @@ const RegisterDependientes = () => {
         padding: 10,
       }}
     >
-      {/* Campo Documento */}
-      <Text style={{ width: "100%", marginBottom: 5 }}>Documento</Text>
-      <Input
+      <CustomInput
+        label="Documento"
         placeholder="Documento"
         value={values.document}
         onChangeText={(text) => {
           handleChange("document")(text);
           setFieldValue("pseudonym", text);
         }}
-        onBlur={handleBlur("document")}
+        onBlur={() => handleBlur("document")}
         errorMessage={
           touched.document && errors.document ? errors.document : ""
         }
-        containerStyle={{ width: "100%", marginBottom: 5 }}
-        inputStyle={{ borderBottomWidth: 1, paddingHorizontal: 5 }}
+        icon="document" // Usando un ícono relevante para Documento
       />
 
-      {/* Campo Nombre */}
-      <Text style={{ width: "100%", marginBottom: 5 }}>Nombre</Text>
-      <Input
+      <CustomInput
+        label="Nombre"
         placeholder="Nombre"
         value={values.name}
         onChangeText={handleChange("name")}
-        onBlur={handleBlur("name")}
+        onBlur={() => handleBlur("name")}
         errorMessage={touched.name && errors.name ? errors.name : ""}
-        containerStyle={{ width: "100%", marginBottom: 5 }}
-        inputStyle={{ borderBottomWidth: 1, paddingHorizontal: 5 }}
+        icon="person" // Ícono relevante para el nombre
       />
 
-      {/* Campo Contraseña */}
-      <Text style={{ width: "100%", marginBottom: 5 }}>Contraseña</Text>
-      <Input
+      <CustomInput
+        label="Contraseña"
         placeholder="Contraseña"
         value={values.password}
         onChangeText={handleChange("password")}
-        onBlur={handleBlur("password")}
+        onBlur={() => handleBlur("password")}
         secureTextEntry
         errorMessage={
           touched.password && errors.password ? errors.password : ""
         }
-        containerStyle={{ width: "100%", marginBottom: 5 }}
-        inputStyle={{ borderBottomWidth: 1, paddingHorizontal: 5 }}
+        icon="lock-closed" // Ícono para contraseña
       />
 
-      {/* Botón Registrarse */}
       <View style={{ width: "100%", alignItems: "center" }}>
         <Button
           title={loading ? "Registrando..." : "Registrar Dependiente"}
@@ -143,6 +133,18 @@ const RegisterDependientes = () => {
           />
         )}
       </View>
+
+      <CustomAlert
+        visible={modalVisible}
+        title={modalType === "success" ? "¡Éxito!" : "Error"}
+        message={modalMessage}
+        type={modalType}
+        onClose={() => {
+          setModalVisible(false);
+          if (modalType === "success") router.replace("/home/ProfileScreen");
+          resetForm();
+        }}
+      />
     </ScrollView>
   );
 };

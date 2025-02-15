@@ -1,34 +1,60 @@
-import React from "react";
-import { View, Text, Image } from "react-native";
+import React, { useEffect, useRef } from "react";
+import { View, Text, Animated, StyleSheet } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import LoginComponent from "@/components/Login/Login";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function LoginScreen() {
+  const imageScale = useRef(new Animated.Value(0.8)).current;
+
+  useEffect(() => {
+    Animated.spring(imageScale, {
+      toValue: 1,
+      friction: 3,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
   return (
-    <KeyboardAwareScrollView
-      contentContainerStyle={{
-        flexGrow: 1,
-        justifyContent: "center", // Mantener el contenido centrado verticalmente
-        alignItems: "center", // Centrado horizontalmente
-        paddingBottom: 20, // Para evitar el solapamiento con el teclado
-      }}
-      enableOnAndroid={true}
-      extraScrollHeight={20}
+    <LinearGradient
+      colors={["#f9f9f9", "#e0e0e0"]}
+      style={styles.gradientContainer}
     >
-      <Image
-        source={require("../assets/images/login2.png")}
-        style={{
-          width: 200,
-          height: 200,
-          marginBottom: 30,
-          marginTop: 30,
-          borderRadius: 10,
-        }}
-      />
-      <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 10 }}>
-        Iniciar Sesión
-      </Text>
-      <LoginComponent /> {/* LoginComponent maneja todo el proceso de login */}
-    </KeyboardAwareScrollView>
+      <KeyboardAwareScrollView
+        contentContainerStyle={styles.scrollContainer}
+        enableOnAndroid={true}
+        extraScrollHeight={20}
+      >
+        <Animated.Image
+          source={require("../assets/images/login2.png")}
+          style={[styles.image, { transform: [{ scale: imageScale }] }]}
+        />
+        <Text style={styles.title}>Iniciar Sesión</Text>
+        <LoginComponent />
+      </KeyboardAwareScrollView>
+    </LinearGradient>
   );
 }
+
+const styles = StyleSheet.create({
+  gradientContainer: {
+    flex: 1,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: "center", // Centrado vertical
+    alignItems: "center", // Centrado horizontal
+    paddingBottom: 20, // Evitar solapamiento con el teclado
+  },
+  image: {
+    width: 150,
+    height: 150,
+    marginVertical: 30,
+    borderRadius: 10,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#333",
+  },
+});

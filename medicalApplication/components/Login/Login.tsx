@@ -6,10 +6,16 @@ import { schemaValidation } from "./Login.data";
 import { API } from "@/utils/api";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { HOME_ROUTE } from "@/utils/rutas";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import CustomAlert from "../Modal/Modal";
+
 export default function LoginComponent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
   interface LoginValues {
     username: string;
     password: string;
@@ -41,26 +47,28 @@ export default function LoginComponent() {
       const data: ApiResponse = await response.json();
 
       if (response.ok && data.success) {
-        // Verificar si los tokens existen
         const { token, refreshToken } = data.body!;
         if (token && refreshToken) {
-          // Guardar tokens en AsyncStorage
           await AsyncStorage.setItem("authToken", token);
           await AsyncStorage.setItem("refreshToken", refreshToken);
-          console.log("Token guardado correctamente");
 
-          // Mostrar mensaje de éxito
-          Alert.alert("¡Bienvenido!", "Inicio de sesión exitoso.");
-          router.push(HOME_ROUTE);
+          setAlertMessage("Inicio de sesión exitoso.");
+          setAlertVisible(true);
+          setTimeout(() => {
+            setAlertVisible(false);
+            router.push("/home/homeScreen");
+          }, 2000);
         } else {
-          Alert.alert("Error", "No se pudo obtener el token de acceso.");
+          setAlertMessage("No se pudo obtener el token de acceso.");
+          setAlertVisible(true);
         }
       } else {
-        Alert.alert("Error", data.message || "Credenciales incorrectas");
+        setAlertMessage(data.message || "Credenciales incorrectas");
+        setAlertVisible(true);
       }
     } catch (error) {
-      console.error(error);
-      Alert.alert("Error", "Hubo un problema con la conexión.");
+      setAlertMessage("Hubo un problema con la conexión.");
+      setAlertVisible(true);
     }
     setIsSubmitting(false);
   };
@@ -83,35 +91,64 @@ export default function LoginComponent() {
         alignItems: "center",
       }}
     >
+      <CustomAlert
+        visible={alertVisible}
+        onClose={() => setAlertVisible(false)}
+        title="Mensaje"
+        message={alertMessage}
+      />
+
       <View style={{ width: "80%" }}>
-        <Text style={{ marginTop: 5 }}>Usuario "(DNI)":</Text>
+        <Text style={{ marginTop: 5 }}>Usuario "(DNI)"</Text>
         <Input
           placeholder="Ingrese su DNI"
           onChangeText={formik.handleChange("username")}
           onBlur={formik.handleBlur("username")}
           value={formik.values.username}
           containerStyle={{ marginBottom: 5 }}
-          inputStyle={{ borderBottomWidth: 1 }}
           errorMessage={
             formik.touched.username && formik.errors.username
               ? formik.errors.username
               : ""
+          }
+          leftIcon={
+            <MaterialIcons
+              name="person"
+              size={24}
+              color="#0066cc"
+              style={{ marginRight: 5 }}
+            />
           }
         />
 
         <Text style={{ marginTop: 5 }}>Contraseña:</Text>
         <Input
           placeholder="Contraseña"
-          secureTextEntry
+          secureTextEntry={!showPassword}
           onChangeText={formik.handleChange("password")}
           onBlur={formik.handleBlur("password")}
           value={formik.values.password}
           containerStyle={{ marginBottom: 5 }}
-          inputStyle={{ borderBottomWidth: 1 }}
           errorMessage={
             formik.touched.password && formik.errors.password
               ? formik.errors.password
               : ""
+          }
+          leftIcon={
+            <MaterialIcons
+              name="lock"
+              size={24}
+              color="#0066cc"
+              style={{ marginRight: 5 }}
+            />
+          }
+          rightIcon={
+            <MaterialCommunityIcons
+              name={showPassword ? "eye" : "eye-off"}
+              size={24}
+              color="#0066cc"
+              onPress={() => setShowPassword(!showPassword)}
+            />
           }
         />
 
@@ -122,7 +159,7 @@ export default function LoginComponent() {
           buttonStyle={{
             backgroundColor: "#0066cc",
             width: "100%",
-            borderRadius: 0,
+            borderRadius: 10,
           }}
           titleStyle={{
             fontSize: 18,
@@ -137,6 +174,7 @@ export default function LoginComponent() {
               textDecorationLine: "underline",
               textAlign: "center",
               marginTop: 15,
+              fontSize: 16,
             }}
           >
             ¿No tienes una cuenta? Regístrate aquí

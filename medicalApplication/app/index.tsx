@@ -1,73 +1,120 @@
-import React from 'react';
-import { View, Text, Image } from 'react-native';
-import { Button } from 'react-native-elements'; // Usamos el Button de react-native-elements
-import { useRouter } from 'expo-router';
+import React, { useEffect, useRef } from "react";
+import { View, Text, Animated, StyleSheet } from "react-native";
+import { Button, Icon } from "react-native-elements";
+import { useRouter } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function Index() {
   const router = useRouter();
+  const imageScale = useRef(new Animated.Value(0.8)).current;
+
+  useEffect(() => {
+    // Animación sutil en la imagen al montar el componente
+    Animated.spring(imageScale, {
+      toValue: 1,
+      friction: 3,
+      useNativeDriver: true,
+    }).start();
+  }, []);
 
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 10,
-      }}
-    >
-      {/* Imagen en la parte superior */}
-      <Image
-        source={require('../assets/images/medico.png')} // Asegúrate de que la ruta sea correcta
-        style={{
-          width: 200,
-          height: 200,
-          marginBottom: 30, // Separación de la imagen con el texto
-          borderRadius: 10, // Bordes redondeados para la imagen
-        }}
-      />
+    <View style={styles.container}>
+      {/* Cabecera con gradiente */}
+      <LinearGradient
+        colors={["#2470ec", "#005bb5"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.header}
+      >
+        <Animated.Image
+          source={require("../assets/images/medico.png")}
+          style={[styles.image, { transform: [{ scale: imageScale }] }]}
+        />
+        <Text style={styles.welcomeText}>¡Bienvenido!</Text>
+      </LinearGradient>
 
-      {/* Título */}
-      <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 20 }}>
-        ¡Bienvenido!
-      </Text>
-
-      {/* Botón Iniciar sesión */}
-      <Button
-        title="Iniciar Sesión"
-        onPress={() => router.push('/login')}
-        buttonStyle={{
-          backgroundColor: '#0066cc', // Azul formal
-          borderRadius: 0, // Bordes rectos
-          marginBottom: 10, // Separación entre botones
-        }}
-        containerStyle={{
-          width: '50%', // Ancho completo
-          borderRadius: 0, // Bordes rectos
-        }}
-        titleStyle={{
-          fontSize: 18, // Tamaño del texto
-          textAlign: 'center', // Centrar el texto
-        }}
-      />
-
-      {/* Botón Registrarse */}
-      <Button
-        title="Registrarse"
-        onPress={() => router.push('/register')}
-        buttonStyle={{
-          backgroundColor: '#0066cc', // Azul formal
-          borderRadius: 0, // Bordes rectos
-          marginBottom: 10,
-        }}
-        containerStyle={{
-          width: '50%', // Ancho completo
-          borderRadius: 0, // Bordes rectos
-        }}
-        titleStyle={{
-          fontSize: 18,
-          textAlign: 'center', // Centrar el texto
-        }}
-      />
+      {/* Contenedor para los botones en fila */}
+      <View style={styles.buttonsRow}>
+        <Button
+          title="Iniciar Sesión"
+          onPress={() => router.push("/login")}
+          buttonStyle={styles.buttonStyle}
+          containerStyle={styles.buttonContainer}
+          titleStyle={styles.buttonTitle}
+          icon={
+            <Icon
+              name="login"
+              type="material-community"
+              color="white"
+              size={24}
+              containerStyle={{ marginRight: 8 }}
+            />
+          }
+        />
+        <Button
+          title="Registrarse"
+          onPress={() => router.push("/register")}
+          buttonStyle={styles.buttonStyle}
+          containerStyle={styles.buttonContainer}
+          titleStyle={styles.buttonTitle}
+          icon={
+            <Icon
+              name="account-plus"
+              type="material-community"
+              color="white"
+              size={24}
+              containerStyle={{ marginRight: 8 }}
+            />
+          }
+        />
+      </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#f9f9f9",
+  },
+  header: {
+    width: "100%",
+    height: 550,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  image: {
+    width: 250,
+    height: 250,
+    marginBottom: 30,
+    borderRadius: 10,
+  },
+  welcomeText: {
+    fontSize: 50,
+    fontWeight: "600",
+    color: "white",
+  },
+  buttonsRow: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    marginTop: 20, // Se ajusta para aprovechar el espacio blanco sobrante
+    paddingHorizontal: 20,
+  },
+  buttonStyle: {
+    backgroundColor: "#0066cc",
+    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+  },
+  buttonContainer: {
+    width: "45%",
+    marginHorizontal: 5,
+  },
+  buttonTitle: {
+    fontSize: 16,
+    textAlign: "center",
+  },
+});
