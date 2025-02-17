@@ -1,5 +1,11 @@
 import React, { useEffect, useRef } from "react";
-import { View, Text, Animated, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  Animated,
+  StyleSheet,
+  Dimensions,
+} from "react-native";
 import { Button, Icon } from "react-native-elements";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
@@ -19,18 +25,21 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-      {/* Cabecera con gradiente */}
+      {/* Sección de cabecera con gradiente */}
       <LinearGradient
         colors={["#2470ec", "#005bb5"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}
       >
-        <Animated.Image
-          source={require("../assets/images/medico.png")}
-          style={[styles.image, { transform: [{ scale: imageScale }] }]}
-        />
-        <Text style={styles.welcomeText}>¡Bienvenido!</Text>
+        {/* Contenedor para centrar los elementos */}
+        <View style={styles.headerContent}>
+          <Animated.Image
+            source={require("../assets/images/medico.png")}
+            style={[styles.image, { transform: [{ scale: imageScale }] }]}
+          />
+          <Text style={styles.welcomeText}>¡Bienvenido!</Text>
+        </View>
       </LinearGradient>
 
       {/* Contenedor para los botones en fila */}
@@ -73,15 +82,21 @@ export default function Index() {
 }
 
 const styles = StyleSheet.create({
+  // El contenedor principal ocupa toda la pantalla
   container: {
     flex: 1,
     backgroundColor: "#f9f9f9",
   },
+  // El gradiente ocupará un 45% de la pantalla (puedes ajustar el número según prefieras)
   header: {
-    width: "100%",
-    height: 550,
+    flex: 1,
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
+    overflow: "hidden", // para que el borde redondeado se aplique correctamente
+  },
+  // Aquí centramos vertical y horizontalmente la imagen y el texto
+  headerContent: {
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -92,15 +107,16 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   welcomeText: {
-    fontSize: 50,
+    fontSize: 40,
     fontWeight: "600",
     color: "white",
   },
+  // Contenedor de los botones en la parte de abajo
   buttonsRow: {
+    flex: 0.4,
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
-    marginTop: 20, // Se ajusta para aprovechar el espacio blanco sobrante
     paddingHorizontal: 20,
   },
   buttonStyle: {

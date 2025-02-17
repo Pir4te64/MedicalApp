@@ -19,21 +19,24 @@ export default function RegisterScreen() {
   return (
     <LinearGradient
       colors={["#f9f9f9", "#e0e0e0"]}
-      style={styles.gradientContainer}
+      style={styles.container}
     >
-      <KeyboardAwareScrollView
-        contentContainerStyle={styles.scrollContainer}
-        enableOnAndroid={true}
-        extraScrollHeight={20}
-      >
-        {/* Imagen animada */}
+      {/* Sección superior con la imagen y el título */}
+      <View style={styles.topContainer}>
         <Animated.Image
           source={require("../assets/images/register.png")}
           style={[styles.image, { transform: [{ scale: imageScale }] }]}
         />
-        {/* Título */}
         <Text style={styles.title}>Registrarse</Text>
-        {/* Formulario de registro */}
+      </View>
+
+      {/* Sección inferior con el formulario de registro (scrollable) */}
+      <KeyboardAwareScrollView
+        style={styles.bottomContainer}
+        contentContainerStyle={styles.scrollContentContainer}
+        enableOnAndroid
+        extraScrollHeight={20}
+      >
         <RegisterForm />
       </KeyboardAwareScrollView>
     </LinearGradient>
@@ -41,21 +44,35 @@ export default function RegisterScreen() {
 }
 
 const styles = StyleSheet.create({
-  gradientContainer: {
+  // Contenedor principal con el gradiente de fondo
+  container: {
     flex: 1,
   },
-  scrollContainer: {
-    flexGrow: 1,
-    justifyContent: "center", // Centrado vertical
-    alignItems: "center", // Centrado horizontal
-    paddingBottom: 20, // Para evitar solapamiento con el teclado
+  // Sección superior (40% de la pantalla, ajusta según tu preferencia)
+  topContainer: {
+    flex: 0.6,
+    justifyContent: "center",
+    alignItems: "center",
   },
+  // Sección inferior (60% de la pantalla)
+  bottomContainer: {
+    flex: 0.6,
+  },
+  // Estilos para el contenido dentro del scroll (centrado)
+  scrollContentContainer: {
+    flexGrow: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingBottom: 20, // evita solapamiento con el teclado
+  },
+  // Estilo de la imagen
   image: {
     width: 150,
     height: 150,
     marginVertical: 30,
     borderRadius: 10,
   },
+  // Título
   title: {
     fontSize: 24,
     fontWeight: "bold",

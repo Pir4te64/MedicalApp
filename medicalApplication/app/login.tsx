@@ -18,18 +18,24 @@ export default function LoginScreen() {
   return (
     <LinearGradient
       colors={["#f9f9f9", "#e0e0e0"]}
-      style={styles.gradientContainer}
+      style={styles.container}
     >
-      <KeyboardAwareScrollView
-        contentContainerStyle={styles.scrollContainer}
-        enableOnAndroid={true}
-        extraScrollHeight={20}
-      >
+      {/* Sección superior con imagen y título */}
+      <View style={styles.topContainer}>
         <Animated.Image
           source={require("../assets/images/login2.png")}
           style={[styles.image, { transform: [{ scale: imageScale }] }]}
         />
         <Text style={styles.title}>Iniciar Sesión</Text>
+      </View>
+
+      {/* Sección inferior con el formulario (scrollable) */}
+      <KeyboardAwareScrollView
+        style={styles.bottomContainer}
+        contentContainerStyle={styles.scrollContentContainer}
+        enableOnAndroid
+        extraScrollHeight={20}
+      >
         <LoginComponent />
       </KeyboardAwareScrollView>
     </LinearGradient>
@@ -37,21 +43,37 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  gradientContainer: {
+  // Ocupa toda la pantalla y aplica el gradiente de fondo
+  container: {
     flex: 1,
+    backgroundColor: "red",
   },
-  scrollContainer: {
+  // Parte superior con imagen y título
+  topContainer: {
+    flex: 1,                  // 40% de la pantalla (ajusta a tu gusto)
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  // Parte inferior donde va el formulario (scrollable)
+  bottomContainer: {
+    flex: 0.6,                  // 60% de la pantalla
+  },
+  // Contenedor interno para centrar el contenido dentro del scroll
+  scrollContentContainer: {
     flexGrow: 1,
-    justifyContent: "center", // Centrado vertical
-    alignItems: "center", // Centrado horizontal
-    paddingBottom: 20, // Evitar solapamiento con el teclado
+    justifyContent: "center",
+    alignItems: "center",
+    paddingBottom: 20,
+    paddingHorizontal: 20,
   },
+  // Estilo de la imagen
   image: {
-    width: 150,
-    height: 150,
+    width: 200,
+    height: 200,
     marginVertical: 30,
     borderRadius: 10,
   },
+  // Título
   title: {
     fontSize: 24,
     fontWeight: "bold",
