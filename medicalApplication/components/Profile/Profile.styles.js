@@ -85,4 +85,19 @@ export const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 10,
   },
+  reloadButton: {
+    position: "absolute",
+    top: 20,
+    right: 20,
+    backgroundColor: "#007AFF",
+    padding: 10,
+    borderRadius: 50,
+    zIndex: 10,
+    elevation: 5, // Sombra en Android
+    shadowColor: "#000", // Sombra en iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  
 });

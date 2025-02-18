@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Modal,
   View,
@@ -20,12 +20,14 @@ interface ModalUpdateUserProps {
     name: string;
     document: string;
   };
+  reloadProfile: () => void; // Agregar esta prop
 }
 
 const ModalUpdateUser: React.FC<ModalUpdateUserProps> = ({
   visible,
   onClose,
   user,
+  reloadProfile, // Agregar esta prop
 }) => {
   const handleSubmit = async (values: { name: string }) => {
     try {
@@ -51,9 +53,19 @@ const ModalUpdateUser: React.FC<ModalUpdateUserProps> = ({
         throw new Error("Error al actualizar los datos del usuario");
       }
 
-      Alert.alert("Éxito", "Los datos del usuario se actualizaron correctamente.", [
-        { text: "Aceptar", onPress: onClose },
-      ]);
+      Alert.alert(
+        "Éxito",
+        "Los datos del usuario se actualizaron correctamente.",
+        [
+          {
+            text: "Aceptar",
+            onPress: () => {
+              onClose();
+              reloadProfile();
+            },
+          },
+        ]
+      );
     } catch (error: any) {
       Alert.alert("Error", error.message || "Error al actualizar el usuario");
     }

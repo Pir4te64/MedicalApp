@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Modal, TouchableOpacity } from "react-native";
+import { View, Text, Modal, TouchableOpacity, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { stylesModal } from "./ModalUpdateAPoderado.styles";
 import { API } from "@/utils/api";
-import CustomAlert from "../../Modal";
 
 interface Afiliado {
   nombre: string;
   documento: string;
   tipoUsuario: string;
   tipoCuenta: string;
-  seudonimo: string; // Add this line
+  seudonimo: string;
 }
 
 interface ModalUpdateAPoderadoProps {
@@ -18,6 +17,7 @@ interface ModalUpdateAPoderadoProps {
   afiliado: Afiliado | null;
   tipoSeleccionado: string | null;
   onClose: () => void;
+  reloadProfile: () => void;
 }
 
 const ModalUpdateAPoderado: React.FC<ModalUpdateAPoderadoProps> = ({
@@ -25,11 +25,9 @@ const ModalUpdateAPoderado: React.FC<ModalUpdateAPoderadoProps> = ({
   afiliado,
   tipoSeleccionado,
   onClose,
+  reloadProfile,
 }) => {
   const [tipoUsuario, setTipoUsuario] = useState<string | null>(null);
-  const [alertVisible, setAlertVisible] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
-  const [alertType, setAlertType] = useState<"success" | "error">("success");
 
   useEffect(() => {
     const obtenerTipoSeleccionado = async () => {
@@ -42,11 +40,8 @@ const ModalUpdateAPoderado: React.FC<ModalUpdateAPoderadoProps> = ({
     }
   }, [visible]);
 
- 
   // Función de envío de datos
   const handleUpdate = async () => {
-    console.log("Enviando datos...");
-
     try {
       const token = await AsyncStorage.getItem("authToken");
       if (!token) {
@@ -55,7 +50,12 @@ const ModalUpdateAPoderado: React.FC<ModalUpdateAPoderadoProps> = ({
       }
 
       // Definir el valor de "role" basado en tipoSeleccionado
-      const role = tipoSeleccionado === "dependiente" ? "D" : tipoSeleccionado === "apoderado" ? "A" : "";
+      const role =
+        tipoSeleccionado === "dependiente"
+          ? "D"
+          : tipoSeleccionado === "apoderado"
+          ? "A"
+          : "";
 
       const url = `${API.UPDATE_DEPENDIENTE}?role=${role}&seudonimo=${afiliado?.seudonimo}`;
 
@@ -71,19 +71,29 @@ const ModalUpdateAPoderado: React.FC<ModalUpdateAPoderadoProps> = ({
       console.log("Respuesta de la API:", data); // Verifica la respuesta de la API
 
       if (response.ok) {
-        setAlertMessage("Datos actualizados correctamente.");
-        setAlertType("success");
-        setAlertVisible(true); // Mostrar la alerta de éxito
+        Alert.alert(
+          "Éxito",
+          "Datos actualizados correctamente.",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                onClose();
+                // Espera 2 segundos antes de recargar el perfil (ajusta el tiempo si es necesario)
+                setTimeout(() => {
+                  reloadProfile();
+                }, 2000);
+              },
+            },
+          ],
+          { cancelable: false }
+        );
       } else {
-        setAlertMessage(data.message || "Error al actualizar.");
-        setAlertType("error");
-        setAlertVisible(true); // Mostrar la alerta de error
+        Alert.alert("Error", data.message || "Error al actualizar.");
       }
     } catch (error) {
       console.error("Error al realizar la solicitud:", error);
-      setAlertMessage("Ocurrió un error al procesar la solicitud.");
-      setAlertType("error");
-      setAlertVisible(true); // Mostrar la alerta de error
+      Alert.alert("Error", "Ocurrió un error al procesar la solicitud.");
     }
   };
 
@@ -92,17 +102,13 @@ const ModalUpdateAPoderado: React.FC<ModalUpdateAPoderadoProps> = ({
       <View style={stylesModal.modalContainer}>
         <View style={stylesModal.modalContent}>
           <Text style={stylesModal.modalTitle}>Seguro que deseas cambiar?</Text>
-
           <Text style={stylesModal.modalText}>
             Has escogido: {tipoUsuario || tipoSeleccionado || "No seleccionado"}
           </Text>
-
-          {/* Mostrar pseudónimo */}
           <Text style={stylesModal.modalText}>
             Pseudónimo: {afiliado?.seudonimo || "No asignado"}
           </Text>
 
-          {/* Botón de actualización */}
           <View style={stylesModal.buttonsContainer}>
             <TouchableOpacity style={stylesModal.closeButton} onPress={onClose}>
               <Text style={stylesModal.closeButtonText}>Cerrar</Text>
@@ -110,20 +116,13 @@ const ModalUpdateAPoderado: React.FC<ModalUpdateAPoderadoProps> = ({
 
             <TouchableOpacity
               style={stylesModal.updateButton}
-              onPress={handleUpdate} // Llama a handleUpdate aquí
+              onPress={handleUpdate}
             >
               <Text style={stylesModal.updateButtonText}>Actualizar</Text>
             </TouchableOpacity>
           </View>
         </View>
       </View>
-      <CustomAlert
-        visible={alertVisible}
-        onClose={() => setAlertVisible(false)}
-        title={alertType === "success" ? "Éxito" : "Error"}
-        message={alertMessage}
-        type={alertType}
-      />
     </Modal>
   );
 };

@@ -11,7 +11,7 @@ import PerfilSecundario from "./PerfilAfiliado";
 const ProfileInfo = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false); // Estado para pull-to-refresh
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchProfile = async () => {
@@ -51,9 +51,9 @@ const ProfileInfo = () => {
   );
 
   const onRefresh = async () => {
-    setRefreshing(true); // Muestra el indicador de carga del pull-to-refresh
+    setRefreshing(true);
     await fetchProfile();
-    setRefreshing(false); // Oculta el indicador después de cargar
+    setRefreshing(false);
   };
 
   if (loading) {
@@ -81,18 +81,20 @@ const ProfileInfo = () => {
   }
 
   return (
-    <ScrollView
-      style={{ width: "100%" }}
-      contentContainerStyle={{ flexGrow: 1 }} // Asegura que se pueda hacer scroll
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-    >
-      <View style={styles.profileContainer}>
-        <PerfilPrincipal profile={profile} />
-        <PerfilSecundario afiliados={profile.afiliados} />
-      </View>
-    </ScrollView>
+    <View style={{ flex: 1 }}>
+      <ScrollView
+        style={{ width: "100%" }}
+        contentContainerStyle={{ flexGrow: 1 }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        <View style={styles.profileContainer}>
+          <PerfilPrincipal profile={profile} />
+          <PerfilSecundario afiliados={profile.afiliados || []} reloadProfile={fetchProfile} />
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 
