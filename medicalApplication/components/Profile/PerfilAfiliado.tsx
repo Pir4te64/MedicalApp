@@ -6,6 +6,7 @@ import { styles } from "./Profile.styles";
 import ModalUpdateAPoderado from "@/components/Modal/ModalSettings/ModalUpdateApoderado/ModalUpdateApoderado";
 import ModalSelector from "@/components/Modal/ModalSettings/ModalSector/ModalSelector";
 import ModalUpdatePassword from "@/components/Modal/ModalSettings/ModalUpdatePassword/ModalUpdatePassword";
+import ModalUpdateUser from "@/components/Modal/ModalSettings/ModalUpdateUser/ModalUpdateUser";
 
 interface Afiliado {
   nombre: string;
@@ -22,8 +23,10 @@ interface PerfilSecundarioProps {
 const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({ afiliados }) => {
   const [selectorVisible, setSelectorVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [passwordModalVisible, setPasswordModalVisible] = useState(false); // Estado para el modal de contraseña
-  const [afiliadoSeleccionado, setAfiliadoSeleccionado] = useState<Afiliado | null>(null);
+  const [passwordModalVisible, setPasswordModalVisible] = useState(false);
+  const [userModalVisible, setUserModalVisible] = useState(false); // Nuevo estado para actualizar datos del usuario
+  const [afiliadoSeleccionado, setAfiliadoSeleccionado] =
+    useState<Afiliado | null>(null);
   const [tipoSeleccionado, setTipoSeleccionado] = useState<string | null>(null);
 
   const actualizarAfiliado = (afiliado: Afiliado) => {
@@ -34,13 +37,19 @@ const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({ afiliados }) => {
   const handleSelectorAccept = async (tipo: string) => {
     setTipoSeleccionado(tipo);
     setSelectorVisible(false);
-    await AsyncStorage.setItem("tipoSeleccionado", tipo); // Guardar en AsyncStorage
+    await AsyncStorage.setItem("tipoSeleccionado", tipo);
     setModalVisible(true);
   };
 
   const handlePasswordUpdate = (afiliado: Afiliado) => {
     setAfiliadoSeleccionado(afiliado);
     setPasswordModalVisible(true);
+  };
+
+  // Función para abrir el modal de actualizar datos del usuario y pasar la info del afiliado
+  const handleUserDataUpdate = (afiliado: Afiliado) => {
+    setAfiliadoSeleccionado(afiliado);
+    setUserModalVisible(true);
   };
 
   if (!afiliados || afiliados.length === 0) {
@@ -62,11 +71,17 @@ const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({ afiliados }) => {
           </View>
           <View style={styles.afiliadoInfo}>
             <Ionicons name="shield-outline" size={16} color="#555" />
-            <Text style={styles.afiliadoText}> Tipo de Usuario: {afiliado.tipoUsuario}</Text>
+            <Text style={styles.afiliadoText}>
+              {" "}
+              Tipo de Usuario: {afiliado.tipoUsuario}
+            </Text>
           </View>
           <View style={styles.afiliadoInfo}>
             <Ionicons name="settings-outline" size={16} color="#555" />
-            <Text style={styles.afiliadoText}> Tipo de Cuenta: {afiliado.tipoCuenta}</Text>
+            <Text style={styles.afiliadoText}>
+              {" "}
+              Tipo de Cuenta: {afiliado.tipoCuenta}
+            </Text>
           </View>
           {/* Sección de iconos, abajo del todo, en fila centrados */}
           <View style={styles.iconsContainer}>
@@ -76,24 +91,12 @@ const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({ afiliados }) => {
             <TouchableOpacity onPress={() => handlePasswordUpdate(afiliado)}>
               <Ionicons name="key-outline" size={30} color="white" />
             </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleUserDataUpdate(afiliado)}>
+              <Ionicons name="person-outline" size={30} color="white" />
+            </TouchableOpacity>
           </View>
         </View>
       ))}
-
-      {/* Modal Selector */}
-      <ModalSelector
-        visible={selectorVisible}
-        onClose={() => setSelectorVisible(false)}
-        onAccept={handleSelectorAccept}
-      />
-
-      {/* Modal de actualización (pasa tipoSeleccionado como prop) */}
-      <ModalUpdateAPoderado
-        visible={modalVisible}
-        afiliado={afiliadoSeleccionado}
-        tipoSeleccionado={tipoSeleccionado}
-        onClose={() => setModalVisible(false)}
-      />
 
       {/* Modal Selector */}
       <ModalSelector
@@ -115,6 +118,17 @@ const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({ afiliados }) => {
         afiliado={afiliadoSeleccionado}
         visible={passwordModalVisible}
         onClose={() => setPasswordModalVisible(false)}
+      />
+
+      {/* Modal de actualización de datos del usuario */}
+      <ModalUpdateUser
+        visible={userModalVisible}
+        onClose={() => setUserModalVisible(false)}
+        user={
+          afiliadoSeleccionado
+            ? { name: afiliadoSeleccionado.nombre, document: afiliadoSeleccionado.documento }
+            : undefined
+        }
       />
     </View>
   );

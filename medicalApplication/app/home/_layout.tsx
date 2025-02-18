@@ -15,7 +15,17 @@ export default function HomeLayout() {
           ),
         }}
       />
-
+   {/* Registrar Dependientes */}
+   <Tabs.Screen
+        name="RegistrarDependientes"
+        options={{
+          title: 'Dependientes',
+          headerShown: false,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person-add" size={size} color={color} />
+          ),
+        }}
+      />
       {/* Profile con Stack */}
       <Tabs.Screen
         name="profile" // Asegúrate de usar "profile/index" para que sea la ruta correcta
@@ -28,17 +38,7 @@ export default function HomeLayout() {
         }}
       />
 
-      {/* Registrar Dependientes */}
-      <Tabs.Screen
-        name="RegistrarDependientes"
-        options={{
-          title: 'Dependientes',
-          headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-add" size={size} color={color} />
-          ),
-        }}
-      />
+   
 
       {/* Configuración */}
       <Tabs.Screen
