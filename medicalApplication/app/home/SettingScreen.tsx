@@ -1,35 +1,47 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import { LinearGradient } from "expo-linear-gradient"; // Asegúrate de tener instalado expo-linear-gradient
-import SettingsComponent from "@/components/Configs/Config"; // Importamos el nuevo componente
+import { LinearGradient } from "expo-linear-gradient";
+import SettingsComponent from "@/components/Configs/Config"; // Importamos el componente de configuración
 
 export default function SettingScreen() {
   return (
-    <View style={{ flex: 1 }}>
-      {/* Header con gradiente */}
+    <View style={styles.container}>
+      {/* Encabezado con gradiente */}
       <LinearGradient
         colors={["#2470ec", "#005bb5"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}
       >
-        {/* Aquí ya no hay texto */}
+        {/* Si en el futuro agregas contenido, se centrará automáticamente */}
       </LinearGradient>
 
-      {/* Contenido del componente Settings */}
-      <SettingsComponent />
+      {/* Contenido de la configuración */}
+      <View style={styles.content}>
+        <SettingsComponent />
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  // Contenedor principal que ocupa toda la pantalla
+  container: {
+    flex: 1,
+  },
+  // Encabezado que ocupa un 30% de la pantalla (ajustable)
   header: {
-    height: 500, // Ajustado a 500 de altura
-    justifyContent: "center",
-    alignItems: "flex-start",
+    flex: 0.7,
+    justifyContent: "center", // Centrado vertical
+    alignItems: "center", // Centrado horizontal (útil si agregas contenido)
     paddingHorizontal: 20,
-    paddingTop: 40, // Para no tapar el área del status bar
-    borderBottomLeftRadius: 30, // Borde inferior izquierdo redondeado
-    borderBottomRightRadius: 30, // Borde inferior derecho redondeado
+    paddingTop: 40, // Para no solaparlo con el status bar
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+    overflow: "hidden", // Para que los bordes redondeados se apliquen correctamente
+  },
+  // Contenedor para el resto del contenido
+  content: {
+    flex: 0.3,
   },
 });

@@ -6,4 +6,6 @@ export const API = {
   LOGIN: `${BASE_URL}/auth/login`,
   PROFILE: `${BASE_URL}/auth/profile`,
   DEPENDIENTE: `${BASE_URL}/user/register/child`,
+  UPDATE_DEPENDIENTE: `${BASE_URL}/user/update/rol`,
+  UPDATE_PASSWORD: `${BASE_URL}/user/update/password`,
 };

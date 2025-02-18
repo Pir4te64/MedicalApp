@@ -1,16 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
-import {
-  View,
-  Text,
-  Animated,
-  ActivityIndicator,
-  StyleSheet,
-} from "react-native";
+import { View, Text, Animated, ActivityIndicator, StyleSheet } from "react-native";
 import LottieView from "lottie-react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API } from "@/utils/api";
-import CustomAlert from "@/components/Modal/Modal"; // Asegúrate de importar tu CustomAlert
-import { LinearGradient } from "expo-linear-gradient"; // Importa el gradiente
+import CustomAlert from "@/components/Modal/Modal";
+import { LinearGradient } from "expo-linear-gradient";
 
 const HomeComponent = () => {
   const [profile, setProfile] = useState<any>(null);
@@ -84,17 +78,22 @@ const HomeComponent = () => {
         colors={["#2470ec", "#005bb5"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={styles.header} // Estilo del gradiente solo aquí
+        style={styles.header}
       >
-        <LottieView
-          source={require("../../assets/animations/hello.json")}
-          autoPlay
-          loop
-          style={styles.animation}
-        />
-        <Text style={styles.welcomeText}>
-          ¡Hola, {profile?.nombre || "Usuario"}!
-        </Text>
+        {/* Contenedor para centrar el contenido dinámicamente */}
+        <View style={styles.headerContent}>
+          <Animated.View style={{ transform: [{ scale: imageScale }] }}>
+            <LottieView
+              source={require("../../assets/animations/hello.json")}
+              autoPlay
+              loop
+              style={styles.animation}
+            />
+          </Animated.View>
+          <Text style={styles.welcomeText}>
+            ¡Hola, {profile?.nombre || "Usuario"}!
+          </Text>
+        </View>
       </LinearGradient>
 
       {/* Custom Alert */}
@@ -103,7 +102,7 @@ const HomeComponent = () => {
         title="Salir"
         message={modalMessage}
         type={modalType}
-        onClose={() => setModalVisible(false)} // Cerramos el modal cuando se presiona "Cerrar"
+        onClose={() => setModalVisible(false)}
       />
     </View>
   );
@@ -114,29 +113,33 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f9f9f9",
   },
+  // Usamos flex para que el header ocupe el 40% de la pantalla
   header: {
+    flex: 1,
     width: "100%",
-    height: 500, // Mantener la altura anterior
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
-    alignItems: "center",
-    justifyContent: "center",
-    position: "relative", // Hacemos que los elementos dentro del header sean posicionados relativos
+    overflow: "hidden", // Asegura que los bordes redondeados se apliquen correctamente
+  },
+  // Contenedor que centra el contenido del header
+  headerContent: {
+    flex: 1,
+    justifyContent: "center", // Centrado vertical
+    alignItems: "center",     // Centrado horizontal
+    paddingHorizontal: 20,
   },
   animation: {
     width: 50,
     height: 50,
-    position: "absolute",
-    top: 20, // Ubica la mano en la parte superior
-    left: 20, // Ubica la mano en el lado izquierdo
+    marginBottom: 10, // Espacio entre la animación y el texto
   },
   welcomeText: {
     fontSize: 20,
     fontWeight: "600",
     color: "white",
-    position: "absolute",
-    top: 30, // Ajustamos la posición para que quede en la parte superior
-    left: 80, // Espaciamos el texto para que no esté pegado a la animación
+    textAlign: "center",
+    // Puedes usar un marginTop si requieres un espacio adicional,
+    // o ajustar el padding en headerContent para mayor dinamismo.
   },
 });
 

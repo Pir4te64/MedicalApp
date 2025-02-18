@@ -1,5 +1,6 @@
-import { Tabs } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+// app/home/layout.tsx
+import { Tabs } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function HomeLayout() {
   return (
@@ -7,7 +8,7 @@ export default function HomeLayout() {
       <Tabs.Screen
         name="homeScreen"
         options={{
-          title: "Inicio",
+          title: 'Inicio',
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home" size={size} color={color} />
@@ -15,10 +16,11 @@ export default function HomeLayout() {
         }}
       />
 
+      {/* Profile con Stack */}
       <Tabs.Screen
-        name="ProfileScreen"
+        name="profile" // Asegúrate de usar "profile/index" para que sea la ruta correcta
         options={{
-          title: "Perfil",
+          title: 'Perfil',
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person" size={size} color={color} />
@@ -26,23 +28,23 @@ export default function HomeLayout() {
         }}
       />
 
-      {/* Nuevo screen para registrar dependientes */}
+      {/* Registrar Dependientes */}
       <Tabs.Screen
         name="RegistrarDependientes"
         options={{
-          title: "Dependientes",
+          title: 'Dependientes',
           headerShown: false,
-
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person-add" size={size} color={color} />
           ),
         }}
       />
 
+      {/* Configuración */}
       <Tabs.Screen
         name="SettingScreen"
         options={{
-          title: "Configuración",
+          title: 'Configuración',
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="settings" size={size} color={color} />

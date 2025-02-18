@@ -6,6 +6,8 @@ import { API } from "@/utils/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Profile } from "@/utils/types";
 import { useFocusEffect } from "@react-navigation/native"; // Importamos el hook
+import PerfilPrincipal from "./PerfilPrincipal";
+import PerfilSecundario from "./PerfilAfiliado";
 
 const ProfileInfo = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -86,71 +88,9 @@ const ProfileInfo = () => {
   return (
     <ScrollView style={{ width: "100%" }}>
       <View style={styles.profileContainer}>
-        <View style={styles.profileDetails}>
-          <View style={styles.profileInfo}>
-            <Ionicons name="person-outline" size={16} color="#ffffff" />
-            <Text style={styles.profileText}> {profile.nombre}</Text>
-          </View>
-          <View style={styles.profileInfo}>
-            <Ionicons name="card" size={16} color="#ffffff" />
-            <Text style={styles.profileText}> DNI: {profile.documento}</Text>
-          </View>
-          <View style={styles.profileInfo}>
-            <Ionicons name="person-circle-outline" size={16} color="#ffffff" />
-            <Text style={styles.profileText}>
-              {" "}
-              Seudónimo: {profile.seudonimo}
-            </Text>
-          </View>
-          <View style={styles.profileInfo}>
-            <Ionicons name="shield-outline" size={16} color="#ffffff" />
-            <Text style={styles.profileText}>
-              {" "}
-              Tipo de Usuario: {profile.tipoUsuario}
-            </Text>
-          </View>
-          <View style={styles.profileInfo}>
-            <Ionicons name="settings-outline" size={16} color="#ffffff" />
-            <Text style={styles.profileText}>
-              {" "}
-              Tipo de Cuenta: {profile.tipoCuenta}
-            </Text>
-          </View>
-        </View>
+      <PerfilPrincipal profile={profile} />
 
-        {profile.afiliados && profile.afiliados.length > 0 ? (
-          <View style={styles.afiliadosSection}>
-            <Text style={styles.afiliadosTitle}>Afiliados</Text>
-            {profile.afiliados.map((afiliado, index) => (
-              <View key={index} style={styles.afiliadoItem}>
-                <Text style={styles.afiliadoName}>{afiliado.nombre}</Text>
-                <View style={styles.afiliadoInfo}>
-                  <Ionicons name="card" size={16} color="#555" />
-                  <Text style={styles.afiliadoText}>
-                    {" "}
-                    DNI: {afiliado.documento}
-                  </Text>
-                </View>
-                <View style={styles.afiliadoInfo}>
-                  <Ionicons name="shield-outline" size={16} color="#555" />
-                  <Text style={styles.afiliadoText}>
-                    {" "}
-                    Tipo de Usuario: {afiliado.tipoUsuario}
-                  </Text>
-                </View>
-                <View style={styles.afiliadoInfo}>
-                  <Ionicons name="settings-outline" size={16} color="#555" />
-                  <Text style={styles.afiliadoText}>
-                    {" "}
-                    Tipo de Cuenta: {afiliado.tipoCuenta}
-                  </Text>
-                </View>
-              </View>
-            ))}
-          </View>
-        ) : (
-          <Text style={styles.noAfiliados}>No tiene afiliados.</Text>
-        )}
+      <PerfilSecundario afiliados={profile.afiliados} />
       </View>
     </ScrollView>
   );

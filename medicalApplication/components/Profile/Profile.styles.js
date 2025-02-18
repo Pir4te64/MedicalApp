@@ -40,10 +40,15 @@ export const styles = StyleSheet.create({
   afiliadoItem: {
     marginBottom: 20,
   },
+  afiliadoHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between", // Alinea nombre a la izquierda y botón a la derecha
+    marginBottom: 10,
+  },
   afiliadoName: {
     fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 10,
   },
   afiliadoInfo: {
     flexDirection: "row",
@@ -69,5 +74,15 @@ export const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  // NUEVOS ESTILOS PARA LOS ÍCONOS
+  iconsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+    marginTop: 10,
+    backgroundColor: "#0066cc",
+    borderRadius: 12,
+    padding: 10,
   },
 });
