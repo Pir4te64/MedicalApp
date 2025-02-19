@@ -44,7 +44,7 @@ export const handleSubmit = async (
       otherAllergiesUsers: Array.isArray(otherAllergies) ? otherAllergies : [],
       chronicDiseasesUsersRequest: formattedChronicDiseases,
     };
-    console.log("Datos a enviar:", JSON.stringify(formData, null, 2));
+    /*  console.log("Datos a enviar:", JSON.stringify(formData, null, 2)); */
 
     const response = await fetch(API.DATA_REGISTER, {
       method: "POST",

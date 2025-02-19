@@ -7,6 +7,7 @@ import DatePickerInput from "./DatePicker";
 import ChronicDiseaseInput from "./ChronicDiseaseInput";
 import { getUserData } from "./Register.fetch";
 import { handleSubmit } from "./Register.data"; // Asegúrate de importar la función handleSubmit
+import { getUpdatedInfo } from "./Register.Update";
 
 interface Afiliado {
   id: number;
@@ -36,6 +37,8 @@ const RegisterDataForm: React.FC<RegisterDataFormProps> = ({ afiliado }) => {
     medication: "",
     dosage: "",
   });
+
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   const handleChange = (key: string, value: any) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
@@ -71,6 +74,7 @@ const RegisterDataForm: React.FC<RegisterDataFormProps> = ({ afiliado }) => {
             otherAllergies: otherAllergiesUsers || [],
             chronicDiseases: chronicDiseasesUsersRequest || [],
           }));
+          setIsDataLoaded(true); // Marcar que los datos han sido cargados
         }
       } catch (error) {
         console.error("Error al obtener los datos del usuario:", error);
@@ -84,6 +88,14 @@ const RegisterDataForm: React.FC<RegisterDataFormProps> = ({ afiliado }) => {
     const { newDisease, doctorEmail, medicalCenter, medication, dosage } = formData;
     return newDisease && doctorEmail && medicalCenter && medication && dosage;
   };
+
+  const handleUpdateInfo = () => {
+    const updatedInfo = getUpdatedInfo(afiliado, formData);
+    console.log("Objeto para actualizar información:", JSON.stringify(updatedInfo, null, 2));
+    // Aquí puedes agregar la lógica para enviar updatedInfo a tu API
+  };
+
+
 
   return (
     <ScrollView style={styles.container}>
@@ -161,12 +173,11 @@ const RegisterDataForm: React.FC<RegisterDataFormProps> = ({ afiliado }) => {
             handleChange("medication", "");
             handleChange("dosage", "");
           } else {
-            Alert.alert("Error", "Por favor, complete todos los campos de enfermedades crónicas.");
+            Alert.alert("Error", "Por favor, complete todos los campos necesarios.");
           }
         }}
       />
 
-      {/* Botón de Registrar */}
       <View style={styles.submitButton}>
         <Text
           style={styles.submitButtonText}
@@ -186,6 +197,18 @@ const RegisterDataForm: React.FC<RegisterDataFormProps> = ({ afiliado }) => {
           Registrar
         </Text>
       </View>
+
+      {/* Botón para actualizar la información, solo si los datos han sido cargados */}
+      {isDataLoaded && (
+        <View style={styles.submitButton}>
+          <Text
+            style={styles.submitButtonText}
+            onPress={handleUpdateInfo}
+          >
+            Actualizar Info
+          </Text>
+        </View>
+      )}
     </ScrollView>
   );
 };
