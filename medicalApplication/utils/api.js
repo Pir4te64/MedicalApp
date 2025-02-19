@@ -11,6 +11,5 @@ export const API = {
   UPDATE_USER: `${BASE_URL}/user/update`,
   DATA_REGISTER: `${BASE_URL}/user/data/register`,
   DATA_REGISTER_UPDATE: `${BASE_URL}/user/data/update`,
-  DATA_REGISTER_UPDATE: `${BASE_URL}/user/data/update`,
   DATA_REGISTER_GET: `${BASE_URL}/user/data/`,
 };

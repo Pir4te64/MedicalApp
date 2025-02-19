@@ -42,9 +42,9 @@ export const handleSubmit = async (
         ? medicationAllergies
         : [],
       otherAllergiesUsers: Array.isArray(otherAllergies) ? otherAllergies : [],
-      chronicDiseasesUsersRequest: formattedChronicDiseases,
+      chronicDiseasesUsers: formattedChronicDiseases,
     };
-    /*  console.log("Datos a enviar:", JSON.stringify(formData, null, 2)); */
+    console.log("Datos a enviar:", JSON.stringify(formData, null, 2)); 
 
     const response = await fetch(API.DATA_REGISTER, {
       method: "POST",
@@ -56,6 +56,7 @@ export const handleSubmit = async (
     });
 
     if (!response.ok) {
+      
       throw new Error(
         `Error en la petición: ${response.status} - ${response.statusText}`
       );

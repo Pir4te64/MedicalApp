@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API } from "@/utils/api"; // Asegúrate de que la ruta sea la correcta
+import { Alert } from "react-native";
 
 export const getUserData = async (userId: number) => {
   try {
@@ -18,15 +19,15 @@ export const getUserData = async (userId: number) => {
     });
 
     if (!response.ok) {
-      throw new Error(
-        `Error en la petición: ${response.status} - ${response.statusText}`
+      Alert.alert("Usuario sin información médica, por favor rellene el formulario."
       );
     }
 
     const data = await response.json();
     return data; // Devuelve los datos obtenidos
   } catch (error) {
-    console.error("Error obteniendo datos del usuario:", error.message);
+    Alert.alert("Usuario sin información médica, por favor rellene el formulario."
+    );
     throw error; // Re-lanza el error para manejarlo en el componente
   }
 };
