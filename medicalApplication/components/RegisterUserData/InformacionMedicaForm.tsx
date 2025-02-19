@@ -182,7 +182,19 @@ const RegisterDataForm: React.FC<RegisterDataFormProps> = ({ afiliado }) => {
           onChangeMedication={(value) => handleChange("medication", value)}
           onChangeDosage={(value) => handleChange("dosage", value)}
           onAddChronicDisease={() => {
+            // Validación de que todos los campos estén completos
+            const validateChronicDiseaseFields = () => {
+              return (
+                formData.newDisease &&
+                formData.doctorEmail &&
+                formData.medicalCenter &&
+                formData.medication &&
+                formData.dosage
+              );
+            };
+
             if (validateChronicDiseaseFields()) {
+              // Agregar la nueva enfermedad crónica
               handleChange("chronicDiseases", [
                 ...formData.chronicDiseases,
                 {
@@ -204,13 +216,14 @@ const RegisterDataForm: React.FC<RegisterDataFormProps> = ({ afiliado }) => {
               handleChange("medication", "");
               handleChange("dosage", "");
             } else {
+              // Mostrar un mensaje de error si los campos no están completos
               Alert.alert(
                 "Error",
                 "Por favor, complete todos los campos necesarios."
               );
             }
           }}
-          onUpdateChronicDisease={onUpdateChronicDisease} // Aquí se pasa la función
+          onUpdateChronicDisease={onUpdateChronicDisease} // Pasar la función de actualización
         />
       </View>
 

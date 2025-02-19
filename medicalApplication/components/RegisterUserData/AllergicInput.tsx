@@ -6,7 +6,8 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons"; // Asegúrate de instalar esta librería para el ícono
+import { Ionicons } from "@expo/vector-icons";
+import * as Yup from "yup"; // Importamos Yup
 
 interface AllergyInputProps {
   title: string;
@@ -22,6 +23,27 @@ const AllergyInput: React.FC<AllergyInputProps> = ({
   onAddAllergy,
 }) => {
   const [allergy, setAllergy] = useState("");
+  const [errors, setErrors] = useState<any>({});
+
+  // Definir el esquema de validación con Yup
+  const validationSchema = Yup.string()
+    .max(100, "El nombre de la alergia debe tener menos de 100 caracteres")
+    .matches(/^[a-zA-Z\s]*$/, "Solo se permiten letras y espacios en blanco");
+
+  const validateInput = () => {
+    validationSchema
+      .validate(allergy, { abortEarly: false })
+      .then(() => {
+        setErrors({});
+      })
+      .catch((err) => {
+        const errorObj: any = {};
+        err.inner.forEach((e: any) => {
+          errorObj[e.path] = e.message;
+        });
+        setErrors(errorObj);
+      });
+  };
 
   return (
     <View>
@@ -35,10 +57,14 @@ const AllergyInput: React.FC<AllergyInputProps> = ({
           onChangeText={setAllergy}
           onSubmitEditing={() => {
             if (allergy.trim() !== "") {
-              onAddAllergy(allergy.trim());
-              setAllergy(""); // Limpiar input al agregar
+              validateInput();
+              if (!errors.allergy) {
+                onAddAllergy(allergy.trim());
+                setAllergy(""); // Limpiar input al agregar
+              }
             }
           }}
+          onBlur={validateInput} // Valida cuando el input pierde foco
         />
 
         {/* Botón de agregar */}
@@ -46,14 +72,20 @@ const AllergyInput: React.FC<AllergyInputProps> = ({
           style={styles.addButton}
           onPress={() => {
             if (allergy.trim() !== "") {
-              onAddAllergy(allergy.trim());
-              setAllergy(""); // Limpiar input al agregar
+              validateInput();
+              if (!errors.allergy) {
+                onAddAllergy(allergy.trim());
+                setAllergy(""); // Limpiar input al agregar
+              }
             }
           }}
         >
           <Ionicons name="add" size={24} color="#fff" />
         </TouchableOpacity>
       </View>
+
+      {/* Mostrar el error si existe */}
+      {errors.allergy && <Text style={styles.errorText}>{errors.allergy}</Text>}
 
       {/* Lista de alergias con punto */}
       <View style={styles.allergiesList}>
@@ -108,6 +140,11 @@ const styles = StyleSheet.create({
     fontSize: 16, // Tamaño de fuente ajustado
     color: "#333",
     marginLeft: 5, // Para separar el punto del texto
+  },
+  errorText: {
+    color: "red",
+    fontSize: 14,
+    marginTop: 5,
   },
 });
 

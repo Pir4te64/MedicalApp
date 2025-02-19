@@ -40,6 +40,14 @@ const ChronicDiseaseInput: React.FC<ChronicDiseaseInputProps> = ({
   chronicDiseases,
   onUpdateChronicDisease,
 }) => {
+  // Función para validar que "dosis" sea un número
+  const handleDosageChange = (value: string) => {
+    // Aceptar solo números
+    if (/^\d*\.?\d+$/.test(value) || value === "") {
+      onChangeDosage(value);
+    }
+  };
+
   return (
     <View>
       <Text style={styles.title}>Agregar Enfermedad Crónica</Text>
@@ -80,9 +88,10 @@ const ChronicDiseaseInput: React.FC<ChronicDiseaseInputProps> = ({
         label="Dosis"
         placeholder="Ej: 10mg"
         value={dosage}
-        onChangeText={onChangeDosage}
+        onChangeText={handleDosageChange} // Validación de dosis
         containerStyle={styles.inputContainer}
         inputStyle={styles.input}
+        keyboardType="numeric" // Solo números
       />
 
       <Button
