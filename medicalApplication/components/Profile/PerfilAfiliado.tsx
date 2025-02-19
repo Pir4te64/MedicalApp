@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { styles } from "./Profile.styles";
 import ModalUpdateAPoderado from "@/components/Modal/ModalSettings/ModalUpdateApoderado/ModalUpdateApoderado";
 import ModalSelector from "@/components/Modal/ModalSettings/ModalSector/ModalSelector";
@@ -21,13 +22,19 @@ interface PerfilSecundarioProps {
   reloadProfile: () => void; // Función para recargar el perfil
 }
 
-const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({ afiliados, reloadProfile }) => {
+const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({
+  afiliados,
+  reloadProfile,
+}) => {
   const [selectorVisible, setSelectorVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [passwordModalVisible, setPasswordModalVisible] = useState(false);
   const [userModalVisible, setUserModalVisible] = useState(false);
-  const [afiliadoSeleccionado, setAfiliadoSeleccionado] = useState<Afiliado | null>(null);
+  const [afiliadoSeleccionado, setAfiliadoSeleccionado] =
+    useState<Afiliado | null>(null);
   const [tipoSeleccionado, setTipoSeleccionado] = useState<string | null>(null);
+
+  const router = useRouter(); // Hook para navegación
 
   const actualizarAfiliado = (afiliado: Afiliado) => {
     setAfiliadoSeleccionado(afiliado);
@@ -51,6 +58,16 @@ const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({ afiliados, reloadPr
     setUserModalVisible(true);
   };
 
+  // Función para navegar a la pantalla de información detallada con los datos del afiliado
+  const navigateToInformation = (afiliado: Afiliado) => {
+    // Pasamos la información del afiliado como parámetro codificando el objeto a JSON
+    router.push(
+      `/home/profile/informacion?afiliado=${encodeURIComponent(
+        JSON.stringify(afiliado)
+      )}`
+    );
+  };
+
   if (!afiliados || afiliados.length === 0) {
     return <Text style={styles.noAfiliados}>No tiene afiliados.</Text>;
   }
@@ -70,11 +87,17 @@ const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({ afiliados, reloadPr
           </View>
           <View style={styles.afiliadoInfo}>
             <Ionicons name="shield-outline" size={16} color="#555" />
-            <Text style={styles.afiliadoText}> Tipo de Usuario: {afiliado.tipoUsuario}</Text>
+            <Text style={styles.afiliadoText}>
+              {" "}
+              Tipo de Usuario: {afiliado.tipoUsuario}
+            </Text>
           </View>
           <View style={styles.afiliadoInfo}>
             <Ionicons name="settings-outline" size={16} color="#555" />
-            <Text style={styles.afiliadoText}> Tipo de Cuenta: {afiliado.tipoCuenta}</Text>
+            <Text style={styles.afiliadoText}>
+              {" "}
+              Tipo de Cuenta: {afiliado.tipoCuenta}
+            </Text>
           </View>
 
           {/* Sección de iconos */}
@@ -89,6 +112,14 @@ const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({ afiliados, reloadPr
               <Ionicons name="person-outline" size={30} color="white" />
             </TouchableOpacity>
           </View>
+
+          {/* Botón para ver información detallada del afiliado */}
+          <TouchableOpacity
+            style={localStyles.infoButton}
+            onPress={() => navigateToInformation(afiliado)}
+          >
+            <Text style={localStyles.infoButtonText}>Registro Medico</Text>
+          </TouchableOpacity>
         </View>
       ))}
 
@@ -110,16 +141,37 @@ const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({ afiliados, reloadPr
         visible={passwordModalVisible}
         onClose={() => setPasswordModalVisible(false)}
         reloadProfile={reloadProfile}
-
       />
       <ModalUpdateUser
         visible={userModalVisible}
         onClose={() => setUserModalVisible(false)}
         reloadProfile={reloadProfile}
-        user={afiliadoSeleccionado ? { name: afiliadoSeleccionado.nombre, document: afiliadoSeleccionado.documento } : undefined}
+        user={
+          afiliadoSeleccionado
+            ? {
+                name: afiliadoSeleccionado.nombre,
+                document: afiliadoSeleccionado.documento,
+              }
+            : undefined
+        }
       />
     </View>
   );
 };
+
+const localStyles = StyleSheet.create({
+  infoButton: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: "#007AFF",
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  infoButtonText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+});
 
 export default PerfilSecundario;

@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { View, Text, ActivityIndicator, ScrollView, RefreshControl } from "react-native";
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  ScrollView,
+  RefreshControl,
+} from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { API } from "@/utils/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -91,7 +97,10 @@ const ProfileInfo = () => {
       >
         <View style={styles.profileContainer}>
           <PerfilPrincipal profile={profile} />
-          <PerfilSecundario afiliados={profile.afiliados || []} reloadProfile={fetchProfile} />
+          <PerfilSecundario
+            afiliados={profile.afiliados || []}
+            reloadProfile={fetchProfile}
+          />
         </View>
       </ScrollView>
     </View>

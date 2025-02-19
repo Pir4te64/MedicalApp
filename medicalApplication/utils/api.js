@@ -9,4 +9,6 @@ export const API = {
   UPDATE_DEPENDIENTE: `${BASE_URL}/user/update/rol`,
   UPDATE_PASSWORD: `${BASE_URL}/user/update/password`,
   UPDATE_USER: `${BASE_URL}/user/update`,
+  DATA_REGISTER: `${BASE_URL}/user/data/register`,
+  DATA_REGISTER_UPDATE: `${BASE_URL}/user/data/update`,
 };

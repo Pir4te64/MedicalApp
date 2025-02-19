@@ -1,6 +1,6 @@
 // app/home/profile/_layout.tsx
-import React from 'react';
-import { Stack } from 'expo-router';
+import React from "react";
+import { Stack } from "expo-router";
 
 const ProfileLayout = () => {
   return (
@@ -9,12 +9,16 @@ const ProfileLayout = () => {
       <Stack.Screen
         name="index" // ProfileScreen
         options={{
-          title: 'Perfil',
+          title: "Perfil",
           headerShown: false,
         }}
       />
-      
-      
+      <Stack.Screen
+        name="informacion" // ProfileScreen
+        options={{
+          title: "Registro Informacion",
+        }}
+      />
     </Stack>
   );
 };

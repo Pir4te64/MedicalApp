@@ -1,10 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { View, ScrollView, BackHandler, StyleSheet } from "react-native";
+import {
+  View,
+  ScrollView,
+  BackHandler,
+  StyleSheet,
+  Button,
+} from "react-native";
+import { useRouter } from "expo-router";
 import ProfileInfo from "@/components/Profile/Profile"; // Asegúrate de importar el componente correctamente
 import CustomAlert from "@/components/Modal/Modal"; // Asegúrate de importar CustomAlert correctamente
 
 export default function ProfileScreen() {
   const [alertVisible, setAlertVisible] = useState(false);
+  const router = useRouter();
+
+  // Función para navegar a la pantalla de información
+  const navigateToInformation = () => {
+    router.push("/home/profile/informacion");
+  };
 
   // Mostrar el CustomAlert
   const showAlert = () => {
@@ -39,6 +52,8 @@ export default function ProfileScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <ProfileInfo />
+
+        {/* Botón para navegar a la pantalla de información */}
       </ScrollView>
 
       {/* CustomAlert con los parámetros adecuados */}
@@ -66,4 +81,3 @@ const styles = StyleSheet.create({
     padding: 20,
   },
 });
-
