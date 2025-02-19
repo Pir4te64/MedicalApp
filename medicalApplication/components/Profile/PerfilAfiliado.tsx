@@ -92,13 +92,13 @@ const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({
               Tipo de Usuario: {afiliado.tipoUsuario}
             </Text>
           </View>
-          <View style={styles.afiliadoInfo}>
+          {/* <View style={styles.afiliadoInfo}>
             <Ionicons name="settings-outline" size={16} color="#555" />
             <Text style={styles.afiliadoText}>
               {" "}
               Tipo de Cuenta: {afiliado.tipoCuenta}
             </Text>
-          </View>
+          </View> */}
 
           {/* Sección de iconos */}
           <View style={styles.iconsContainer}>

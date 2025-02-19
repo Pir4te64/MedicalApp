@@ -1,6 +1,6 @@
 import React from "react";
 import { View, TextInput, Text } from "react-native";
-import Icon from "react-native-vector-icons/Ionicons"; // Importa el ícono que desees usar
+import Icon from "react-native-vector-icons/Ionicons";
 
 interface CustomInputProps {
   label: string;
@@ -10,7 +10,8 @@ interface CustomInputProps {
   onBlur: () => void;
   errorMessage?: string;
   secureTextEntry?: boolean;
-  icon?: string; // Prop para el ícono
+  icon?: string;
+  onValidateField: () => void; // Nueva prop para disparar la validación
 }
 
 const CustomInput: React.FC<CustomInputProps> = ({
@@ -22,6 +23,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
   errorMessage,
   secureTextEntry,
   icon,
+  onValidateField, // Recibimos la función para validar el campo
 }) => {
   return (
     <View style={{ width: "100%", marginBottom: 15 }}>
@@ -30,8 +32,8 @@ const CustomInput: React.FC<CustomInputProps> = ({
         style={{
           flexDirection: "row",
           alignItems: "center",
-          borderBottomWidth: 1, // Solo el borde inferior
-          borderBottomColor: "#ccc", // Color del borde inferior
+          borderBottomWidth: 1,
+          borderBottomColor: "#ccc",
           paddingHorizontal: 10,
         }}
       >
@@ -46,7 +48,10 @@ const CustomInput: React.FC<CustomInputProps> = ({
         <TextInput
           placeholder={placeholder}
           value={value}
-          onChangeText={onChangeText}
+          onChangeText={(text) => {
+            onChangeText(text); // Actualizamos el valor
+            onValidateField(); // Ejecutamos la validación en cada cambio de texto
+          }}
           onBlur={onBlur}
           secureTextEntry={secureTextEntry}
           style={{

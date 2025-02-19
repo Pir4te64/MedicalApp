@@ -7,7 +7,7 @@ import { useRouter } from "expo-router";
 import { API } from "@/utils/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomAlert from "@/components/Modal/Modal";
-import CustomInput from "@/components/Registrardependientes/CustomInput"; // Importamos el nuevo componente
+import CustomInput from "@/components/Registrardependientes/CustomInput";
 
 const RegisterDependientes = () => {
   const router = useRouter();
@@ -24,6 +24,7 @@ const RegisterDependientes = () => {
     errors,
     touched,
     setFieldValue,
+    validateField,
     resetForm,
   } = useFormik({
     initialValues,
@@ -86,7 +87,8 @@ const RegisterDependientes = () => {
         errorMessage={
           touched.document && errors.document ? errors.document : ""
         }
-        icon="document" // Usando un ícono relevante para Documento
+        icon="document"
+        onValidateField={() => validateField("document")} // Validación en tiempo real
       />
 
       <CustomInput
@@ -96,7 +98,8 @@ const RegisterDependientes = () => {
         onChangeText={handleChange("name")}
         onBlur={() => handleBlur("name")}
         errorMessage={touched.name && errors.name ? errors.name : ""}
-        icon="person" // Ícono relevante para el nombre
+        icon="person"
+        onValidateField={() => validateField("name")} // Validación en tiempo real
       />
 
       <CustomInput
@@ -109,7 +112,8 @@ const RegisterDependientes = () => {
         errorMessage={
           touched.password && errors.password ? errors.password : ""
         }
-        icon="lock-closed" // Ícono para contraseña
+        icon="lock-closed"
+        onValidateField={() => validateField("password")} // Validación en tiempo real
       />
 
       <View style={{ width: "100%", alignItems: "center" }}>
@@ -141,7 +145,7 @@ const RegisterDependientes = () => {
         type={modalType}
         onClose={() => {
           setModalVisible(false);
-          if (modalType === "success") router.replace("/home/ProfileScreen");
+          if (modalType === "success") router.replace("/home/profile");
           resetForm();
         }}
       />
