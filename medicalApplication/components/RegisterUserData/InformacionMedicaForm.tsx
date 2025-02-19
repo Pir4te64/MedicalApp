@@ -1,16 +1,12 @@
-import React, { useState } from "react";
-import {
-  Text,
-  ScrollView,
-  View,
-  TextInput,
-  Button,
-  Platform,
-} from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import React, { useState, useEffect } from "react";
+import { Text, ScrollView, View, Alert } from "react-native";
 import { styles } from "./InformacionStyles.styles";
 import { Input } from "react-native-elements";
-import { handleSubmit } from "./Register.data";
+import AllergyInput from "./AllergicInput";
+import DatePickerInput from "./DatePicker";
+import ChronicDiseaseInput from "./ChronicDiseaseInput";
+import { getUserData } from "./Register.fetch";
+import { handleSubmit } from "./Register.data"; // Asegúrate de importar la función handleSubmit
 
 interface Afiliado {
   id: number;
@@ -21,221 +17,173 @@ interface RegisterDataFormProps {
 }
 
 const RegisterDataForm: React.FC<RegisterDataFormProps> = ({ afiliado }) => {
-  const [birthDate, setBirthDate] = useState(new Date());
-  const [weight, setWeight] = useState("");
-  const [height, setHeight] = useState("");
-  const [bloodType, setBloodType] = useState("");
-
-  const [medicationAllergies, setMedicationAllergies] = useState<
-    { allergy: string }[]
-  >([]);
-  const [otherAllergies, setOtherAllergies] = useState<{ allergy: string }[]>(
-    []
-  );
-  const [chronicDiseases, setChronicDiseases] = useState<
-    {
+  const [formData, setFormData] = useState({
+    birthDate: new Date(),
+    weight: "",
+    height: "",
+    bloodType: "",
+    medicationAllergies: [] as { allergy: string }[],
+    otherAllergies: [] as { allergy: string }[],
+    chronicDiseases: [] as {
       disease: string;
       doctorEmail: string;
       medicalCenter: string;
       medicalTreatmentUser: { medication: string; dosage: string }[];
-    }[]
-  >([]);
+    }[],
+    newDisease: "",
+    doctorEmail: "",
+    medicalCenter: "",
+    medication: "",
+    dosage: "",
+  });
 
-  const [newDisease, setNewDisease] = useState("");
-  const [doctorEmail, setDoctorEmail] = useState("");
-  const [medicalCenter, setMedicalCenter] = useState("");
-  const [medication, setMedication] = useState("");
-  const [dosage, setDosage] = useState("");
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const handleDateChange = (event: any, selectedDate?: Date) => {
-    setShowDatePicker(false); // 🔹 Ocultar el picker al seleccionar
-    if (selectedDate) {
-      setBirthDate(selectedDate);
-    }
+  const handleChange = (key: string, value: any) => {
+    setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
-  const addMedicationAllergy = (allergy: string) => {
-    if (allergy.trim() !== "") {
-      setMedicationAllergies([...medicationAllergies, { allergy }]);
-    }
-  };
+  // Llamar a la función getUserData cuando el componente se monta
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await getUserData(afiliado.id);
+        console.log("Datos del usuario:", JSON.stringify(response, null, 2));
 
-  const addOtherAllergy = (allergy: string) => {
-    if (allergy.trim() !== "") {
-      setOtherAllergies([...otherAllergies, { allergy }]);
-    }
-  };
+        // Verifica si la respuesta es exitosa y si contiene el cuerpo de datos
+        if (response.success && response.body) {
+          const {
+            birthDate,
+            weight,
+            height,
+            bloodType,
+            medicationAllergyUsers,
+            otherAllergiesUsers,
+            chronicDiseasesUsersRequest,
+          } = response.body;
 
-  const addChronicDisease = () => {
-    if (
-      newDisease.trim() !== "" &&
-      doctorEmail.trim() !== "" &&
-      medicalCenter.trim() !== "" &&
-      medication.trim() !== "" &&
-      dosage.trim() !== ""
-    ) {
-      setChronicDiseases([
-        ...chronicDiseases,
-        {
-          disease: newDisease,
-          doctorEmail,
-          medicalCenter,
-          medicalTreatmentUser: [{ medication, dosage }],
-        },
-      ]);
-      // Limpiar inputs después de agregar
-      setNewDisease("");
-      setDoctorEmail("");
-      setMedicalCenter("");
-      setMedication("");
-      setDosage("");
-    }
+          // Establecer los valores en el estado
+          setFormData((prev) => ({
+            ...prev,
+            birthDate: new Date(birthDate[0], birthDate[1] - 1, birthDate[2]), // Ajusta la fecha
+            weight: weight || "", // Establecer un valor vacío si no hay
+            height: height || "",
+            bloodType: bloodType || "",
+            medicationAllergies: medicationAllergyUsers || [],
+            otherAllergies: otherAllergiesUsers || [],
+            chronicDiseases: chronicDiseasesUsersRequest || [],
+          }));
+        }
+      } catch (error) {
+        console.error("Error al obtener los datos del usuario:", error);
+      }
+    };
+
+    fetchUserData();
+  }, [afiliado.id]);
+
+  const validateChronicDiseaseFields = () => {
+    const { newDisease, doctorEmail, medicalCenter, medication, dosage } = formData;
+    return newDisease && doctorEmail && medicalCenter && medication && dosage;
   };
 
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.subtitle}>Fecha de Nacimiento</Text>
-
-      <Button
-        title="Seleccionar Fecha"
-        onPress={() => setShowDatePicker(true)}
+      <DatePickerInput
+        date={formData.birthDate}
+        onChange={(date) => handleChange("birthDate", date)}
       />
-      <Text style={styles.dateText}>
-        {birthDate.toLocaleDateString()}{" "}
-        {/* 📌 Muestra la fecha seleccionada */}
-      </Text>
-
-      {showDatePicker && (
-        <DateTimePicker
-          value={birthDate}
-          mode="date"
-          display={Platform.OS === "android" ? "calendar" : "spinner"} // 📌 Ajuste para Android
-          onChange={handleDateChange}
-        />
-      )}
-
       <Input
         label="Peso"
         placeholder="Ingrese su peso"
-        value={weight}
-        onChangeText={setWeight}
+        value={formData.weight}
+        onChangeText={(value) => handleChange("weight", value)}
         inputStyle={styles.input}
       />
       <Input
         label="Altura"
         placeholder="Ingrese su altura"
-        value={height}
-        onChangeText={setHeight}
+        value={formData.height}
+        onChangeText={(value) => handleChange("height", value)}
         inputStyle={styles.input}
       />
       <Input
         label="Tipo de Sangre"
         placeholder="Ingrese su tipo de sangre"
-        value={bloodType}
-        onChangeText={setBloodType}
+        value={formData.bloodType}
+        onChangeText={(value) => handleChange("bloodType", value)}
         inputStyle={styles.input}
       />
 
       {/* Alergias a medicamentos */}
-      <View style={styles.allergyContainer}>
-        <Text style={styles.subtitle}>Agregar Alergia a Medicamentos</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Ingrese alergia"
-          onSubmitEditing={(e) => addMedicationAllergy(e.nativeEvent.text)}
-        />
-        {medicationAllergies.map((item, index) => (
-          <Text key={index} style={styles.allergyText}>
-            {item.allergy}
-          </Text>
-        ))}
-      </View>
+      <AllergyInput
+        title="Agregar Alergia a Medicamentos"
+        placeholder="Ingrese alergia"
+        allergies={formData.medicationAllergies}
+        onAddAllergy={(allergy) => handleChange("medicationAllergies", [...formData.medicationAllergies, { allergy }])}
+      />
 
       {/* Otras alergias */}
-      <View style={styles.allergyContainer}>
-        <Text style={styles.subtitle}>Agregar Otras Alergias</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Ingrese alergia"
-          onSubmitEditing={(e) => addOtherAllergy(e.nativeEvent.text)}
-        />
-        {otherAllergies.map((item, index) => (
-          <Text key={index} style={styles.allergyText}>
-            {item.allergy}
-          </Text>
-        ))}
-      </View>
+      <AllergyInput
+        title="Agregar Otras Alergias"
+        placeholder="Ingrese otra alergia"
+        allergies={formData.otherAllergies}
+        onAddAllergy={(allergy) => handleChange("otherAllergies", [...formData.otherAllergies, { allergy }])}
+      />
 
       {/* Enfermedades Crónicas */}
-      <View style={styles.allergyContainer}>
-        <Text style={styles.subtitle}>Agregar Enfermedad Crónica</Text>
-        <Input
-          label="Enfermedad"
-          placeholder="Ej: Diabetes"
-          value={newDisease}
-          onChangeText={setNewDisease}
-        />
-        <Input
-          label="Correo del Doctor"
-          placeholder="Ej: doctor@email.com"
-          value={doctorEmail}
-          onChangeText={setDoctorEmail}
-        />
-        <Input
-          label="Centro Médico"
-          placeholder="Ej: Hospital Central"
-          value={medicalCenter}
-          onChangeText={setMedicalCenter}
-        />
-        <Input
-          label="Medicamento"
-          placeholder="Ej: Insulina"
-          value={medication}
-          onChangeText={setMedication}
-        />
-        <Input
-          label="Dosis"
-          placeholder="Ej: 10mg"
-          value={dosage}
-          onChangeText={setDosage}
-        />
-        <Button title="Agregar Enfermedad" onPress={addChronicDisease} />
+      <ChronicDiseaseInput
+        newDisease={formData.newDisease}
+        doctorEmail={formData.doctorEmail}
+        medicalCenter={formData.medicalCenter}
+        medication={formData.medication}
+        dosage={formData.dosage}
+        chronicDiseases={formData.chronicDiseases}
+        onChangeDisease={(value) => handleChange("newDisease", value)}
+        onChangeDoctorEmail={(value) => handleChange("doctorEmail", value)}
+        onChangeMedicalCenter={(value) => handleChange("medicalCenter", value)}
+        onChangeMedication={(value) => handleChange("medication", value)}
+        onChangeDosage={(value) => handleChange("dosage", value)}
+        onAddChronicDisease={() => {
+          if (validateChronicDiseaseFields()) {
+            handleChange("chronicDiseases", [
+              ...formData.chronicDiseases,
+              {
+                disease: formData.newDisease,
+                doctorEmail: formData.doctorEmail,
+                medicalCenter: formData.medicalCenter,
+                medicalTreatmentUser: [{ medication: formData.medication, dosage: formData.dosage }],
+              },
+            ]);
+            // Limpiar campos
+            handleChange("newDisease", "");
+            handleChange("doctorEmail", "");
+            handleChange("medicalCenter", "");
+            handleChange("medication", "");
+            handleChange("dosage", "");
+          } else {
+            Alert.alert("Error", "Por favor, complete todos los campos de enfermedades crónicas.");
+          }
+        }}
+      />
 
-        {chronicDiseases.map((item, index) => (
-          <View key={index} style={styles.diseaseContainer}>
-            <Text style={styles.allergyText}>Enfermedad: {item.disease}</Text>
-            <Text style={styles.allergyText}>Doctor: {item.doctorEmail}</Text>
-            <Text style={styles.allergyText}>
-              Centro Médico: {item.medicalCenter}
-            </Text>
-            <Text style={styles.allergyText}>
-              Medicamento: {item.medicalTreatmentUser[0].medication}
-            </Text>
-            <Text style={styles.allergyText}>
-              Dosis: {item.medicalTreatmentUser[0].dosage}
-            </Text>
-          </View>
-        ))}
-      </View>
-
-      {/* Botón de Registro */}
+      {/* Botón de Registrar */}
       <View style={styles.submitButton}>
         <Text
           style={styles.submitButtonText}
           onPress={() =>
             handleSubmit(
               afiliado,
-              birthDate,
-              weight,
-              height,
-              bloodType,
-              medicationAllergies,
-              otherAllergies,
-              chronicDiseases
+              formData.birthDate,
+              formData.weight,
+              formData.height,
+              formData.bloodType,
+              formData.medicationAllergies,
+              formData.otherAllergies,
+              formData.chronicDiseases
             )
           }
         >
-          Registrarse
+          Registrar
         </Text>
       </View>
     </ScrollView>

@@ -21,13 +21,7 @@ export default function LoginScreen() {
       style={styles.container}
     >
       {/* Sección superior con imagen y título */}
-      <View style={styles.topContainer}>
-        <Animated.Image
-          source={require("../assets/images/login2.png")}
-          style={[styles.image, { transform: [{ scale: imageScale }] }]}
-        />
-        <Text style={styles.title}>Iniciar Sesión</Text>
-      </View>
+
 
       {/* Sección inferior con el formulario (scrollable) */}
       <KeyboardAwareScrollView
@@ -36,6 +30,13 @@ export default function LoginScreen() {
         enableOnAndroid
         extraScrollHeight={20}
       >
+        <View style={styles.topContainer}>
+          <Animated.Image
+            source={require("../assets/images/login2.png")}
+            style={[styles.image, { transform: [{ scale: imageScale }] }]}
+          />
+          <Text style={styles.title}>Iniciar Sesión</Text>
+        </View>
         <LoginComponent />
       </KeyboardAwareScrollView>
     </LinearGradient>

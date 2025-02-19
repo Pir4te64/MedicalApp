@@ -22,13 +22,7 @@ export default function RegisterScreen() {
       style={styles.container}
     >
       {/* Sección superior con la imagen y el título */}
-      <View style={styles.topContainer}>
-        <Animated.Image
-          source={require("../assets/images/register.png")}
-          style={[styles.image, { transform: [{ scale: imageScale }] }]}
-        />
-        <Text style={styles.title}>Registrarse</Text>
-      </View>
+
 
       {/* Sección inferior con el formulario de registro (scrollable) */}
       <KeyboardAwareScrollView
@@ -37,6 +31,13 @@ export default function RegisterScreen() {
         enableOnAndroid
         extraScrollHeight={20}
       >
+        <View style={styles.topContainer}>
+          <Animated.Image
+            source={require("../assets/images/register.png")}
+            style={[styles.image, { transform: [{ scale: imageScale }] }]}
+          />
+          <Text style={styles.title}>Registrarse</Text>
+        </View>
         <RegisterForm />
       </KeyboardAwareScrollView>
     </LinearGradient>
