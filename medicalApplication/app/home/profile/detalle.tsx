@@ -14,7 +14,7 @@ const Detalle = () => {
   }
 
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <AfiliadoInfo id={afiliadoData.id} /> {/* Pasamos solo el id */}
     </View>
   );
