@@ -20,7 +20,7 @@ function MainStack() {
   useEffect(() => {
     if (!loading) {
       if (token) {
-        router.replace("/home"); // Si hay token, va a Home
+        router.replace("/home/homeScreen"); // Si hay token, va a Home
       } else {
         router.replace("/"); // Si no hay token, va a Login
       }

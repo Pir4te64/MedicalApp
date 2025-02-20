@@ -31,11 +31,10 @@ const PerfilPrincipal: React.FC<PerfilPrincipalProps> = ({ profile }) => {
       </View>
       <View style={styles.profileInfo}>
         <Ionicons name="shield-outline" size={16} color="#ffffff" />
-        <Text style={styles.profileText}> Tipo de Usuario: {profile.tipoUsuario}</Text>
-      </View>
-      <View style={styles.profileInfo}>
-        <Ionicons name="settings-outline" size={16} color="#ffffff" />
-        <Text style={styles.profileText}> Tipo de Cuenta: {profile.tipoCuenta}</Text>
+        <Text style={styles.profileText}>
+          {" "}
+          Tipo de Usuario: {profile.tipoUsuario}
+        </Text>
       </View>
     </View>
   );

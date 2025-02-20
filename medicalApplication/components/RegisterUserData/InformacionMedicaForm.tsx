@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Text, ScrollView, View, Alert } from "react-native";
 import { styles } from "./InformacionStyles.styles";
-import { Input } from "react-native-elements";
-import AllergyInput from "./AllergicInput";
+import AllergyInput from "./AllergicInput/AllergicInput";
 import DatePickerInput from "./DatePicker/DatePicker";
-import ChronicDiseaseInput from "./ChronicDiseaseInput";
+import ChronicDiseaseInput from "./ChronicDiseaseInput/ChronicDiseaseInput";
 import { getUserData } from "./Register.fetch";
-import { handleSubmit } from "./Register.data"; // Asegúrate de importar la función handleSubmit
+import { handleSubmit } from "./Register.data";
 import { getUpdatedInfo } from "./Register.Update";
 import { GuardarInfoActualizada } from "./GuardarInfoActualizada";
 import InputsPrincipales from "./InputsPrincipales/InputsPrincipales";
+import { useRegisterStore } from "./ChronicDiseaseInput/useRegisterStore";
+
 interface Afiliado {
   id: number;
 }
@@ -19,62 +20,31 @@ interface RegisterDataFormProps {
 }
 
 const RegisterDataForm: React.FC<RegisterDataFormProps> = ({ afiliado }) => {
-  const [formData, setFormData] = useState({
-    birthDate: new Date(),
-    weight: "",
-    height: "",
-    bloodType: "",
-    medicationAllergies: [] as { allergy: string }[],
-    otherAllergies: [] as { allergy: string }[],
-    chronicDiseases: [] as {
-      disease: string;
-      doctorEmail: string;
-      medicalCenter: string;
-      medicalTreatmentUser: { medication: string; dosage: string }[];
-    }[],
-    newDisease: "",
-    doctorEmail: "",
-    medicalCenter: "",
-    medication: "",
-    dosage: "",
-  });
+  // Extrae el estado y la función setField desde el store
+  const {
+    birthDate,
+    weight,
+    height,
+    bloodType,
+    medicationAllergies,
+    otherAllergies,
+    chronicDiseases,
+    newDisease,
+    doctorEmail,
+    medicalCenter,
+    medication,
+    dosage,
+    setField,
+  } = useRegisterStore();
 
+  // Mantén un estado local para controlar si los datos se cargaron
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
-  const handleChange = (key: string, value: any) => {
-    setFormData((prev) => ({ ...prev, [key]: value }));
-  };
-
-  // Función para actualizar una enfermedad crónica existente
-  const onUpdateChronicDisease = (
-    index: number,
-    field: string,
-    value: string
-  ) => {
-    setFormData((prev) => {
-      const updatedDiseases = [...prev.chronicDiseases];
-      const currentDisease = { ...updatedDiseases[index] };
-
-      if (field === "medication" || field === "dosage") {
-        // Actualizamos la información dentro del objeto medicalTreatmentUser
-        currentDisease.medicalTreatmentUser[0] = {
-          ...currentDisease.medicalTreatmentUser[0],
-          [field]: value,
-        };
-      } else {
-        currentDisease[field] = value;
-      }
-      updatedDiseases[index] = currentDisease;
-      return { ...prev, chronicDiseases: updatedDiseases };
-    });
-  };
-
-  // Llamar a la función getUserData cuando el componente se monta
+  // Actualiza el estado desde la respuesta de getUserData
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const response = await getUserData(afiliado.id);
-        console.log("Datos del usuario:", JSON.stringify(response, null, 2));
 
         if (response.success && response.body) {
           const {
@@ -84,19 +54,19 @@ const RegisterDataForm: React.FC<RegisterDataFormProps> = ({ afiliado }) => {
             bloodType,
             medicationAllergyUsers,
             otherAllergiesUsers,
-            chronicDiseasesUsers, // Propiedad correcta
+            chronicDiseasesUsers,
           } = response.body;
 
-          setFormData((prev) => ({
-            ...prev,
-            birthDate: new Date(birthDate[0], birthDate[1] - 1, birthDate[2]),
-            weight: weight || "",
-            height: height || "",
-            bloodType: bloodType || "",
-            medicationAllergies: medicationAllergyUsers || [],
-            otherAllergies: otherAllergiesUsers || [],
-            chronicDiseases: chronicDiseasesUsers || [],
-          }));
+          setField(
+            "birthDate",
+            new Date(birthDate[0], birthDate[1] - 1, birthDate[2])
+          );
+          setField("weight", weight || "");
+          setField("height", height || "");
+          setField("bloodType", bloodType || "");
+          setField("medicationAllergies", medicationAllergyUsers || []);
+          setField("otherAllergies", otherAllergiesUsers || []);
+          setField("chronicDiseases", chronicDiseasesUsers || []);
           setIsDataLoaded(true);
         }
       } catch (error) {
@@ -105,16 +75,37 @@ const RegisterDataForm: React.FC<RegisterDataFormProps> = ({ afiliado }) => {
     };
 
     fetchUserData();
-  }, [afiliado.id]);
+  }, [afiliado.id, setField]);
 
-  const validateChronicDiseaseFields = () => {
-    const { newDisease, doctorEmail, medicalCenter, medication, dosage } =
-      formData;
-    return newDisease && doctorEmail && medicalCenter && medication && dosage;
+  // Función para actualizar una enfermedad crónica existente
+  const onUpdateChronicDisease = (
+    index: number,
+    field: string,
+    value: string
+  ) => {
+    // Si necesitas manipular el estado que está en el store,
+    // podrías obtener el estado actual y luego actualizarlo
+    useRegisterStore.setState((state) => {
+      const updatedDiseases = [...state.chronicDiseases];
+      const currentDisease = { ...updatedDiseases[index] };
+
+      if (field === "medication" || field === "dosage") {
+        currentDisease.medicalTreatmentUser[0] = {
+          ...currentDisease.medicalTreatmentUser[0],
+          [field]: value,
+        };
+      } else {
+        currentDisease[field] = value;
+      }
+      updatedDiseases[index] = currentDisease;
+      return { chronicDiseases: updatedDiseases };
+    });
   };
 
   const handleUpdateInfo = async () => {
-    const updatedInfo = getUpdatedInfo(afiliado, formData);
+    // Obtenemos el estado completo directamente del store
+    const currentState = useRegisterStore.getState();
+    const updatedInfo = getUpdatedInfo(afiliado, currentState);
 
     try {
       const resultado = await GuardarInfoActualizada(updatedInfo);
@@ -122,31 +113,47 @@ const RegisterDataForm: React.FC<RegisterDataFormProps> = ({ afiliado }) => {
         "Datos del usuario actualizado:",
         JSON.stringify(resultado, null, 2)
       );
-
-      // Mostrar alert cuando los datos se hayan guardado
-      Alert.alert("Éxito", "Datos actualizados correctamente.");
+      Alert.alert("✅ Éxito", "Los datos se actualizaron correctamente.", [
+        { text: "OK", onPress: () => console.log("Alerta cerrada") },
+      ]);
     } catch (error) {
       console.error("Error al actualizar la información:", error);
       Alert.alert("Error", "Hubo un problema al actualizar los datos.");
     }
   };
+  const isFormComplete = () => {
+    return (
+      birthDate &&
+      weight &&
+      height &&
+      bloodType &&
+      medicationAllergies.length > 0 &&
+      otherAllergies.length > 0 &&
+      chronicDiseases.length > 0
+    );
+  };
+
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.subtitle}>Fecha de Nacimiento</Text>
       <DatePickerInput
-        date={formData.birthDate}
-        onChange={(date) => handleChange("birthDate", date)}
+        date={birthDate}
+        onChange={(date) => setField("birthDate", date)}
       />
-      <InputsPrincipales formData={formData} handleChange={handleChange} />
+      <InputsPrincipales
+        formData={useRegisterStore.getState()}
+        handleChange={setField}
+      />
       <View style={styles.Alergiascontainer}>
         {/* Alergias a medicamentos */}
         <AllergyInput
           title="Agregar Alergia a Medicamentos"
-          placeholder="Ingrese alergia"
-          allergies={formData.medicationAllergies}
+          placeholder="Ej 'Penicilina'"
+          allergies={medicationAllergies}
+          availableAllergies={["Penicilina", "Ibuprofeno", "Sulfa"]} // Lista de alergias predefinidas
           onAddAllergy={(allergy) =>
-            handleChange("medicationAllergies", [
-              ...formData.medicationAllergies,
+            setField("medicationAllergies", [
+              ...medicationAllergies,
               { allergy },
             ])
           }
@@ -155,78 +162,63 @@ const RegisterDataForm: React.FC<RegisterDataFormProps> = ({ afiliado }) => {
         {/* Otras alergias */}
         <AllergyInput
           title="Agregar Otras Alergias"
-          placeholder="Ingrese otra alergia"
-          allergies={formData.otherAllergies}
+          placeholder="Otras alergias"
+          allergies={otherAllergies}
+          availableAllergies={["Polen", "Ácaros", "Látex"]}
           onAddAllergy={(allergy) =>
-            handleChange("otherAllergies", [
-              ...formData.otherAllergies,
-              { allergy },
-            ])
+            setField("otherAllergies", [...otherAllergies, { allergy }])
           }
         />
       </View>
+
       <View style={styles.Alergiascontainer}>
         {/* Enfermedades Crónicas */}
         <ChronicDiseaseInput
-          newDisease={formData.newDisease}
-          doctorEmail={formData.doctorEmail}
-          medicalCenter={formData.medicalCenter}
-          medication={formData.medication}
-          dosage={formData.dosage}
-          chronicDiseases={formData.chronicDiseases}
-          onChangeDisease={(value) => handleChange("newDisease", value)}
-          onChangeDoctorEmail={(value) => handleChange("doctorEmail", value)}
-          onChangeMedicalCenter={(value) =>
-            handleChange("medicalCenter", value)
-          }
-          onChangeMedication={(value) => handleChange("medication", value)}
-          onChangeDosage={(value) => handleChange("dosage", value)}
+          newDisease={newDisease}
+          doctorEmail={doctorEmail}
+          medicalCenter={medicalCenter}
+          medication={medication}
+          dosage={dosage}
+          chronicDiseases={chronicDiseases}
+          onChangeDisease={(value) => setField("newDisease", value)}
+          onChangeDoctorEmail={(value) => setField("doctorEmail", value)}
+          onChangeMedicalCenter={(value) => setField("medicalCenter", value)}
+          onChangeMedication={(value) => setField("medication", value)}
+          onChangeDosage={(value) => setField("dosage", value)}
           onAddChronicDisease={() => {
-            // Validación de que todos los campos estén completos
-            const validateChronicDiseaseFields = () => {
-              return (
-                formData.newDisease &&
-                formData.doctorEmail &&
-                formData.medicalCenter &&
-                formData.medication &&
-                formData.dosage
-              );
-            };
-
-            if (validateChronicDiseaseFields()) {
-              // Agregar la nueva enfermedad crónica
-              handleChange("chronicDiseases", [
-                ...formData.chronicDiseases,
+            if (
+              newDisease &&
+              doctorEmail &&
+              medicalCenter &&
+              medication &&
+              dosage
+            ) {
+              setField("chronicDiseases", [
+                ...chronicDiseases,
                 {
-                  disease: formData.newDisease,
-                  doctorEmail: formData.doctorEmail,
-                  medicalCenter: formData.medicalCenter,
-                  medicalTreatmentUser: [
-                    {
-                      medication: formData.medication,
-                      dosage: formData.dosage,
-                    },
-                  ],
+                  disease: newDisease,
+                  doctorEmail,
+                  medicalCenter,
+                  medicalTreatmentUser: [{ medication, dosage }],
                 },
               ]);
               // Limpiar campos
-              handleChange("newDisease", "");
-              handleChange("doctorEmail", "");
-              handleChange("medicalCenter", "");
-              handleChange("medication", "");
-              handleChange("dosage", "");
+              setField("newDisease", "");
+              setField("doctorEmail", "");
+              setField("medicalCenter", "");
+              setField("medication", "");
+              setField("dosage", "");
             } else {
-              // Mostrar un mensaje de error si los campos no están completos
               Alert.alert(
-                "Error",
-                "Por favor, complete todos los campos necesarios."
+                "⚠️ Campos incompletos",
+                "Por favor, completa todos los campos necesarios antes de continuar.",
+                [{ text: "Aceptar" }]
               );
             }
           }}
-          onUpdateChronicDisease={onUpdateChronicDisease} // Pasar la función de actualización
+          onUpdateChronicDisease={onUpdateChronicDisease}
         />
       </View>
-
       {isDataLoaded ? (
         <View style={styles.submitButton}>
           <Text style={styles.submitButtonText} onPress={handleUpdateInfo}>
@@ -236,19 +228,25 @@ const RegisterDataForm: React.FC<RegisterDataFormProps> = ({ afiliado }) => {
       ) : (
         <View style={styles.submitButton}>
           <Text
-            style={styles.submitButtonText}
-            onPress={() =>
-              handleSubmit(
-                afiliado,
-                formData.birthDate,
-                formData.weight,
-                formData.height,
-                formData.bloodType,
-                formData.medicationAllergies,
-                formData.otherAllergies,
-                formData.chronicDiseases
-              )
-            }
+            style={[
+              styles.submitButtonText,
+              !isFormComplete() && { opacity: 0.5 }, // Cambia la opacidad si está deshabilitado
+            ]}
+            onPress={() => {
+              if (isFormComplete()) {
+                handleSubmit(
+                  afiliado,
+                  birthDate,
+                  weight,
+                  height,
+                  bloodType,
+                  medicationAllergies,
+                  otherAllergies,
+                  chronicDiseases
+                );
+              }
+            }}
+            disabled={!isFormComplete()}
           >
             Registrar
           </Text>

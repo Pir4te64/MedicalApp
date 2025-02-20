@@ -1,11 +1,5 @@
 import React, { useState } from "react";
-import {
-  Modal,
-  View,
-  Text,
-  StyleSheet,
-  Alert,
-} from "react-native";
+import { Modal, View, Text, StyleSheet, Alert } from "react-native";
 import UpdatePasswordForm from "./Formulario"; // Ajusta la ruta según tu estructura
 import { actualizarContrasena } from "./ModalUP.data";
 
@@ -24,18 +18,22 @@ const ModalUpdatePassword: React.FC<ModalUpdatePasswordProps> = ({
 }) => {
   const [passwordsMatch, setPasswordsMatch] = useState<boolean>(true);
 
-  const handleSubmit = async (values: { newPassword: string; confirmPassword: string }) => {
+  const handleSubmit = async (values: {
+    newPassword: string;
+    confirmPassword: string;
+  }) => {
     try {
       if (values.newPassword !== values.confirmPassword) {
         console.log("Las contraseñas no coinciden");
         setPasswordsMatch(false);
-        Alert.alert("Error", "Las contraseñas no coinciden");
+        Alert.alert(
+          "❌ Error",
+          "⚠️ Las contraseñas no coinciden.\n\nPor favor, verifica e intenta nuevamente."
+        );
         return;
       } else {
         setPasswordsMatch(true);
       }
-
-      console.log("Enviando nueva contraseña para afiliado:", afiliado?.nombre);
 
       if (!afiliado?.seudonimo) {
         throw new Error("El seudónimo del afiliado es requerido");
@@ -49,16 +47,15 @@ const ModalUpdatePassword: React.FC<ModalUpdatePasswordProps> = ({
       );
       console.log("Resultado de la actualización:", result);
 
-      // Mostrar alerta de éxito y ejecutar reloadProfile luego de cerrar la alerta
+      // Mostrar alerta de éxito con icono y mensaje mejorado
       Alert.alert(
-        "Éxito",
-        "La contraseña se actualizó correctamente",
+        "✅ ¡Contraseña actualizada!",
+        "🔒 Tu contraseña se ha cambiado correctamente.\n\nSe recargará el perfil en breve.",
         [
           {
             text: "OK",
             onPress: () => {
               onClose();
-              // Esperamos 3 segundos antes de recargar el perfil (opcional)
               setTimeout(() => {
                 reloadProfile();
               }, 2000);
@@ -69,9 +66,11 @@ const ModalUpdatePassword: React.FC<ModalUpdatePasswordProps> = ({
       );
     } catch (error) {
       console.error("Error al actualizar la contraseña:", error);
-      Alert.alert("Error", "Error al actualizar la contraseña", [
-        { text: "OK", onPress: onClose },
-      ]);
+      Alert.alert(
+        "❌ Error",
+        "⚠️ Ocurrió un error al actualizar la contraseña.\n\nInténtalo nuevamente.",
+        [{ text: "OK", onPress: onClose }]
+      );
     }
   };
 

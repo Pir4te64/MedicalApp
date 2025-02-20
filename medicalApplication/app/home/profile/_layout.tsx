@@ -7,16 +7,22 @@ const ProfileLayout = () => {
     <Stack>
       {/* Perfil Screen */}
       <Stack.Screen
-        name="index" // ProfileScreen
+        name="index" // Perfil principal
         options={{
           title: "Perfil",
-          headerShown: false,
+          headerShown: false, // No mostrar header en esta pantalla
         }}
       />
       <Stack.Screen
-        name="informacion" // ProfileScreen
+        name="informacion" // Pantalla para registrar información
         options={{
-          title: "Registro Informacion",
+          title: "Registro Información", // Título personalizado
+        }}
+      />
+      <Stack.Screen
+        name="detalle" // Pantalla de detalle de la información
+        options={{
+          title: "Información Detalle", // Título personalizado
         }}
       />
     </Stack>

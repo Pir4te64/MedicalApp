@@ -72,14 +72,13 @@ const ModalUpdateAPoderado: React.FC<ModalUpdateAPoderadoProps> = ({
 
       if (response.ok) {
         Alert.alert(
-          "Éxito",
+          "✅ ¡Éxito!",
           "Datos actualizados correctamente.",
           [
             {
               text: "OK",
               onPress: () => {
                 onClose();
-                // Espera 2 segundos antes de recargar el perfil (ajusta el tiempo si es necesario)
                 setTimeout(() => {
                   reloadProfile();
                 }, 2000);
@@ -89,7 +88,12 @@ const ModalUpdateAPoderado: React.FC<ModalUpdateAPoderadoProps> = ({
           { cancelable: false }
         );
       } else {
-        Alert.alert("Error", data.message || "Error al actualizar.");
+        Alert.alert(
+          "❌ Error",
+          data.message || "Error al actualizar.",
+          [{ text: "OK", onPress: () => onClose() }],
+          { cancelable: false }
+        );
       }
     } catch (error) {
       console.error("Error al realizar la solicitud:", error);

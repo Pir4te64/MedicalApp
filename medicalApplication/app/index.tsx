@@ -1,11 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import {
-  View,
-  Text,
-  Animated,
-  StyleSheet,
-  Dimensions,
-} from "react-native";
+import { View, Text, Animated, StyleSheet, Dimensions } from "react-native";
 import { Button, Icon } from "react-native-elements";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
@@ -38,7 +32,7 @@ export default function Index() {
             source={require("../assets/images/medico.png")}
             style={[styles.image, { transform: [{ scale: imageScale }] }]}
           />
-          <Text style={styles.welcomeText}>¡Bienvenido!</Text>
+          <Text style={styles.welcomeText}>¡Bienvenido a TKareBox!</Text>
         </View>
       </LinearGradient>
 
@@ -107,7 +101,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   welcomeText: {
-    fontSize: 40,
+    fontSize: 30,
     fontWeight: "600",
     color: "white",
   },

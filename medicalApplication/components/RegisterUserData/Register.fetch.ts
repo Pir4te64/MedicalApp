@@ -7,7 +7,7 @@ export const getUserData = async (userId: number) => {
     const authToken = await AsyncStorage.getItem("authToken");
 
     if (!authToken) {
-      throw new Error("No se encontró el token de autenticación");
+      throw new Error("⚠️ No se encontró el token de autenticación.\n\nPor favor, inicia sesión nuevamente.");
     }
 
     const response = await fetch(`${API.DATA_REGISTER_GET}${userId}`, {
@@ -19,14 +19,21 @@ export const getUserData = async (userId: number) => {
     });
 
     if (!response.ok) {
-      Alert.alert("Usuario sin información médica, por favor rellene el formulario."
+      Alert.alert(
+        "⚠️ Información médica faltante",
+        "📋 No se encontraron datos médicos del usuario.\n\nPor favor, complete el formulario.",
+        [{ text: "Aceptar" }]
       );
+      return null; // Retorna null si no hay datos
     }
 
     const data = await response.json();
     return data; // Devuelve los datos obtenidos
   } catch (error) {
-    Alert.alert("Usuario sin información médica, por favor rellene el formulario."
+    Alert.alert(
+      "❌ Error al obtener datos",
+      "⚠️ No se pudo recuperar la información médica.\n\nInténtalo nuevamente más tarde.",
+      [{ text: "Aceptar" }]
     );
     throw error; // Re-lanza el error para manejarlo en el componente
   }

@@ -65,8 +65,10 @@ export const handleSubmit = async (
     const responseData = await response.json();
     console.log("Datos del usuario:", JSON.stringify(responseData, null, 2));
 
-    // Mostrar alerta de éxito
-    Alert.alert("Éxito", "Los datos se enviaron correctamente.");
+    Alert.alert("✅ Éxito", "Los datos se enviaron correctamente.", [
+      { text: "Aceptar", onPress: () => console.log("Alerta cerrada") },
+    ]);
+    
     return responseData;
   } catch (error) {
     // Mostrar alerta de error

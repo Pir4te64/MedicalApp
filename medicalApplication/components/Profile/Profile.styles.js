@@ -63,7 +63,7 @@ export const styles = StyleSheet.create({
   noAfiliados: {
     textAlign: "center",
     fontSize: 16,
-    color: "#888",
+    color: "white",
     marginTop: 20,
   },
   errorText: {

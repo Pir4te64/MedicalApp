@@ -33,7 +33,9 @@ const ModalUpdateUser: React.FC<ModalUpdateUserProps> = ({
     try {
       const authToken = await AsyncStorage.getItem("authToken");
       if (!authToken) {
-        throw new Error("No se encontró el token de autenticación");
+        throw new Error(
+          "⚠️ No se encontró el token de autenticación.\n\nPor favor, inicia sesión nuevamente."
+        );
       }
 
       const response = await fetch(API.UPDATE_USER, {
@@ -50,12 +52,14 @@ const ModalUpdateUser: React.FC<ModalUpdateUserProps> = ({
       });
 
       if (!response.ok) {
-        throw new Error("Error al actualizar los datos del usuario");
+        throw new Error(
+          "⚠️ Error al actualizar los datos del usuario.\n\nVerifica tu conexión e inténtalo de nuevo."
+        );
       }
 
       Alert.alert(
-        "Éxito",
-        "Los datos del usuario se actualizaron correctamente.",
+        "✅ ¡Datos actualizados!",
+        "📝 La información del usuario se actualizó correctamente.",
         [
           {
             text: "Aceptar",
@@ -67,7 +71,11 @@ const ModalUpdateUser: React.FC<ModalUpdateUserProps> = ({
         ]
       );
     } catch (error: any) {
-      Alert.alert("Error", error.message || "Error al actualizar el usuario");
+      Alert.alert(
+        "❌ Error",
+        error.message ||
+          "⚠️ Ocurrió un error al actualizar el usuario.\n\nInténtalo nuevamente más tarde."
+      );
     }
   };
 
@@ -88,7 +96,14 @@ const ModalUpdateUser: React.FC<ModalUpdateUserProps> = ({
             })}
             onSubmit={handleSubmit}
           >
-            {({ values, handleChange, handleBlur, handleSubmit, errors, touched }) => (
+            {({
+              values,
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              errors,
+              touched,
+            }) => (
               <>
                 <TextInput
                   style={styles.input}

@@ -57,6 +57,13 @@ const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({
     setAfiliadoSeleccionado(afiliado);
     setUserModalVisible(true);
   };
+  const navigateToDetail = (afiliado: Afiliado) => {
+    router.push(
+      `/home/profile/detalle?afiliado=${encodeURIComponent(
+        JSON.stringify(afiliado)
+      )}`
+    );
+  };
 
   // Función para navegar a la pantalla de información detallada con los datos del afiliado
   const navigateToInformation = (afiliado: Afiliado) => {
@@ -92,13 +99,6 @@ const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({
               Tipo de Usuario: {afiliado.tipoUsuario}
             </Text>
           </View>
-          {/* <View style={styles.afiliadoInfo}>
-            <Ionicons name="settings-outline" size={16} color="#555" />
-            <Text style={styles.afiliadoText}>
-              {" "}
-              Tipo de Cuenta: {afiliado.tipoCuenta}
-            </Text>
-          </View> */}
 
           {/* Sección de iconos */}
           <View style={styles.iconsContainer}>
@@ -111,15 +111,13 @@ const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({
             <TouchableOpacity onPress={() => handleUserDataUpdate(afiliado)}>
               <Ionicons name="person-outline" size={30} color="white" />
             </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigateToInformation(afiliado)}>
+              <Ionicons name="clipboard-outline" size={30} color="white" />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigateToDetail(afiliado)}>
+              <Ionicons name="eye-outline" size={30} color="white" />
+            </TouchableOpacity>
           </View>
-
-          {/* Botón para ver información detallada del afiliado */}
-          <TouchableOpacity
-            style={localStyles.infoButton}
-            onPress={() => navigateToInformation(afiliado)}
-          >
-            <Text style={localStyles.infoButtonText}>Registro Medico</Text>
-          </TouchableOpacity>
         </View>
       ))}
 
@@ -158,20 +156,5 @@ const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({
     </View>
   );
 };
-
-const localStyles = StyleSheet.create({
-  infoButton: {
-    marginTop: 10,
-    padding: 10,
-    backgroundColor: "#007AFF",
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  infoButtonText: {
-    color: "#fff",
-    fontSize: 14,
-    fontWeight: "bold",
-  },
-});
 
 export default PerfilSecundario;
