@@ -57,4 +57,16 @@ export const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 2,
   },
+  editButton: {
+    backgroundColor: "#007bff",
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
+    marginVertical: 20,
+  },
+  editButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
 });

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+// components/PerfilSecundario.tsx
+import React, { useCallback } from "react";
+import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { styles } from "./Profile.styles";
@@ -8,72 +8,86 @@ import ModalUpdateAPoderado from "@/components/Modal/ModalSettings/ModalUpdateAp
 import ModalSelector from "@/components/Modal/ModalSettings/ModalSector/ModalSelector";
 import ModalUpdatePassword from "@/components/Modal/ModalSettings/ModalUpdatePassword/ModalUpdatePassword";
 import ModalUpdateUser from "@/components/Modal/ModalSettings/ModalUpdateUser/ModalUpdateUser";
-
-interface Afiliado {
-  nombre: string;
-  documento: string;
-  tipoUsuario: string;
-  tipoCuenta: string;
-  seudonimo: string;
-}
+import { Afiliado, useAfiliadosStore } from "./afiliadosStore";
 
 interface PerfilSecundarioProps {
   afiliados: Afiliado[];
-  reloadProfile: () => void; // Función para recargar el perfil
+  reloadProfile: () => void;
 }
 
 const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({
   afiliados,
   reloadProfile,
 }) => {
-  const [selectorVisible, setSelectorVisible] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [passwordModalVisible, setPasswordModalVisible] = useState(false);
-  const [userModalVisible, setUserModalVisible] = useState(false);
-  const [afiliadoSeleccionado, setAfiliadoSeleccionado] =
-    useState<Afiliado | null>(null);
-  const [tipoSeleccionado, setTipoSeleccionado] = useState<string | null>(null);
+  const router = useRouter();
 
-  const router = useRouter(); // Hook para navegación
+  // Extraemos los estados y acciones del store
+  const {
+    selectorVisible,
+    modalVisible,
+    passwordModalVisible,
+    userModalVisible,
+    afiliadoSeleccionado,
+    tipoSeleccionado,
+    abrirSelector,
+    aceptarSelector,
+    cerrarSelector,
+    abrirModalPassword,
+    abrirModalUser,
+    cerrarModalPassword,
+    cerrarModalUser,
+    resetearEstados,
+  } = useAfiliadosStore();
 
-  const actualizarAfiliado = (afiliado: Afiliado) => {
-    setAfiliadoSeleccionado(afiliado);
-    setSelectorVisible(true);
-  };
+  const actualizarAfiliado = useCallback(
+    (afiliado: Afiliado) => {
+      abrirSelector(afiliado);
+    },
+    [abrirSelector]
+  );
 
-  const handleSelectorAccept = async (tipo: string) => {
-    setTipoSeleccionado(tipo);
-    setSelectorVisible(false);
-    await AsyncStorage.setItem("tipoSeleccionado", tipo);
-    setModalVisible(true);
-  };
+  const handleSelectorAccept = useCallback(
+    async (tipo: string) => {
+      await aceptarSelector(tipo);
+    },
+    [aceptarSelector]
+  );
 
-  const handlePasswordUpdate = (afiliado: Afiliado) => {
-    setAfiliadoSeleccionado(afiliado);
-    setPasswordModalVisible(true);
-  };
+  const handlePasswordUpdate = useCallback(
+    (afiliado: Afiliado) => {
+      abrirModalPassword(afiliado);
+    },
+    [abrirModalPassword]
+  );
 
-  const handleUserDataUpdate = (afiliado: Afiliado) => {
-    setAfiliadoSeleccionado(afiliado);
-    setUserModalVisible(true);
-  };
-  const navigateToDetail = (afiliado: Afiliado) => {
-    router.push(
-      `/home/profile/detalle?afiliado=${encodeURIComponent(
-        JSON.stringify(afiliado)
-      )}`
-    );
-  };
+  const handleUserDataUpdate = useCallback(
+    (afiliado: Afiliado) => {
+      abrirModalUser(afiliado);
+    },
+    [abrirModalUser]
+  );
 
-  // Función para navegar a la pantalla de información detallada con los datos del afiliado
-  const navigateToInformation = (afiliado: Afiliado) => {
-    // Pasamos la información del afiliado como parámetro codificando el objeto a JSON
-    router.push(
-      `/home/profile/informacion?afiliado=${encodeURIComponent(
-        JSON.stringify(afiliado)
-      )}`
-    );
-  };
+  const navigateToDetail = useCallback(
+    (afiliado: Afiliado) => {
+      router.push(
+        `/home/profile/detalle?afiliado=${encodeURIComponent(
+          JSON.stringify(afiliado)
+        )}`
+      );
+    },
+    [router]
+  );
+
+  const navigateToInformation = useCallback(
+    (afiliado: Afiliado) => {
+      router.push(
+        `/home/profile/informacion?afiliado=${encodeURIComponent(
+          JSON.stringify(afiliado)
+        )}`
+      );
+    },
+    [router]
+  );
 
   if (!afiliados || afiliados.length === 0) {
     return <Text style={styles.noAfiliados}>No tiene afiliados.</Text>;
@@ -82,9 +96,9 @@ const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({
   return (
     <View style={styles.afiliadosSection}>
       <Text style={styles.afiliadosTitle}>Afiliados</Text>
+      // ...
       {afiliados.map((afiliado, index) => (
         <View key={index} style={styles.afiliadoItem}>
-          {/* Encabezado con el nombre */}
           <View style={styles.afiliadoHeader}>
             <Text style={styles.afiliadoName}>{afiliado.nombre}</Text>
           </View>
@@ -99,12 +113,13 @@ const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({
               Tipo de Usuario: {afiliado.tipoUsuario}
             </Text>
           </View>
-
-          {/* Sección de iconos */}
           <View style={styles.iconsContainer}>
-            <TouchableOpacity onPress={() => actualizarAfiliado(afiliado)}>
-              <Ionicons name="build-outline" size={30} color="white" />
-            </TouchableOpacity>
+            {/* Si el afiliado no es de tipo D, mostramos el botón de actualizarAfiliado */}
+            {afiliado.tipoUsuario !== "D" && (
+              <TouchableOpacity onPress={() => actualizarAfiliado(afiliado)}>
+                <Ionicons name="build-outline" size={30} color="white" />
+              </TouchableOpacity>
+            )}
             <TouchableOpacity onPress={() => handlePasswordUpdate(afiliado)}>
               <Ionicons name="key-outline" size={30} color="white" />
             </TouchableOpacity>
@@ -120,29 +135,28 @@ const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({
           </View>
         </View>
       ))}
-
       {/* Modales */}
       <ModalSelector
         visible={selectorVisible}
-        onClose={() => setSelectorVisible(false)}
+        onClose={cerrarSelector}
         onAccept={handleSelectorAccept}
       />
       <ModalUpdateAPoderado
         visible={modalVisible}
         afiliado={afiliadoSeleccionado}
         tipoSeleccionado={tipoSeleccionado}
-        onClose={() => setModalVisible(false)}
+        onClose={() => resetearEstados()}
         reloadProfile={reloadProfile}
       />
       <ModalUpdatePassword
         afiliado={afiliadoSeleccionado}
         visible={passwordModalVisible}
-        onClose={() => setPasswordModalVisible(false)}
+        onClose={cerrarModalPassword}
         reloadProfile={reloadProfile}
       />
       <ModalUpdateUser
         visible={userModalVisible}
-        onClose={() => setUserModalVisible(false)}
+        onClose={cerrarModalUser}
         reloadProfile={reloadProfile}
         user={
           afiliadoSeleccionado

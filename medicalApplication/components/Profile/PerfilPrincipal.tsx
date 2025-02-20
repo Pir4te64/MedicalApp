@@ -23,7 +23,7 @@ const PerfilPrincipal: React.FC<PerfilPrincipalProps> = ({ profile }) => {
       </View>
       <View style={styles.profileInfo}>
         <Ionicons name="card" size={16} color="#ffffff" />
-        <Text style={styles.profileText}> DNI: {profile.documento}</Text>
+        <Text style={styles.profileText}> {profile.documento}</Text>
       </View>
       <View style={styles.profileInfo}>
         <Ionicons name="person-circle-outline" size={16} color="#ffffff" />
@@ -32,7 +32,6 @@ const PerfilPrincipal: React.FC<PerfilPrincipalProps> = ({ profile }) => {
       <View style={styles.profileInfo}>
         <Ionicons name="shield-outline" size={16} color="#ffffff" />
         <Text style={styles.profileText}>
-          {" "}
           Tipo de Usuario: {profile.tipoUsuario}
         </Text>
       </View>

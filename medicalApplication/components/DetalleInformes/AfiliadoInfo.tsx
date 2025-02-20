@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, ActivityIndicator, StyleSheet, ScrollView } from "react-native";
+import { Text, View, ActivityIndicator, ScrollView } from "react-native";
 import getInfo from "./Detalles.GetInfo";
 import { styles } from "./AfiliadoInfo.styles";
 interface AfiliadoInfoProps {
@@ -23,7 +23,9 @@ const AfiliadoInfo: React.FC<AfiliadoInfoProps> = ({ id }) => {
   }, [id]);
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#007bff" style={styles.loader} />;
+    return (
+      <ActivityIndicator size="large" color="#007bff" style={styles.loader} />
+    );
   }
 
   if (!data) {
@@ -34,7 +36,9 @@ const AfiliadoInfo: React.FC<AfiliadoInfoProps> = ({ id }) => {
     <ScrollView style={styles.container}>
       <View style={styles.infoContainer}>
         <Text style={styles.label}>Fecha de nacimiento:</Text>
-        <Text style={styles.infoValue}>{`${data.birthDate[2]}/${data.birthDate[1]}/${data.birthDate[0]}`}</Text>
+        <Text
+          style={styles.infoValue}
+        >{`${data.birthDate[2]}/${data.birthDate[1]}/${data.birthDate[0]}`}</Text>
       </View>
 
       <View style={styles.infoContainer}>
@@ -56,7 +60,9 @@ const AfiliadoInfo: React.FC<AfiliadoInfoProps> = ({ id }) => {
         <Text style={styles.sectionTitle}>Alérgenos:</Text>
         {data.medicationAllergyUsers.length > 0 ? (
           data.medicationAllergyUsers.map((allergy: any, index: number) => (
-            <Text key={index} style={styles.listItem}>{allergy.allergy}</Text>
+            <Text key={index} style={styles.listItem}>
+              {allergy.allergy}
+            </Text>
           ))
         ) : (
           <Text style={styles.listItem}>No reportado</Text>
@@ -65,7 +71,9 @@ const AfiliadoInfo: React.FC<AfiliadoInfoProps> = ({ id }) => {
         <Text style={styles.sectionTitle}>Otras alergias:</Text>
         {data.otherAllergiesUsers.length > 0 ? (
           data.otherAllergiesUsers.map((allergy: any, index: number) => (
-            <Text key={index} style={styles.listItem}>{allergy.allergy}</Text>
+            <Text key={index} style={styles.listItem}>
+              {allergy.allergy}
+            </Text>
           ))
         ) : (
           <Text style={styles.listItem}>No reportado</Text>
@@ -74,7 +82,9 @@ const AfiliadoInfo: React.FC<AfiliadoInfoProps> = ({ id }) => {
         <Text style={styles.sectionTitle}>Enfermedades crónicas:</Text>
         {data.chronicDiseasesUsers.length > 0 ? (
           data.chronicDiseasesUsers.map((disease: any, index: number) => (
-            <Text key={index} style={styles.listItem}>{disease.disease}</Text>
+            <Text key={index} style={styles.listItem}>
+              {disease.disease}
+            </Text>
           ))
         ) : (
           <Text style={styles.listItem}>No reportado</Text>
@@ -83,7 +93,5 @@ const AfiliadoInfo: React.FC<AfiliadoInfoProps> = ({ id }) => {
     </ScrollView>
   );
 };
-
-
 
 export default AfiliadoInfo;

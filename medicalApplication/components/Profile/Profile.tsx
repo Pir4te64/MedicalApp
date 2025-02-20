@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback } from "react";
+// components/ProfileInfo.tsx
+import React, { useCallback } from "react";
 import {
   View,
   Text,
@@ -7,61 +8,25 @@ import {
   RefreshControl,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import { API } from "@/utils/api";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Profile } from "@/utils/types";
+import { useProfileStore } from "./profileStore";
 import { styles } from "./Profile.styles";
 import PerfilPrincipal from "./PerfilPrincipal";
 import PerfilSecundario from "./PerfilAfiliado";
 
 const ProfileInfo = () => {
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { profile, loading, error, fetchProfile } = useProfileStore();
 
-  const fetchProfile = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const token = await AsyncStorage.getItem("authToken");
-      if (!token) throw new Error("No se encontró el token de autenticación");
-
-      const response = await fetch(API.PROFILE, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log(response);
-
-      if (!response.ok) throw new Error("Error al obtener el perfil");
-
-      const data = await response.json();
-      if (data.success) {
-        setProfile(data.body);
-      } else {
-        throw new Error(data.message || "Error desconocido");
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Error desconocido");
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Ejecutar fetchProfile al enfocar la pantalla
   useFocusEffect(
     useCallback(() => {
       fetchProfile();
-    }, [])
+    }, [fetchProfile])
   );
 
-  const onRefresh = async () => {
-    setRefreshing(true);
+  // Memorizamos onRefresh
+  const onRefresh = useCallback(async () => {
     await fetchProfile();
-    setRefreshing(false);
-  };
+  }, [fetchProfile]);
 
   if (loading) {
     return (
@@ -93,7 +58,7 @@ const ProfileInfo = () => {
         style={{ width: "100%" }}
         contentContainerStyle={{ flexGrow: 1 }}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl refreshing={loading} onRefresh={onRefresh} />
         }
       >
         <View style={styles.profileContainer}>

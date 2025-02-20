@@ -108,11 +108,8 @@ const RegisterDataForm: React.FC<RegisterDataFormProps> = ({ afiliado }) => {
     const updatedInfo = getUpdatedInfo(afiliado, currentState);
 
     try {
-      const resultado = await GuardarInfoActualizada(updatedInfo);
-      console.log(
-        "Datos del usuario actualizado:",
-        JSON.stringify(resultado, null, 2)
-      );
+      await GuardarInfoActualizada(updatedInfo);
+
       Alert.alert("✅ Éxito", "Los datos se actualizaron correctamente.", [
         { text: "OK", onPress: () => console.log("Alerta cerrada") },
       ]);

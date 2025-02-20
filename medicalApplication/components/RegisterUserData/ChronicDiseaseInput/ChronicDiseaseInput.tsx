@@ -1,29 +1,9 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Input, Button } from "react-native-elements";
-import { Icon } from "react-native-elements"; // Asegúrate de importar el componente Icon
+import { Icon } from "react-native-elements";
 import ChronicDiseaseItem from "./ChronicDiseaseItem";
-
-interface ChronicDiseaseInputProps {
-  newDisease: string;
-  doctorEmail: string;
-  medicalCenter: string;
-  medication: string;
-  dosage: string;
-  onChangeDisease: (value: string) => void;
-  onChangeDoctorEmail: (value: string) => void;
-  onChangeMedicalCenter: (value: string) => void;
-  onChangeMedication: (value: string) => void;
-  onChangeDosage: (value: string) => void;
-  onAddChronicDisease: () => void;
-  chronicDiseases: {
-    disease: string;
-    doctorEmail: string;
-    medicalCenter: string;
-    medicalTreatmentUser: { medication: string; dosage: string }[];
-  }[];
-  onUpdateChronicDisease: (index: number, field: string, value: string) => void;
-}
+import { ChronicDiseaseInputProps } from "./ChornicDiseaseInterface";
 
 const ChronicDiseaseInput: React.FC<ChronicDiseaseInputProps> = ({
   newDisease,
@@ -40,78 +20,79 @@ const ChronicDiseaseInput: React.FC<ChronicDiseaseInputProps> = ({
   chronicDiseases,
   onUpdateChronicDisease,
 }) => {
-  // Función para validar que "dosis" sea un número
-  const handleDosageChange = (value: string) => {
-    // Aceptar solo números
-    if (/^\d*\.?\d+$/.test(value) || value === "") {
-      onChangeDosage(value);
-    }
-  };
-
+  const [isExpanded, setIsExpanded] = useState(false);
+  // obtener el ID para pasarle al usuario
   return (
-    <View>
-      <Text style={styles.title}>Agregar Enfermedad Crónica</Text>
+    <View style={styles.container}>
+      {/* Botón para expandir o colapsar */}
+      <TouchableOpacity
+        style={styles.header}
+        onPress={() => setIsExpanded(!isExpanded)}
+      >
+        <Text style={styles.title}>Agregar Enfermedad Crónica</Text>
+        <Icon
+          name={isExpanded ? "chevron-up" : "chevron-down"}
+          type="feather"
+          color="white"
+        />
+      </TouchableOpacity>
 
-      <Input
-        label="Enfermedad"
-        placeholder="Ej: Diabetes"
-        value={newDisease}
-        onChangeText={onChangeDisease}
-        containerStyle={styles.inputContainer}
-        inputStyle={styles.input}
-      />
-      <Input
-        label="Correo del Doctor"
-        placeholder="Ej: doctor@email.com"
-        value={doctorEmail}
-        onChangeText={onChangeDoctorEmail}
-        containerStyle={styles.inputContainer}
-        inputStyle={styles.input}
-      />
-      <Input
-        label="Centro Médico"
-        placeholder="Ej: Hospital Central"
-        value={medicalCenter}
-        onChangeText={onChangeMedicalCenter}
-        containerStyle={styles.inputContainer}
-        inputStyle={styles.input}
-      />
-      <Input
-        label="Medicamento"
-        placeholder="Ej: Insulina"
-        value={medication}
-        onChangeText={onChangeMedication}
-        containerStyle={styles.inputContainer}
-        inputStyle={styles.input}
-      />
-      <Input
-        label="Dosis"
-        placeholder="Ej: 10mg"
-        value={dosage}
-        onChangeText={handleDosageChange} // Validación de dosis
-        containerStyle={styles.inputContainer}
-        inputStyle={styles.input}
-        keyboardType="numeric" // Solo números
-      />
-
-      <Button
-        title="Agregar Enfermedad"
-        onPress={onAddChronicDisease}
-        buttonStyle={styles.button}
-        icon={
-          <Icon
-            name="plus"
-            type="feather"
-            color="white"
-            style={{
-              marginLeft: 5,
-            }}
+      {/* Contenedor que se despliega */}
+      {isExpanded && (
+        <View style={styles.box}>
+          <Input
+            label="Enfermedad"
+            placeholder="Ej: Diabetes"
+            value={newDisease}
+            onChangeText={onChangeDisease}
+            containerStyle={styles.inputContainer}
+            inputStyle={styles.input}
           />
-        } // Aquí agregamos el icono
-        iconPosition="right" // El icono estará a la izquierda del texto
-      />
+          <Input
+            label="Correo del Doctor"
+            placeholder="Ej: doctor@email.com"
+            value={doctorEmail}
+            onChangeText={onChangeDoctorEmail}
+            containerStyle={styles.inputContainer}
+            inputStyle={styles.input}
+          />
+          <Input
+            label="Centro Médico"
+            placeholder="Ej: Hospital Central"
+            value={medicalCenter}
+            onChangeText={onChangeMedicalCenter}
+            containerStyle={styles.inputContainer}
+            inputStyle={styles.input}
+          />
+          <Input
+            label="Medicamento"
+            placeholder="Ej: Insulina"
+            value={medication}
+            onChangeText={onChangeMedication}
+            containerStyle={styles.inputContainer}
+            inputStyle={styles.input}
+          />
+          <Input
+            label="Dosis"
+            placeholder="Ej: 10mg"
+            value={dosage}
+            onChangeText={onChangeDosage}
+            containerStyle={styles.inputContainer}
+            inputStyle={styles.input}
+            keyboardType="numeric"
+          />
 
-      {/* Lista de enfermedades crónicas ya agregadas con opción a editar */}
+          <Button
+            title="Agregar Enfermedad"
+            onPress={onAddChronicDisease}
+            buttonStyle={styles.button}
+            icon={<Icon name="plus" type="feather" color="white" />}
+            iconPosition="right"
+          />
+        </View>
+      )}
+
+      {/* Lista de enfermedades agregadas */}
       <View style={styles.diseasesList}>
         {chronicDiseases.map((item, index) => (
           <View key={index} style={styles.diseaseItemContainer}>
@@ -119,6 +100,7 @@ const ChronicDiseaseInput: React.FC<ChronicDiseaseInputProps> = ({
               index={index}
               diseaseData={item}
               onUpdate={onUpdateChronicDisease}
+              onDelete={() => console.log("Enfermedad eliminada")}
             />
           </View>
         ))}
@@ -128,11 +110,31 @@ const ChronicDiseaseInput: React.FC<ChronicDiseaseInputProps> = ({
 };
 
 const styles = StyleSheet.create({
+  container: {
+    marginBottom: 20,
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#007BFF",
+    padding: 12,
+    borderRadius: 5,
+  },
   title: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#333",
-    marginBottom: 20,
+    color: "#fff",
+  },
+  box: {
+    marginTop: 10,
+    padding: 15,
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 5,
   },
   inputContainer: {
     marginBottom: 15,
@@ -142,7 +144,7 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   button: {
-    backgroundColor: "#007BFF", // Azul vibrante
+    backgroundColor: "#007BFF",
     paddingVertical: 10,
     borderRadius: 5,
   },
@@ -150,15 +152,12 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   diseaseItemContainer: {
-    marginBottom: 15, // Espacio entre cada contenedor de enfermedad
-    borderRadius: 8, // Bordes redondeados
-    backgroundColor: "#fff", // Fondo blanco para cada contenedor
-    shadowColor: "#000", // Sombra negra
-    shadowOffset: { width: 0, height: 2 }, // Desplazamiento de la sombra
-    shadowOpacity: 0.1, // Opacidad de la sombra
-    shadowRadius: 6, // Radio de difuminado de la sombra
-    elevation: 5, // Elevación para dispositivos Android (sombra)
-    padding: 10, // Relleno dentro del contenedor
+    marginBottom: 15,
+    borderRadius: 8,
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 5,
+    padding: 10,
   },
 });
 
