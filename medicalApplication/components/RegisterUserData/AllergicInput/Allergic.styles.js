@@ -5,10 +5,12 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 8,
+    color: "#fff",
   },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
+    marginVertical: 8,
   },
   input: {
     flex: 1,

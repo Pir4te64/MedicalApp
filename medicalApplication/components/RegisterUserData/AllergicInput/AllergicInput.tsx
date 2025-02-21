@@ -72,14 +72,24 @@ const AllergyInput: React.FC<AllergyInputProps> = ({
 
   return (
     <View>
-      <TouchableOpacity style={{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginVertical: 8,
-      }} onPress={() => setIsCollapsed(!isCollapsed)}>
+      <TouchableOpacity
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginVertical: 8,
+          padding: 8,
+          borderRadius: 8,
+          backgroundColor: "#007bff",
+        }}
+        onPress={() => setIsCollapsed(!isCollapsed)}
+      >
         <Text style={styles.subtitle}>{title}</Text>
-        <Ionicons name={isCollapsed ? "chevron-down" : "chevron-up"} size={24} />
+        <Ionicons
+          name={isCollapsed ? "chevron-down" : "chevron-up"}
+          size={24}
+          color="#fff"
+        />
       </TouchableOpacity>
 
       {!isCollapsed && (
@@ -111,13 +121,22 @@ const AllergyInput: React.FC<AllergyInputProps> = ({
             </TouchableOpacity>
           </View>
 
-          {errors.allergy && <Text style={styles.errorText}>{errors.allergy}</Text>}
+          {errors.allergy && (
+            <Text style={styles.errorText}>{errors.allergy}</Text>
+          )}
 
           {/* Lista de alergias agregadas */}
           <View style={styles.allergiesList}>
             {allergies.map((item, index) => (
               <View key={index} style={styles.allergyItem}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flex: 1 }}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    flex: 1,
+                  }}
+                >
                   <Text style={styles.allergyText}>• {item.allergy}</Text>
                   <TouchableOpacity
                     onPress={() => onDeleteAllergy(item.allergy)} // Llama a la función de eliminar

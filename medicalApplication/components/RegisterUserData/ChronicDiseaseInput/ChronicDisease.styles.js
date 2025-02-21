@@ -37,7 +37,8 @@ export const styles = StyleSheet.create({
     borderRadius: 5,
   },
   diseasesList: {
-    marginTop: 15,
+    marginVertical: 8,
+    
   },
   diseaseItemContainer: {
     borderRadius: 8,

@@ -61,12 +61,10 @@ const ChronicDiseaseItem: React.FC<ChronicDiseaseItemProps> = ({
         <Ionicons
           name={isExpanded ? "chevron-up" : "chevron-down"}
           size={20}
-          color="white"
+          color="#007BFF"
         />
       </TouchableOpacity>
-
       // En tu ChronicDiseaseItem
-
       {isExpanded && (
         <View style={styles.box}>
           <Input
@@ -97,7 +95,9 @@ const ChronicDiseaseItem: React.FC<ChronicDiseaseItemProps> = ({
               <Input
                 label="Medicamento"
                 value={treatment.medication}
-                onChangeText={(value) => onUpdate(index, "medication", value, i)} // Pasar el índice del tratamiento
+                onChangeText={(value) =>
+                  onUpdate(index, "medication", value, i)
+                } // Pasar el índice del tratamiento
                 containerStyle={styles.inputContainer}
                 inputStyle={styles.input}
               />
@@ -125,7 +125,6 @@ const ChronicDiseaseItem: React.FC<ChronicDiseaseItemProps> = ({
           </TouchableOpacity>
         </View>
       )}
-
     </View>
   );
 };
@@ -138,20 +137,24 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#007BFF",
+    backgroundColor: "white",
     padding: 12,
     borderRadius: 5,
+    borderColor: "#007BFF", // Added border color
+    borderWidth: 1, // Added border width
   },
   title: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#fff",
+    color: "#007BFF",
   },
   box: {
     marginTop: 10,
     padding: 15,
     borderRadius: 8,
     backgroundColor: "#f9f9f9",
+    borderColor: "#ddd", // Added border color
+    borderWidth: 1, // Added border width
   },
   inputContainer: {
     marginBottom: 10,
