@@ -99,7 +99,19 @@ const RegisterDataForm: React.FC<RegisterDataFormProps> = ({ afiliado }) => {
       chronicDiseases.length > 0
     );
   };
-
+  const handleDeleteAllergy = (allergy: string, type: 'medication' | 'other') => {
+    if (type === 'medication') {
+      const updatedAllergies = medicationAllergies.filter(
+        (item) => item.allergy.toLowerCase() !== allergy.toLowerCase()
+      );
+      setField("medicationAllergies", updatedAllergies);
+    } else {
+      const updatedAllergies = otherAllergies.filter(
+        (item) => item.allergy.toLowerCase() !== allergy.toLowerCase()
+      );
+      setField("otherAllergies", updatedAllergies);
+    }
+  };
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.subtitle}>Fecha de Nacimiento</Text>
@@ -114,6 +126,7 @@ const RegisterDataForm: React.FC<RegisterDataFormProps> = ({ afiliado }) => {
       <View style={styles.Alergiascontainer}>
         <AllergyInput
           title="Agregar Alergia a Medicamentos"
+          onDeleteAllergy={(allergy) => handleDeleteAllergy(allergy, 'medication')} // Pasar función de eliminación
           placeholder="Ej 'Penicilina'"
           allergies={medicationAllergies}
           availableAllergies={["Penicilina", "Ibuprofeno", "Sulfa"]}
@@ -126,6 +139,7 @@ const RegisterDataForm: React.FC<RegisterDataFormProps> = ({ afiliado }) => {
         />
 
         <AllergyInput
+          onDeleteAllergy={(allergy) => handleDeleteAllergy(allergy, 'other')} // Pasar función de eliminación
           title="Agregar Otras Alergias"
           placeholder="Otras alergias"
           allergies={otherAllergies}

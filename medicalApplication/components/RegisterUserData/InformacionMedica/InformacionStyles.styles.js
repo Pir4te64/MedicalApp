@@ -60,6 +60,6 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3, // Para Android
-    marginVertical: 22,
+    marginVertical: 15,
   },
 });

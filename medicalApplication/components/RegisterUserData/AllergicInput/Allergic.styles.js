@@ -1,56 +1,58 @@
 // Allergic.styles.ts
 import { StyleSheet } from "react-native";
-
 export const styles = StyleSheet.create({
   subtitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
     marginBottom: 8,
   },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 8,
   },
   input: {
     flex: 1,
-    borderWidth: 2,
     borderColor: "#ccc",
-    padding: 8,
+    borderWidth: 1,
     borderRadius: 4,
+    padding: 8,
+    marginRight: 8,
   },
   addButton: {
     backgroundColor: "#007bff",
-    padding: 10,
-    marginLeft: 8,
-    borderRadius: 8,
+    padding: 5,
+    borderRadius: 50,
   },
   errorText: {
     color: "red",
-    fontSize: 12,
-  },
-  allergiesList: {
-    marginTop: 10,
-  },
-  allergyItem: {
     marginVertical: 4,
   },
+  allergiesList: {
+    marginVertical: 8,
+  },
+  allergyItem: {
+    flexDirection: "row",
+    justifyContent: "space-between", // Alinear texto e ícono en extremos opuestos
+    alignItems: "center", // Alinear verticalmente
+    padding: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+  },
   allergyText: {
-    fontSize: 18,
+    fontSize: 16,
+    flex: 1, // Para que ocupe el espacio disponible
   },
   predefinedButton: {
-    backgroundColor: "#eee",
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 20,
+    backgroundColor: "#f0f0f0",
+    padding: 8,
+    borderRadius: 50,
     marginRight: 8,
-  },
-  predefinedButtonText: {
-    fontSize: 14,
-    color: "#333",
   },
   disabledButton: {
     backgroundColor: "#ccc",
+  },
+  predefinedButtonText: {
+    fontSize: 14,
   },
   disabledButtonText: {
     color: "#888",
