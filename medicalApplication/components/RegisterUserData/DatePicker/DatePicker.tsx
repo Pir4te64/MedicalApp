@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { View, Button, Text, Platform, StyleSheet } from "react-native";
+import { View, Text, Platform, StyleSheet } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
-
+import { Button } from "react-native-elements";
 interface DatePickerInputProps {
   date: Date;
   onChange: (date: Date) => void;
@@ -31,10 +31,12 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
 
   return (
     <View style={styles.container}>
+      <Text style={styles.subtitle}>Fecha de Nacimiento</Text>
+
       <Button
         title="Seleccionar fecha"
         onPress={() => setShow(true)}
-        color="#007BFF"
+        buttonStyle={{ backgroundColor: "#007BFF" }}
       />
       <Text style={styles.selectedDate}>
         Fecha seleccionada: {formatDate(date)}
@@ -61,6 +63,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     backgroundColor: "#E6F0FF",
+  },
+  subtitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 5,
+    color: "#007BFF",
   },
   selectedDate: {
     marginTop: 10,

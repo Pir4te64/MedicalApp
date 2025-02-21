@@ -50,7 +50,11 @@ const RegisterDataForm: React.FC<RegisterDataFormProps> = ({ afiliado }) => {
       resetForm();
     }, [])
   );
-  const onUpdateChronicDisease = (index: number, field: string, value: string) => {
+  const onUpdateChronicDisease = (
+    index: number,
+    field: string,
+    value: string
+  ) => {
     useRegisterStore.setState((state) => {
       const updatedChronicDiseases = [...state.chronicDiseases];
 
@@ -62,7 +66,8 @@ const RegisterDataForm: React.FC<RegisterDataFormProps> = ({ afiliado }) => {
       } else if (field === "medicalCenter") {
         updatedChronicDiseases[index].medicalCenter = value;
       } else if (field === "medication") {
-        updatedChronicDiseases[index].medicalTreatmentUser[0].medication = value;
+        updatedChronicDiseases[index].medicalTreatmentUser[0].medication =
+          value;
       } else if (field === "dosage") {
         updatedChronicDiseases[index].medicalTreatmentUser[0].dosage = value;
       }
@@ -70,7 +75,6 @@ const RegisterDataForm: React.FC<RegisterDataFormProps> = ({ afiliado }) => {
       return { chronicDiseases: updatedChronicDiseases };
     });
   };
-
 
   const handleUpdateInfo = async () => {
     const currentState = useRegisterStore.getState();
@@ -99,8 +103,11 @@ const RegisterDataForm: React.FC<RegisterDataFormProps> = ({ afiliado }) => {
       chronicDiseases.length > 0
     );
   };
-  const handleDeleteAllergy = (allergy: string, type: 'medication' | 'other') => {
-    if (type === 'medication') {
+  const handleDeleteAllergy = (
+    allergy: string,
+    type: "medication" | "other"
+  ) => {
+    if (type === "medication") {
       const updatedAllergies = medicationAllergies.filter(
         (item) => item.allergy.toLowerCase() !== allergy.toLowerCase()
       );
@@ -114,19 +121,24 @@ const RegisterDataForm: React.FC<RegisterDataFormProps> = ({ afiliado }) => {
   };
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.subtitle}>Fecha de Nacimiento</Text>
-      <DatePickerInput
-        date={birthDate}
-        onChange={(date) => setField("birthDate", date)}
-      />
-      <InputsPrincipales
-        formData={useRegisterStore.getState()}
-        handleChange={setField}
-      />
+      <View style={styles.Alergiascontainer}>
+        <DatePickerInput
+          date={birthDate}
+          onChange={(date) => setField("birthDate", date)}
+        />
+
+        <InputsPrincipales
+          formData={useRegisterStore.getState()}
+          handleChange={setField}
+        />
+      </View>
+
       <View style={styles.Alergiascontainer}>
         <AllergyInput
           title="Agregar Alergia a Medicamentos"
-          onDeleteAllergy={(allergy) => handleDeleteAllergy(allergy, 'medication')} // Pasar función de eliminación
+          onDeleteAllergy={(allergy) =>
+            handleDeleteAllergy(allergy, "medication")
+          } // Pasar función de eliminación
           placeholder="Ej 'Penicilina'"
           allergies={medicationAllergies}
           availableAllergies={["Penicilina", "Ibuprofeno", "Sulfa"]}
@@ -139,7 +151,7 @@ const RegisterDataForm: React.FC<RegisterDataFormProps> = ({ afiliado }) => {
         />
 
         <AllergyInput
-          onDeleteAllergy={(allergy) => handleDeleteAllergy(allergy, 'other')} // Pasar función de eliminación
+          onDeleteAllergy={(allergy) => handleDeleteAllergy(allergy, "other")} // Pasar función de eliminación
           title="Agregar Otras Alergias"
           placeholder="Otras alergias"
           allergies={otherAllergies}
@@ -203,7 +215,7 @@ const RegisterDataForm: React.FC<RegisterDataFormProps> = ({ afiliado }) => {
           style={styles.submitButton}
           onPress={handleUpdateInfo}
         >
-          <Text style={styles.submitButtonText}>Actualizar Info</Text>
+          <Text style={styles.submitButtonText}>Actualizar</Text>
         </TouchableOpacity>
       ) : (
         <TouchableOpacity

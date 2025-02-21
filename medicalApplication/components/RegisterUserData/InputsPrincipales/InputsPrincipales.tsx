@@ -1,7 +1,16 @@
 import React, { useState } from "react";
-import { View, StyleSheet } from "react-native";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  LayoutAnimation,
+  Platform,
+  UIManager,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { Input } from "react-native-elements";
-import * as Yup from "yup"; // Importamos Yup
+import * as Yup from "yup";
 
 interface InputsPrincipalesProps {
   formData: {
@@ -12,13 +21,21 @@ interface InputsPrincipalesProps {
   handleChange: (field: string, value: string) => void;
 }
 
+if (
+  Platform.OS === "android" &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+
 const InputsPrincipales: React.FC<InputsPrincipalesProps> = ({
   formData,
   handleChange,
 }) => {
   const [errors, setErrors] = useState<any>({});
+  const [expanded, setExpanded] = useState<boolean>(false);
 
-  // Definir el esquema de validación con Yup
+  // Esquema de validación con Yup
   const validationSchema = Yup.object().shape({
     weight: Yup.number()
       .positive("El peso debe ser un número positivo")
@@ -36,7 +53,7 @@ const InputsPrincipales: React.FC<InputsPrincipalesProps> = ({
 
   const validateForm = () => {
     validationSchema
-      .validate(formData, { abortEarly: false }) // Evita que se pare al primer error
+      .validate(formData, { abortEarly: false })
       .then(() => {
         setErrors({});
       })
@@ -49,49 +66,75 @@ const InputsPrincipales: React.FC<InputsPrincipalesProps> = ({
       });
   };
 
+  const toggleExpanded = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setExpanded(!expanded);
+  };
+
   return (
-    <View style={styles.inputWrapper}>
-      <Input
-        label="Peso"
-        placeholder="Ingrese su peso en kg"
-        value={formData.weight}
-        onChangeText={(value) => handleChange("weight", value)}
-        errorMessage={errors.weight} // Muestra el error si existe
-        onBlur={validateForm} // Valida cuando el input pierde foco
-        keyboardType="numeric" // Acepta solo números
-      />
-      <Input
-        label="Altura"
-        placeholder="Ingrese su altura en cm"
-        value={formData.height}
-        onChangeText={(value) => handleChange("height", value)}
-        errorMessage={errors.height} // Muestra el error si existe
-        onBlur={validateForm} // Valida cuando el input pierde foco
-        keyboardType="numeric" // Acepta solo números
-      />
-      <Input
-        label="Tipo de Sangre"
-        placeholder="A+, A-, B+, B-, AB+, AB-, O+, O-"
-        value={formData.bloodType}
-        onChangeText={(value) => handleChange("bloodType", value)}
-        errorMessage={errors.bloodType} // Muestra el error si existe
-        onBlur={validateForm} // Valida cuando el input pierde foco
-      />
+    <View style={styles.container}>
+      <TouchableOpacity onPress={toggleExpanded} style={styles.header}>
+        <Text style={styles.headerText}>Datos</Text>
+        <Ionicons
+          name={expanded ? "chevron-up-outline" : "chevron-down-outline"}
+          size={24}
+          color="white"
+        />
+      </TouchableOpacity>
+      {expanded && (
+        <View style={styles.content}>
+          <Input
+            label="Peso"
+            placeholder="Ingrese su peso en kg"
+            value={formData.weight}
+            onChangeText={(value) => handleChange("weight", value)}
+            errorMessage={errors.weight}
+            onBlur={validateForm}
+            keyboardType="numeric"
+          />
+          <Input
+            label="Altura"
+            placeholder="Ingrese su altura en cm"
+            value={formData.height}
+            onChangeText={(value) => handleChange("height", value)}
+            errorMessage={errors.height}
+            onBlur={validateForm}
+            keyboardType="numeric"
+          />
+          <Input
+            label="Tipo de Sangre"
+            placeholder="A+, A-, B+, B-, AB+, AB-, O+, O-"
+            value={formData.bloodType}
+            onChangeText={(value) => handleChange("bloodType", value)}
+            errorMessage={errors.bloodType}
+            onBlur={validateForm}
+          />
+        </View>
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  inputWrapper: {
-    backgroundColor: "#fff",
-    padding: 15,
+  container: {
     borderRadius: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3, // Para Android
     marginVertical: 10,
+    overflow: "hidden",
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 15,
+    backgroundColor: "#007bff",
+  },
+  headerText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#fff",
+  },
+  content: {
+    padding: 15,
   },
 });
 
