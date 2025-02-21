@@ -1,9 +1,8 @@
 import { API } from "@/utils/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Alert } from "react-native";
 
-export const deleteChronicDisease = async (
-  idUser: number
-): Promise<boolean> => {
+export const deleteChronicDisease = async (idUser: string): Promise<boolean> => {
   try {
     const token = await AsyncStorage.getItem("authToken");
     if (!token) {
@@ -20,10 +19,7 @@ export const deleteChronicDisease = async (
     });
 
     if (!response.ok) {
-      console.error(
-        "Error al eliminar la enfermedad crónica:",
-        await response.text()
-      );
+      console.error("Error al eliminar la enfermedad crónica:", await response.text());
       return false;
     }
 

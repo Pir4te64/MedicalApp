@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Text, ScrollView, View, Alert, TouchableOpacity } from "react-native";
 import { styles } from "./InformacionStyles.styles";
 import AllergyInput from "../AllergicInput/AllergicInput";
@@ -50,27 +50,27 @@ const RegisterDataForm: React.FC<RegisterDataFormProps> = ({ afiliado }) => {
       resetForm();
     }, [])
   );
-  const onUpdateChronicDisease = (
-    index: number,
-    field: string,
-    value: string
-  ) => {
+  const onUpdateChronicDisease = (index: number, field: string, value: string) => {
     useRegisterStore.setState((state) => {
-      const updatedDiseases = [...state.chronicDiseases];
-      const currentDisease = { ...updatedDiseases[index] };
+      const updatedChronicDiseases = [...state.chronicDiseases];
 
-      if (field === "medication" || field === "dosage") {
-        currentDisease.medicalTreatmentUser[0] = {
-          ...currentDisease.medicalTreatmentUser[0],
-          [field]: value,
-        };
-      } else {
-        currentDisease[field] = value;
+      // Actualiza el campo correspondiente
+      if (field === "disease") {
+        updatedChronicDiseases[index].disease = value;
+      } else if (field === "doctorEmail") {
+        updatedChronicDiseases[index].doctorEmail = value;
+      } else if (field === "medicalCenter") {
+        updatedChronicDiseases[index].medicalCenter = value;
+      } else if (field === "medication") {
+        updatedChronicDiseases[index].medicalTreatmentUser[0].medication = value;
+      } else if (field === "dosage") {
+        updatedChronicDiseases[index].medicalTreatmentUser[0].dosage = value;
       }
-      updatedDiseases[index] = currentDisease;
-      return { chronicDiseases: updatedDiseases };
+
+      return { chronicDiseases: updatedChronicDiseases };
     });
   };
+
 
   const handleUpdateInfo = async () => {
     const currentState = useRegisterStore.getState();

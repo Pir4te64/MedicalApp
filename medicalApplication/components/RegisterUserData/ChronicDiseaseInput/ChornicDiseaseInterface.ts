@@ -12,6 +12,7 @@ export interface ChronicDiseaseInputProps {
   onChangeDosage: (text: string) => void;
   onAddChronicDisease: () => void;
   chronicDiseases: Array<{
+    id: string;
     disease: string;
     doctorEmail: string;
     medicalCenter: string;
@@ -19,14 +20,5 @@ export interface ChronicDiseaseInputProps {
     dosage: string;
   }>;
 
-  onUpdateChronicDisease: (
-    index: number,
-    updatedDisease: {
-      disease: string;
-      doctorEmail: string;
-      medicalCenter: string;
-      medication: string;
-      dosage: string;
-    }
-  ) => void;
+ 
 }

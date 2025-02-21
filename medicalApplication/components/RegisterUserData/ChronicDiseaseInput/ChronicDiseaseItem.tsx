@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Alert, StyleSheet, TouchableOpacity, Text } from "react-native";
 import { Input } from "react-native-elements";
 import { Ionicons } from "@expo/vector-icons";
@@ -6,13 +6,14 @@ import { Ionicons } from "@expo/vector-icons";
 interface ChronicDiseaseItemProps {
   index: number;
   diseaseData: {
+    id: number;
     disease: string;
     doctorEmail: string;
     medicalCenter: string;
     medicalTreatmentUser: { medication: string; dosage: string }[];
   };
   onUpdate: (index: number, field: string, value: string) => void;
-  onDelete: (index: number) => void;
+  onDelete: (index: number) => Promise<boolean>;
 }
 
 const ChronicDiseaseItem: React.FC<ChronicDiseaseItemProps> = ({
@@ -22,8 +23,9 @@ const ChronicDiseaseItem: React.FC<ChronicDiseaseItemProps> = ({
   onDelete,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false); // Estado para deshabilitar botón
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     Alert.alert(
       "Eliminar Enfermedad",
       "¿Estás seguro de que deseas eliminar esta enfermedad?",
@@ -31,7 +33,16 @@ const ChronicDiseaseItem: React.FC<ChronicDiseaseItemProps> = ({
         { text: "Cancelar", style: "cancel" },
         {
           text: "Eliminar",
-          onPress: () => onDelete(index),
+          onPress: async () => {
+            const success: boolean = await onDelete(diseaseData.id);
+
+            if (success) {
+              setIsDeleted(true); // Desactiva el botón de eliminar
+              Alert.alert("✅ Éxito", "Enfermedad eliminada correctamente");
+            } else {
+              Alert.alert("❌ Error", "No se pudo eliminar la enfermedad");
+            }
+          },
           style: "destructive",
         },
       ],
@@ -40,7 +51,7 @@ const ChronicDiseaseItem: React.FC<ChronicDiseaseItemProps> = ({
   };
 
   return (
-    <View>
+    <View style={styles.container}>
       {/* Botón para expandir/cerrar */}
       <TouchableOpacity
         style={styles.header}
@@ -53,6 +64,8 @@ const ChronicDiseaseItem: React.FC<ChronicDiseaseItemProps> = ({
           color="white"
         />
       </TouchableOpacity>
+
+      // En tu ChronicDiseaseItem
 
       {isExpanded && (
         <View style={styles.box}>
@@ -77,28 +90,42 @@ const ChronicDiseaseItem: React.FC<ChronicDiseaseItemProps> = ({
             containerStyle={styles.inputContainer}
             inputStyle={styles.input}
           />
-          <Input
-            label="Medicamento"
-            value={diseaseData.medicalTreatmentUser[0].medication}
-            onChangeText={(value) => onUpdate(index, "medication", value)}
-            containerStyle={styles.inputContainer}
-            inputStyle={styles.input}
-          />
-          <Input
-            label="Dosis"
-            value={diseaseData.medicalTreatmentUser[0].dosage}
-            onChangeText={(value) => onUpdate(index, "dosage", value)}
-            containerStyle={styles.inputContainer}
-            inputStyle={styles.input}
-          />
+
+          {/* Manejo del medicamento y la dosis */}
+          {diseaseData.medicalTreatmentUser.map((treatment, i) => (
+            <View key={i}>
+              <Input
+                label="Medicamento"
+                value={treatment.medication}
+                onChangeText={(value) => onUpdate(index, "medication", value, i)} // Pasar el índice del tratamiento
+                containerStyle={styles.inputContainer}
+                inputStyle={styles.input}
+              />
+              <Input
+                label="Dosis"
+                value={treatment.dosage}
+                onChangeText={(value) => onUpdate(index, "dosage", value, i)} // Pasar el índice del tratamiento
+                containerStyle={styles.inputContainer}
+                inputStyle={styles.input}
+                keyboardType="numeric"
+              />
+            </View>
+          ))}
 
           {/* Botón de eliminación */}
-          <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
+          <TouchableOpacity
+            style={[styles.deleteButton, isDeleted && styles.disabledButton]}
+            onPress={handleDelete}
+            disabled={isDeleted}
+          >
             <Ionicons name="trash-bin-outline" size={20} color="white" />
-            <Text style={styles.deleteText}>Eliminar</Text>
+            <Text style={styles.deleteText}>
+              {isDeleted ? "Eliminado" : "Eliminar"}
+            </Text>
           </TouchableOpacity>
         </View>
       )}
+
     </View>
   );
 };
@@ -124,6 +151,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     padding: 15,
     borderRadius: 8,
+    backgroundColor: "#f9f9f9",
   },
   inputContainer: {
     marginBottom: 10,
@@ -140,6 +168,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 5,
     marginTop: 10,
+  },
+  disabledButton: {
+    backgroundColor: "#ccc", // Color para el botón deshabilitado
   },
   deleteText: {
     color: "white",
