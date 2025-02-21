@@ -9,7 +9,6 @@ const SettingsComponent = () => {
   const router = useRouter();
 
   const handleLogout = () => {
-    console.log("Cerrando sesión...");
     logout(); // Llamamos a la función de logout del contexto
     router.replace("/"); // Redirigimos al index
   };

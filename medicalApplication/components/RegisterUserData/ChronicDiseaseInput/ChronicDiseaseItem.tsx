@@ -124,11 +124,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     padding: 15,
     borderRadius: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 5,
   },
   inputContainer: {
     marginBottom: 10,

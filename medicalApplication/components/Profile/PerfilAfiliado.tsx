@@ -1,27 +1,25 @@
 // components/PerfilSecundario.tsx
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { styles } from "./Profile.styles";
-import ModalUpdateAPoderado from "@/components/Modal/ModalSettings/ModalUpdateApoderado/ModalUpdateApoderado";
-import ModalSelector from "@/components/Modal/ModalSettings/ModalSector/ModalSelector";
-import ModalUpdatePassword from "@/components/Modal/ModalSettings/ModalUpdatePassword/ModalUpdatePassword";
-import ModalUpdateUser from "@/components/Modal/ModalSettings/ModalUpdateUser/ModalUpdateUser";
 import { Afiliado, useAfiliadosStore } from "./afiliadosStore";
+import Modales from "./Modales";
 
 interface PerfilSecundarioProps {
   afiliados: Afiliado[];
   reloadProfile: () => void;
+  perfilSuper: string;
 }
 
 const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({
   afiliados,
   reloadProfile,
+  perfilSuper,
 }) => {
   const router = useRouter();
 
-  // Extraemos los estados y acciones del store
   const {
     selectorVisible,
     modalVisible,
@@ -96,7 +94,6 @@ const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({
   return (
     <View style={styles.afiliadosSection}>
       <Text style={styles.afiliadosTitle}>Afiliados</Text>
-      // ...
       {afiliados.map((afiliado, index) => (
         <View key={index} style={styles.afiliadoItem}>
           <View style={styles.afiliadoHeader}>
@@ -114,58 +111,47 @@ const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({
             </Text>
           </View>
           <View style={styles.iconsContainer}>
-            {/* Si el afiliado no es de tipo D, mostramos el botón de actualizarAfiliado */}
-            {afiliado.tipoUsuario !== "D" && (
-              <TouchableOpacity onPress={() => actualizarAfiliado(afiliado)}>
-                <Ionicons name="build-outline" size={30} color="white" />
-              </TouchableOpacity>
+            {perfilSuper !== "D" && (
+              <>
+                <TouchableOpacity onPress={() => actualizarAfiliado(afiliado)}>
+                  <Ionicons name="build-outline" size={30} color="white" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => navigateToInformation(afiliado)}
+                >
+                  <Ionicons name="clipboard-outline" size={30} color="white" />
+                </TouchableOpacity>
+              </>
             )}
+
             <TouchableOpacity onPress={() => handlePasswordUpdate(afiliado)}>
               <Ionicons name="key-outline" size={30} color="white" />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => handleUserDataUpdate(afiliado)}>
               <Ionicons name="person-outline" size={30} color="white" />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigateToInformation(afiliado)}>
-              <Ionicons name="clipboard-outline" size={30} color="white" />
-            </TouchableOpacity>
+
             <TouchableOpacity onPress={() => navigateToDetail(afiliado)}>
               <Ionicons name="eye-outline" size={30} color="white" />
             </TouchableOpacity>
           </View>
         </View>
       ))}
-      {/* Modales */}
-      <ModalSelector
-        visible={selectorVisible}
-        onClose={cerrarSelector}
-        onAccept={handleSelectorAccept}
-      />
-      <ModalUpdateAPoderado
-        visible={modalVisible}
-        afiliado={afiliadoSeleccionado}
-        tipoSeleccionado={tipoSeleccionado}
-        onClose={() => resetearEstados()}
+
+      {/* Llamada al componente de modales */}
+      <Modales
+        selectorVisible={selectorVisible}
+        modalVisible={modalVisible}
+        passwordModalVisible={passwordModalVisible}
+        userModalVisible={userModalVisible}
+        tipoSeleccionado={tipoSeleccionado || ""}
+        afiliadoSeleccionado={afiliadoSeleccionado}
+        cerrarSelector={cerrarSelector}
+        aceptarSelector={handleSelectorAccept}
+        cerrarModalPassword={cerrarModalPassword}
+        cerrarModalUser={cerrarModalUser}
+        resetearEstados={resetearEstados}
         reloadProfile={reloadProfile}
-      />
-      <ModalUpdatePassword
-        afiliado={afiliadoSeleccionado}
-        visible={passwordModalVisible}
-        onClose={cerrarModalPassword}
-        reloadProfile={reloadProfile}
-      />
-      <ModalUpdateUser
-        visible={userModalVisible}
-        onClose={cerrarModalUser}
-        reloadProfile={reloadProfile}
-        user={
-          afiliadoSeleccionado
-            ? {
-                name: afiliadoSeleccionado.nombre,
-                document: afiliadoSeleccionado.documento,
-              }
-            : undefined
-        }
       />
     </View>
   );

@@ -124,7 +124,7 @@ const RegisterDependientes = () => {
           buttonStyle={{
             backgroundColor: "#0066cc",
             width: "100%",
-            borderRadius: 0,
+            borderRadius: 10,
           }}
           containerStyle={{ marginTop: 10, width: "100%" }}
           titleStyle={{ fontSize: 18, textAlign: "center" }}

@@ -1,8 +1,9 @@
 import { API } from "@/utils/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-
-export const deleteChronicDisease = async (idUser: string): Promise<boolean> => {
+export const deleteChronicDisease = async (
+  idUser: number
+): Promise<boolean> => {
   try {
     const token = await AsyncStorage.getItem("authToken");
     if (!token) {
@@ -13,13 +14,16 @@ export const deleteChronicDisease = async (idUser: string): Promise<boolean> => 
     const response = await fetch(`${API.DATA_REGISTER_DELETE}${idUser}`, {
       method: "DELETE",
       headers: {
-        "Authorization": `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     });
 
     if (!response.ok) {
-      console.error("Error al eliminar la enfermedad crónica:", await response.text());
+      console.error(
+        "Error al eliminar la enfermedad crónica:",
+        await response.text()
+      );
       return false;
     }
 

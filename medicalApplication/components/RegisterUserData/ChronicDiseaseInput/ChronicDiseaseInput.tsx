@@ -4,8 +4,10 @@ import { Input, Button } from "react-native-elements";
 import { Icon } from "react-native-elements";
 import ChronicDiseaseItem from "./ChronicDiseaseItem";
 import { ChronicDiseaseInputProps } from "./ChornicDiseaseInterface";
+import { deleteChronicDisease } from "./ChronicDelete";
 
 const ChronicDiseaseInput: React.FC<ChronicDiseaseInputProps> = ({
+  afiliadoId,
   newDisease,
   doctorEmail,
   medicalCenter,
@@ -21,7 +23,7 @@ const ChronicDiseaseInput: React.FC<ChronicDiseaseInputProps> = ({
   onUpdateChronicDisease,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  // obtener el ID para pasarle al usuario
+
   return (
     <View style={styles.container}>
       {/* Botón para expandir o colapsar */}
@@ -100,7 +102,7 @@ const ChronicDiseaseInput: React.FC<ChronicDiseaseInputProps> = ({
               index={index}
               diseaseData={item}
               onUpdate={onUpdateChronicDisease}
-              onDelete={() => console.log("Enfermedad eliminada")}
+              onDelete={() => deleteChronicDisease(afiliadoId)}
             />
           </View>
         ))}
@@ -154,9 +156,6 @@ const styles = StyleSheet.create({
   diseaseItemContainer: {
     marginBottom: 15,
     borderRadius: 8,
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 5,
     padding: 10,
   },
 });

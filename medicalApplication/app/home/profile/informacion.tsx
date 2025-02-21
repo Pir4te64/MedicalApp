@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import { useLocalSearchParams } from "expo-router"; // Importar useLocalSearchParams
-import RegisterDataForm from "@/components/RegisterUserData/InformacionMedicaForm";
+import RegisterDataForm from "@/components/RegisterUserData/InformacionMedica/InformacionMedicaForm";
 import { Afiliado } from "@/utils/types";
 
 const RegistrationForm = () => {

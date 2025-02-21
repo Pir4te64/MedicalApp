@@ -21,9 +21,10 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
   };
 
   // Formatear fecha como DD/MM/YYYY
-  const formatDate = (date: Date) => {
+  const formatDate = (date?: Date | null) => {
+    if (!date) return "No seleccionada"; // Evita error si la fecha es null
     const day = date.getDate().toString().padStart(2, "0");
-    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Los meses comienzan en 0
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };

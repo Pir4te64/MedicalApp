@@ -64,6 +64,7 @@ const ProfileInfo = () => {
         <View style={styles.profileContainer}>
           <PerfilPrincipal profile={profile} />
           <PerfilSecundario
+            perfilSuper={profile.tipoCuenta}
             afiliados={profile.afiliados || []}
             reloadProfile={fetchProfile}
           />

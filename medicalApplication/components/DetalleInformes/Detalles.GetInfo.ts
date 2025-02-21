@@ -1,4 +1,3 @@
-
 // utils/Detalles.getInfo.ts
 import { API } from "@/utils/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -29,7 +28,7 @@ const getInfo = async (id: string): Promise<ApiResponse | null> => {
 
     // Construir la URL con el id
     const url = `${API.DATA_REGISTER_GET}${id}`;
-    
+
     // Realizar la solicitud GET con el token de autenticación en los headers
     const response = await fetch(url, {
       method: "GET",
@@ -50,7 +49,6 @@ const getInfo = async (id: string): Promise<ApiResponse | null> => {
       data,
     };
   } catch (error) {
-    console.error("Error en getInfo:", error);
     return null;
   }
 };

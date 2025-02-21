@@ -7,7 +7,9 @@ export const getUserData = async (userId: number) => {
     const authToken = await AsyncStorage.getItem("authToken");
 
     if (!authToken) {
-      throw new Error("⚠️ No se encontró el token de autenticación.\n\nPor favor, inicia sesión nuevamente.");
+      throw new Error(
+        "⚠️ No se encontró el token de autenticación.\n\nPor favor, inicia sesión nuevamente."
+      );
     }
 
     const response = await fetch(`${API.DATA_REGISTER_GET}${userId}`, {

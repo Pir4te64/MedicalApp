@@ -39,7 +39,6 @@ const InputsPrincipales: React.FC<InputsPrincipalesProps> = ({
       .validate(formData, { abortEarly: false }) // Evita que se pare al primer error
       .then(() => {
         setErrors({});
-        console.log("Formulario válido");
       })
       .catch((err) => {
         const errorObj: any = {};

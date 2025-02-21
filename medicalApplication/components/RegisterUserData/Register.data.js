@@ -44,7 +44,6 @@ export const handleSubmit = async (
       otherAllergiesUsers: Array.isArray(otherAllergies) ? otherAllergies : [],
       chronicDiseasesUsers: formattedChronicDiseases,
     };
-    console.log("Datos a enviar:", JSON.stringify(formData, null, 2)); 
 
     const response = await fetch(API.DATA_REGISTER, {
       method: "POST",
@@ -63,10 +62,9 @@ export const handleSubmit = async (
     }
 
     const responseData = await response.json();
-    console.log("Datos del usuario:", JSON.stringify(responseData, null, 2));
 
     Alert.alert("✅ Éxito", "Los datos se enviaron correctamente.", [
-      { text: "Aceptar", onPress: () => console.log("Alerta cerrada") },
+      { text: "Aceptar",  },
     ]);
     
     return responseData;
