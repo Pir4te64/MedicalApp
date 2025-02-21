@@ -25,6 +25,12 @@ const ProfileLayout = () => {
           title: "Información Detalle", // Título personalizado
         }}
       />
+      <Stack.Screen
+        name="contactos" // Pantalla de detalle de la información
+        options={{
+          title: "Contactos", // Título personalizado
+        }}
+      />
     </Stack>
   );
 };

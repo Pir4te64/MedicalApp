@@ -3,9 +3,9 @@ import React, { useCallback, useEffect } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { styles } from "./Profile.styles";
-import { Afiliado, useAfiliadosStore } from "./afiliadosStore";
-import Modales from "./Modales";
+import { styles } from "../Profile.styles";
+import { Afiliado, useAfiliadosStore } from "../afiliadosStore";
+import Modales from "../Modales";
 
 interface PerfilSecundarioProps {
   afiliados: Afiliado[];
@@ -86,6 +86,16 @@ const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({
     },
     [router]
   );
+  const navigateToContactos = useCallback(
+    (afiliado: Afiliado) => {
+      router.push(
+        `/home/profile/contactos?afiliado=${encodeURIComponent(
+          JSON.stringify(afiliado)
+        )}`
+      );
+    },
+    [router]
+  );
 
   if (!afiliados || afiliados.length === 0) {
     return <Text style={styles.noAfiliados}>No tiene afiliados.</Text>;
@@ -133,6 +143,9 @@ const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({
 
             <TouchableOpacity onPress={() => navigateToDetail(afiliado)}>
               <Ionicons name="eye-outline" size={30} color="white" />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigateToContactos(afiliado)}>
+              <Ionicons name="call-outline" size={30} color="white" />
             </TouchableOpacity>
           </View>
         </View>

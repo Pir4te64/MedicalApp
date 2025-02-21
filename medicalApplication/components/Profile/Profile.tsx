@@ -11,7 +11,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useProfileStore } from "./profileStore";
 import { styles } from "./Profile.styles";
 import PerfilPrincipal from "./PerfilPrincipal";
-import PerfilSecundario from "./PerfilAfiliado";
+import PerfilSecundario from "./PerfilAfiliado/PerfilAfiliado";
 
 const ProfileInfo = () => {
   const { profile, loading, error, fetchProfile } = useProfileStore();
