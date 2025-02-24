@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   profileContainer: {
     padding: 20,
-    backgroundColor: "#0066cc", // Azul suave para el fondo
+    backgroundColor: "#0066cc",
     borderRadius: 12,
   },
   profileDetails: {
@@ -16,7 +16,7 @@ export const styles = StyleSheet.create({
   },
   profileText: {
     fontSize: 18,
-    color: "#ffffff", // Texto blanco para contraste
+    color: "#ffffff",
     marginLeft: 10,
   },
   afiliadosSection: {
@@ -35,20 +35,35 @@ export const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 15,
     textAlign: "center",
-    color: "#0066cc", // Título azul
+    color: "#0066cc",
   },
-  afiliadoItem: {
-    marginBottom: 20,
+  afiliadoContainer: {
+    marginBottom: 10,
+    padding: 15,
+    borderRadius: 10,
+    backgroundColor: "#f8f9fa",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
   },
   afiliadoHeader: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between", // Alinea nombre a la izquierda y botón a la derecha
-    marginBottom: 10,
+    justifyContent: "space-between",
+    padding: 12,
+    borderRadius: 8,
   },
   afiliadoName: {
     fontSize: 18,
-    fontWeight: "bold",
+    color: "black",
+  },
+  afiliadoContent: {
+    marginTop: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 8,
   },
   afiliadoInfo: {
     flexDirection: "row",
@@ -75,15 +90,26 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  // NUEVOS ESTILOS PARA LOS ÍCONOS
   iconsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    alignItems: "center",
     marginTop: 10,
-    backgroundColor: "#0066cc",
-    borderRadius: 12,
     padding: 10,
+    borderRadius: 10,
+    backgroundColor: "#ffffff",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
+  },
+  iconRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 8,
+  },
+  iconText: {
+    fontSize: 16,
+    color: "#333",
+    marginLeft: 10,
   },
   reloadButton: {
     position: "absolute",
@@ -93,11 +119,20 @@ export const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 50,
     zIndex: 10,
-    elevation: 5, // Sombra en Android
-    shadowColor: "#000", // Sombra en iOS
+    elevation: 5,
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
+  },
+  iconsColumn: {
+    flexDirection: "column",
+    alignItems: "flex-start",
+    justifyContent: "center",
+  },
+  
+  iconStyle: {
+    fontSize: 24, // Ajusta el tamaño si es necesario
   },
   
 });

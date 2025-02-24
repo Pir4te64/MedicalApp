@@ -53,7 +53,11 @@ const EditableContact: React.FC<EditableContactProps> = ({
         style={styles.header}
         onPress={() => setIsExpanded(!isExpanded)}
       >
-        <Text h4 style={styles.contactName}>
+        <Text
+          h4
+          h4Style={{ fontSize: 24, fontWeight: 400 }}
+          style={styles.contactName}
+        >
           {item.name}
         </Text>
         <Icon

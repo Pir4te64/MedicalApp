@@ -37,12 +37,8 @@ const InputsPrincipales: React.FC<InputsPrincipalesProps> = ({
 
   // Esquema de validación con Yup
   const validationSchema = Yup.object().shape({
-    weight: Yup.number()
-      .positive("El peso debe ser un número positivo")
-      .required("El peso es obligatorio"),
-    height: Yup.number()
-      .positive("La altura debe ser un número positivo")
-      .required("La altura es obligatoria"),
+    weight: Yup.number().required("El peso es obligatorio"),
+    height: Yup.number().required("La altura es obligatoria"),
     bloodType: Yup.string()
       .oneOf(
         ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
@@ -97,7 +93,6 @@ const InputsPrincipales: React.FC<InputsPrincipalesProps> = ({
             placeholder="Ingrese su altura en cm"
             value={formData.height}
             onChangeText={(value) => handleChange("height", value)}
-            errorMessage={errors.height}
             onBlur={validateForm}
             keyboardType="numeric"
           />

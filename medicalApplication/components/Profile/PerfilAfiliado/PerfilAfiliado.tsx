@@ -1,11 +1,10 @@
-// components/PerfilSecundario.tsx
-import React, { useCallback, useEffect } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import React, { useCallback } from "react";
+import { View, Text } from "react-native";
 import { useRouter } from "expo-router";
 import { styles } from "../Profile.styles";
 import { Afiliado, useAfiliadosStore } from "../afiliadosStore";
 import Modales from "../Modales";
+import AfiliadoItem from "./Afiliados";
 
 interface PerfilSecundarioProps {
   afiliados: Afiliado[];
@@ -19,7 +18,6 @@ const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({
   perfilSuper,
 }) => {
   const router = useRouter();
-
   const {
     selectorVisible,
     modalVisible,
@@ -38,30 +36,17 @@ const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({
   } = useAfiliadosStore();
 
   const actualizarAfiliado = useCallback(
-    (afiliado: Afiliado) => {
-      abrirSelector(afiliado);
-    },
+    (afiliado: Afiliado) => abrirSelector(afiliado),
     [abrirSelector]
   );
 
-  const handleSelectorAccept = useCallback(
-    async (tipo: string) => {
-      await aceptarSelector(tipo);
-    },
-    [aceptarSelector]
-  );
-
   const handlePasswordUpdate = useCallback(
-    (afiliado: Afiliado) => {
-      abrirModalPassword(afiliado);
-    },
+    (afiliado: Afiliado) => abrirModalPassword(afiliado),
     [abrirModalPassword]
   );
 
   const handleUserDataUpdate = useCallback(
-    (afiliado: Afiliado) => {
-      abrirModalUser(afiliado);
-    },
+    (afiliado: Afiliado) => abrirModalUser(afiliado),
     [abrirModalUser]
   );
 
@@ -86,6 +71,7 @@ const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({
     },
     [router]
   );
+
   const navigateToContactos = useCallback(
     (afiliado: Afiliado) => {
       router.push(
@@ -105,53 +91,19 @@ const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({
     <View style={styles.afiliadosSection}>
       <Text style={styles.afiliadosTitle}>Afiliados</Text>
       {afiliados.map((afiliado, index) => (
-        <View key={index} style={styles.afiliadoItem}>
-          <View style={styles.afiliadoHeader}>
-            <Text style={styles.afiliadoName}>{afiliado.nombre}</Text>
-          </View>
-          <View style={styles.afiliadoInfo}>
-            <Ionicons name="card" size={16} color="#555" />
-            <Text style={styles.afiliadoText}> DNI: {afiliado.documento}</Text>
-          </View>
-          <View style={styles.afiliadoInfo}>
-            <Ionicons name="shield-outline" size={16} color="#555" />
-            <Text style={styles.afiliadoText}>
-              {" "}
-              Tipo de Usuario: {afiliado.tipoUsuario}
-            </Text>
-          </View>
-          <View style={styles.iconsContainer}>
-            {perfilSuper !== "D" && (
-              <>
-                <TouchableOpacity onPress={() => actualizarAfiliado(afiliado)}>
-                  <Ionicons name="build-outline" size={30} color="white" />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => navigateToInformation(afiliado)}
-                >
-                  <Ionicons name="clipboard-outline" size={30} color="white" />
-                </TouchableOpacity>
-              </>
-            )}
-
-            <TouchableOpacity onPress={() => handlePasswordUpdate(afiliado)}>
-              <Ionicons name="key-outline" size={30} color="white" />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleUserDataUpdate(afiliado)}>
-              <Ionicons name="person-outline" size={30} color="white" />
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigateToDetail(afiliado)}>
-              <Ionicons name="eye-outline" size={30} color="white" />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigateToContactos(afiliado)}>
-              <Ionicons name="call-outline" size={30} color="white" />
-            </TouchableOpacity>
-          </View>
-        </View>
+        <AfiliadoItem
+          key={index}
+          afiliado={afiliado}
+          perfilSuper={perfilSuper}
+          actualizarAfiliado={actualizarAfiliado}
+          handlePasswordUpdate={handlePasswordUpdate}
+          handleUserDataUpdate={handleUserDataUpdate}
+          navigateToDetail={navigateToDetail}
+          navigateToInformation={navigateToInformation}
+          navigateToContactos={navigateToContactos}
+        />
       ))}
 
-      {/* Llamada al componente de modales */}
       <Modales
         selectorVisible={selectorVisible}
         modalVisible={modalVisible}
@@ -160,7 +112,7 @@ const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({
         tipoSeleccionado={tipoSeleccionado || ""}
         afiliadoSeleccionado={afiliadoSeleccionado}
         cerrarSelector={cerrarSelector}
-        aceptarSelector={handleSelectorAccept}
+        aceptarSelector={aceptarSelector}
         cerrarModalPassword={cerrarModalPassword}
         cerrarModalUser={cerrarModalUser}
         resetearEstados={resetearEstados}

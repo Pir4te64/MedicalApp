@@ -94,13 +94,11 @@ const RegisterDataForm: React.FC<RegisterDataFormProps> = ({ afiliado }) => {
 
   const isFormComplete = () => {
     return (
-      birthDate &&
-      weight &&
-      height &&
-      bloodType &&
-      medicationAllergies.length > 0 &&
-      otherAllergies.length > 0 &&
-      chronicDiseases.length > 0
+      birthDate && weight && height && bloodType
+      // bloodType &&
+      // medicationAllergies.length > 0 &&
+      // otherAllergies.length > 0 &&
+      // chronicDiseases.length > 0
     );
   };
   const handleDeleteAllergy = (

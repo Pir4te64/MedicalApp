@@ -32,7 +32,11 @@ const ContactosComponent: React.FC<ContactosComponentProps> = ({
       const fetchedContactos = await getAllContactos(afiliadoData.id);
       setContactos(fetchedContactos);
     } catch (error) {
-      Alert.alert("Error al obtener los contactos");
+      Alert.alert(
+        "Advertencia",
+        "Antes de crear sus contactos debe crear su acta medica."
+      );
+      navigation.goBack();
     } finally {
       setLoading(false);
     }
