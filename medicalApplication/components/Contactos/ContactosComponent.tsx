@@ -1,22 +1,18 @@
-import React, { useEffect } from "react";
-import { View, Text, Button, FlatList, Alert, TextInput } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  View, Text, FlatList, Alert, ActivityIndicator
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useContactStore } from "./useContactStore";
 import { PACIENTE_CONTACTO_POST } from "./ContactosPOST";
 import { getAllContactos } from "./ContactosGETALL";
+import { styles } from "./Contactos.Styles";
+import ContactForm from "./CrearContacto";
+import { Contact, ContactosComponentProps } from "./Contactos.Interface";
+import { updateContact } from "./ContactosPUT";
+import EditableContact from "./ContactosEditar";
 
-interface ContactosComponentProps {
-  afiliadoData: {
-    nombre: string;
-    documento: string;
-    tipoUsuario: string;
-    id: number; // Recibimos el id como prop
-  };
-}
-
-const ContactosComponent: React.FC<ContactosComponentProps> = ({
-  afiliadoData,
-}) => {
+const ContactosComponent: React.FC<ContactosComponentProps> = ({ afiliadoData }) => {
   const navigation = useNavigation();
   const {
     contactos,
@@ -25,24 +21,27 @@ const ContactosComponent: React.FC<ContactosComponentProps> = ({
     toggleAddContact,
     updateContactInfo,
     resetContactInfo,
-    fetchContactos,
+    setContactos,
   } = useContactStore();
+  const [loading, setLoading] = useState(false);
+
+  // ✅ Definimos una función que obtiene TODOS los contactos
+  const fetchContacts = async () => {
+    setLoading(true);
+    try {
+      const fetchedContactos = await getAllContactos(afiliadoData.id);
+      setContactos(fetchedContactos);
+    } catch (error) {
+      console.error("Error al obtener los contactos:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    // Ahora pasamos el id al llamar a la función getAllContactos
-    const fetchContacts = async () => {
-      try {
-        const fetchedContactos = await getAllContactos(afiliadoData.id);
-        // Actualizamos los contactos con la data obtenida
-        fetchContactos();
-      } catch (error) {
-        console.error("Error al obtener los contactos:", error);
-      }
-    };
-
-    fetchContacts(); // Llamar para obtener los contactos
-    resetContactInfo(afiliadoData.id); // Reseteamos el formulario con el ID del usuario
-  }, [afiliadoData.id, fetchContactos]);
+    fetchContacts();
+    resetContactInfo(afiliadoData.id);
+  }, [afiliadoData.id]);
 
   const handleAddContact = async () => {
     if (!contactInfo.name || !contactInfo.phone || !contactInfo.email) {
@@ -51,79 +50,78 @@ const ContactosComponent: React.FC<ContactosComponentProps> = ({
     }
 
     try {
-      await PACIENTE_CONTACTO_POST(contactInfo);
+      const newContact = { ...contactInfo, id_afiliado: afiliadoData.id };
+      await PACIENTE_CONTACTO_POST(newContact);
       Alert.alert("Éxito", "El contacto ha sido agregado correctamente.");
       resetContactInfo(afiliadoData.id);
       toggleAddContact();
-      // Refrescar la lista de contactos
-      fetchContactos();
-      navigation.goBack();
+      await fetchContacts(); // ✅ Actualiza la lista de contactos después de agregar
     } catch (error) {
       Alert.alert("Error", "No se pudo agregar el contacto.");
     }
   };
 
-  const renderContactItem = ({ item }: { item: any }) => (
-    <View>
-      <Text>{item.name}</Text>
-      <Text>{item.phone}</Text>
-      <Text>{item.email}</Text>
-      <Text>{item.observation}</Text>
-    </View>
-  );
+  const handleUpdateContact = async (contactId: string, updatedData: Partial<Contact>) => {
+    setLoading(true);
+    try {
+      await updateContact(contactId, {
+        name: updatedData.name || "",
+        phone: updatedData.phone || "",
+        email: updatedData.email || "",
+        observation: updatedData.observation || "",
+      });
+
+      Alert.alert("Éxito", "El contacto ha sido actualizado correctamente.");
+
+      await fetchContacts(); // ✅ Actualiza la lista de contactos después de actualizar
+    } catch (error) {
+      Alert.alert("Error", "No se pudo actualizar el contacto.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <View>
-      <Text>Nombre: {afiliadoData.nombre}</Text>
-      <Text>DNI: {afiliadoData.documento}</Text>
-
-      <Button title="Agregar Contacto" onPress={toggleAddContact} />
-
-      {showAddContact && (
-        <View>
-          <Text>Nombre:</Text>
-          <TextInput
-            value={contactInfo.name}
-            onChangeText={(text) => updateContactInfo("name", text)}
-          />
-
-          <Text>Teléfono:</Text>
-          <TextInput
-            keyboardType="numeric"
-            value={contactInfo.phone}
-            onChangeText={(text) => updateContactInfo("phone", text)}
-          />
-
-          <Text>Email:</Text>
-          <TextInput
-            value={contactInfo.email}
-            onChangeText={(text) => updateContactInfo("email", text)}
-          />
-
-          <Text>Observación:</Text>
-          <TextInput
-            value={contactInfo.observation}
-            onChangeText={(text) => updateContactInfo("observation", text)}
-            multiline
-            numberOfLines={4}
-            style={{
-              height: 80,
-              borderWidth: 1,
-              borderColor: "#ccc",
-              padding: 8,
-              textAlignVertical: "top",
-            }}
-          />
-
-          <Button title="Guardar Contacto" onPress={handleAddContact} />
+    <View style={{ flex: 1 }}>
+      {loading && (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="#007AFF" />
         </View>
       )}
 
       <FlatList
         data={contactos}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderContactItem}
+        keyExtractor={(item) => item.id}
+        keyboardShouldPersistTaps="handled"
+        renderItem={({ item }) => (
+          <EditableContact
+            item={item}
+            contactos={contactos}
+            setContactos={setContactos}
+            handleUpdateContact={handleUpdateContact}
+            getContacts={fetchContacts}
+          />
+        )}
+        ListHeaderComponent={
+          <View style={styles.container}>
+            <Text style={styles.subtitle}>Lista de Contactos</Text>
+          </View>
+        }
+        ListFooterComponent={ // ✅ Se agrega el formulario al final sin romper `FlatList`
+          <ContactForm
+            contactInfo={contactInfo}
+            updateContactInfo={updateContactInfo}
+            handleAddContact={handleAddContact}
+            toggleAddContact={toggleAddContact}
+            showAddContact={showAddContact}
+          />
+        }
+        ListEmptyComponent={
+          <Text style={styles.noContacts}>No hay contactos registrados.</Text>
+        }
+        contentContainerStyle={styles.scrollContainer}
       />
+
     </View>
   );
 };

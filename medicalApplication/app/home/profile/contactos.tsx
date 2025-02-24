@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text, KeyboardAvoidingView, Platform } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import ContactosComponent from "@/components/Contactos/ContactosComponent";
 import { Afiliado } from "@/utils/types";
@@ -23,15 +23,27 @@ const Contactos = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.scrollContainer}
+      contentContainerStyle={styles.contentContainer}
+    >
       <ContactosComponent afiliadoData={afiliadoData} />
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flex: 1,
+  },
   container: {
     flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  contentContainer: {
+    flexGrow: 1,
     padding: 20,
   },
 });

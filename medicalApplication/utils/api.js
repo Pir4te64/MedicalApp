@@ -14,8 +14,8 @@ export const API = {
   DATA_REGISTER_GET: `${BASE_URL}/user/data/`,
   DATA_REGISTER_DELETE: `${BASE_URL}/user/data/chronicDiseases/`,
   PACIENTE_CONTACTO_POST: `${BASE_URL}/patient-contact`,
-  PACIENTE_CONTACTO_UPDATE: `${BASE_URL}/patient/contact/`,
-  PACIENTE_CONTACTO_DELETE: `${BASE_URL}/patient/contact/`,
-  PACIENTE_CONTACTO_GET: `${BASE_URL}/patient/contact/`,
+  PACIENTE_CONTACTO_PUT: `${BASE_URL}/patient-contact`,
+  PACIENTE_CONTACTO_DELETE: `${BASE_URL}/patient-contact`,
+  PACIENTE_CONTACTO_GET: `${BASE_URL}/patient-contact/`,
   PACIENTE_CONTACTO_GET_ALL: `${BASE_URL}/patient-contact/all`,
 };

@@ -28,7 +28,6 @@ export const getAllContactos = async (id: number): Promise<any[]> => {
         Authorization: `Bearer ${authToken}`, // Agregar el token en los headers
       },
     });
-    console.log("url", `${API.PACIENTE_CONTACTO_GET_ALL}/${id}`);
 
     if (!response.ok) {
       throw new Error(`Error en la solicitud: ${response.status}`);
@@ -38,7 +37,7 @@ export const getAllContactos = async (id: number): Promise<any[]> => {
 
     return data;
   } catch (error) {
-    console.error("Error al obtener los contactos:", error);
+    console.log("Error al obtener los contactos:", error);
     throw error;
   }
 };
