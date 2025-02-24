@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  View, Text, FlatList, Alert, ActivityIndicator
-} from "react-native";
+import { View, Text, FlatList, Alert, ActivityIndicator } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useContactStore } from "./useContactStore";
 import { PACIENTE_CONTACTO_POST } from "./ContactosPOST";
@@ -12,7 +10,9 @@ import { Contact, ContactosComponentProps } from "./Contactos.Interface";
 import { updateContact } from "./ContactosPUT";
 import EditableContact from "./ContactosEditar";
 
-const ContactosComponent: React.FC<ContactosComponentProps> = ({ afiliadoData }) => {
+const ContactosComponent: React.FC<ContactosComponentProps> = ({
+  afiliadoData,
+}) => {
   const navigation = useNavigation();
   const {
     contactos,
@@ -32,7 +32,7 @@ const ContactosComponent: React.FC<ContactosComponentProps> = ({ afiliadoData })
       const fetchedContactos = await getAllContactos(afiliadoData.id);
       setContactos(fetchedContactos);
     } catch (error) {
-      console.error("Error al obtener los contactos:", error);
+      Alert.alert("Error al obtener los contactos");
     } finally {
       setLoading(false);
     }
@@ -57,11 +57,16 @@ const ContactosComponent: React.FC<ContactosComponentProps> = ({ afiliadoData })
       toggleAddContact();
       await fetchContacts(); // ✅ Actualiza la lista de contactos después de agregar
     } catch (error) {
+      console.log(error);
+
       Alert.alert("Error", "No se pudo agregar el contacto.");
     }
   };
 
-  const handleUpdateContact = async (contactId: string, updatedData: Partial<Contact>) => {
+  const handleUpdateContact = async (
+    contactId: string,
+    updatedData: Partial<Contact>
+  ) => {
     setLoading(true);
     try {
       await updateContact(contactId, {
@@ -82,7 +87,7 @@ const ContactosComponent: React.FC<ContactosComponentProps> = ({ afiliadoData })
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, padding: 20 }}>
       {loading && (
         <View style={styles.loaderContainer}>
           <ActivityIndicator size="large" color="#007AFF" />
@@ -103,11 +108,7 @@ const ContactosComponent: React.FC<ContactosComponentProps> = ({ afiliadoData })
           />
         )}
         ListHeaderComponent={
-          <View style={styles.container}>
-            <Text style={styles.subtitle}>Lista de Contactos</Text>
-          </View>
-        }
-        ListFooterComponent={ // ✅ Se agrega el formulario al final sin romper `FlatList`
+          // ✅ Se agrega el formulario al final sin romper `FlatList`
           <ContactForm
             contactInfo={contactInfo}
             updateContactInfo={updateContactInfo}
@@ -121,7 +122,6 @@ const ContactosComponent: React.FC<ContactosComponentProps> = ({ afiliadoData })
         }
         contentContainerStyle={styles.scrollContainer}
       />
-
     </View>
   );
 };

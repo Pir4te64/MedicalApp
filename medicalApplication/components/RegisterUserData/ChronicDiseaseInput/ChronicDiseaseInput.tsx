@@ -21,7 +21,6 @@ const ChronicDiseaseInput: React.FC<ChronicDiseaseInputProps> = ({
   chronicDiseases,
   onUpdateChronicDisease,
 }) => {
-
   const [isExpanded, setIsExpanded] = useState(false);
   return (
     <View style={styles.container}>
@@ -106,6 +105,5 @@ const ChronicDiseaseInput: React.FC<ChronicDiseaseInputProps> = ({
     </View>
   );
 };
-
 
 export default ChronicDiseaseInput;

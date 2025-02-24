@@ -5,6 +5,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: "#fff",
+    borderRadius: 10,
   },
   scrollContainer: {
     flexGrow: 1, // Permite que el contenido pueda desplazarse completamente
@@ -33,8 +34,7 @@ export const styles = StyleSheet.create({
     elevation: 3,
   },
   contactName: {
-    fontSize: 18,
-    fontWeight: "bold",
+    fontSize: 10,
   },
   formContainer: {
     marginTop: 20,
@@ -68,5 +68,65 @@ export const styles = StyleSheet.create({
   deleteButton: {
     backgroundColor: "red", // Botón rojo para eliminar
     marginLeft: 10, // Separación con el botón "Guardar"
+  },
+  button: {
+    backgroundColor: "#007BFF", // Azul profesional
+    borderRadius: 5,
+    marginVertical: 10,
+  },
+  formContainer: {
+    backgroundColor: "#f0f4f8",
+    padding: 16,
+    borderRadius: 10,
+    elevation: 3, // Sombra en Android
+    shadowColor: "#000", // Sombra en iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  divider: {
+    backgroundColor: "#007BFF",
+    height: 2,
+    marginVertical: 10,
+  },
+  label: {
+    marginLeft: 10,
+    marginBottom: 5,
+    color: "#007BFF",
+  },
+  inputText: {
+    color: "#333",
+  },
+  textAreaContainer: {
+    paddingHorizontal: 10,
+    paddingVertical: 0,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginTop: 10,
+  },
+  button: {
+    backgroundColor: "#007BFF",
+    borderRadius: 5,
+    paddingHorizontal: 20,
+    marginVertical: 10,
+  },
+  deleteButton: {
+    backgroundColor: "#FF3B30",
+    borderRadius: 5,
+    paddingHorizontal: 20,
+    marginVertical: 10,
+    
+  },
+  buttonStyle: {
+    flex: 1,
+    marginHorizontal: 5,
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 8,
   },
 });

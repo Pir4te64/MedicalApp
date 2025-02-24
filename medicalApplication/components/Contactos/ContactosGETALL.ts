@@ -37,7 +37,6 @@ export const getAllContactos = async (id: number): Promise<any[]> => {
 
     return data;
   } catch (error) {
-    console.log("Error al obtener los contactos:", error);
     throw error;
   }
 };
