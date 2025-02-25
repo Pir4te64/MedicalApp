@@ -84,9 +84,6 @@ const HistorialMedicoForm: React.FC<Props> = ({ afiliado }) => {
 
     await postHistorialData(historialData);
   };
-  useEffect(() => {
-    console.log(JSON.stringify(historial, null, 2));
-  }, [historial]);
 
   return (
     <ScrollView style={styles.container}>
