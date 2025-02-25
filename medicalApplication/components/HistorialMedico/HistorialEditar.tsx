@@ -132,7 +132,6 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({ historial }) => {
         };
       }),
     };
-    console.log("Historial actualizado:", updatedHistorial);
 
     try {
       // Llamada a la función HistorialPUT para enviar el objeto
