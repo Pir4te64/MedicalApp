@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { View, Button, ScrollView } from "react-native";
+import { View, Button, ScrollView, Text } from "react-native";
 import { useHistorialMedicoStore } from "./useHistorialMedicoStore";
 import { HistorialData, postHistorialData } from "./HistorialPOST";
 import { getHistorialData, HistorialGETResponse } from "./GetUserData";
 import { getHistorialByUser } from "./getHistorialByUser";
 import FormFields from "./HistorialCrear";
 import { styles } from "./HistorialStyles";
+import HistorialEditar from "./HistorialEditar";
+import { Historial } from "./HistorialInterface";
 interface Props {
   afiliado: { id: string };
 }
-
 const HistorialMedicoForm: React.FC<Props> = ({ afiliado }) => {
   const {
     date,
@@ -39,7 +40,8 @@ const HistorialMedicoForm: React.FC<Props> = ({ afiliado }) => {
   } = useHistorialMedicoStore();
   const [userDataId, setUserDataId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
-  const [historial, setHistorial] = useState<any>(null);
+  const [historial, setHistorial] = useState<Historial[] | null>(null);
+
   useEffect(() => {
     const fetchData = async () => {
       const data = await getHistorialData(afiliado.id);
@@ -54,9 +56,8 @@ const HistorialMedicoForm: React.FC<Props> = ({ afiliado }) => {
   const handleObtenerDatos = async () => {
     if (userDataId) {
       const data = await getHistorialByUser(userDataId);
-      console.log(data);
 
-      if (data && data.success) {
+      if (data) {
         setHistorial(data);
       }
     }
@@ -83,6 +84,9 @@ const HistorialMedicoForm: React.FC<Props> = ({ afiliado }) => {
 
     await postHistorialData(historialData);
   };
+  useEffect(() => {
+    console.log(JSON.stringify(historial, null, 2));
+  }, [historial]);
 
   return (
     <ScrollView style={styles.container}>
@@ -131,6 +135,12 @@ const HistorialMedicoForm: React.FC<Props> = ({ afiliado }) => {
           }
           onPress={() => setShowForm(!showForm)}
         />
+        <View>
+          {historial &&
+            historial.map((historial, index) => (
+              <HistorialEditar key={index} historial={historial} />
+            ))}
+        </View>
       </View>
     </ScrollView>
   );

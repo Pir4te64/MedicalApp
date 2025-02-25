@@ -26,3 +26,52 @@ export interface FormFieldsProps {
   setShowOrderPicker: (index: number | null) => void;
   handleSubmit: () => void;
 }
+
+export interface Treatment {
+  treatmentDate: string;
+  urlDocTreatment: string;
+}
+
+export interface FollowUp {
+  followUpDate: string;
+  followUpNotes: string;
+}
+
+export interface Order {
+  ordersDate: string;
+  urlDocOrders: string;
+}
+
+export interface Historial {
+  id: string;
+  date: string;
+  specialty: string;
+  treatingPhysician: string;
+  originalSymptoms: string[];
+  diagnoses: string[];
+  treatments: Treatment[];
+  followUps: FollowUp[];
+  orders: Order[];
+  userDataId: string | null;
+}
+export interface HistorialEditarComponentProps {
+  id: string;
+  date: string;
+  specialty: string;
+  treatingPhysician: string;
+  originalSymptoms: string[];
+  diagnoses: string[];
+  treatments: {
+    treatmentDate: (number | string)[];
+    urlDocTreatment: string;
+  }[];
+  followUps: {
+    followUpDate: (number | string)[];
+    followUpNotes: string;
+  }[];
+  orders: {
+    ordersDate: (number | string)[];
+    urlDocOrders: string;
+  }[];
+  userDataId: string | null;
+}
