@@ -1,4 +1,5 @@
-// HistorialPOST.ts
+import { API } from "@/utils/api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export interface HistorialData {
   userDataId: string;
@@ -67,4 +68,39 @@ export const createHistorialPOSTData = (
       urlDocOrders: o.urlDocOrders,
     })),
   };
+};
+
+export const postHistorialData = async (data: HistorialData): Promise<void> => {
+  // Obtén el token del Async Storage
+  const authToken = await AsyncStorage.getItem("authToken");
+
+  if (!authToken) {
+    console.error("No se encontró el token de autenticación.");
+    return;
+  }
+
+  const postData = createHistorialPOSTData(data);
+
+  try {
+    const response = await fetch(API.HISTORAL_CLINICO_POST, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+      body: JSON.stringify(postData),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Error ${response.status}: ${response.statusText} - ${errorText}`
+      );
+    }
+
+    const responseData = await response.json();
+    console.log("Respuesta de la API:", JSON.stringify(responseData, null, 2));
+  } catch (error) {
+    console.error("Error al enviar los datos:", error);
+  }
 };
