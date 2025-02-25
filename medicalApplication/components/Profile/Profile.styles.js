@@ -39,7 +39,7 @@ export const styles = StyleSheet.create({
   },
   afiliadoContainer: {
     marginBottom: 10,
-    padding: 15,
+    padding: 5,
     borderRadius: 10,
     backgroundColor: "#f8f9fa",
     shadowColor: "#000",

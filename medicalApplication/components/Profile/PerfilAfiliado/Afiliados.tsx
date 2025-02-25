@@ -13,6 +13,7 @@ const AfiliadoItem: React.FC<AfiliadoItemProps> = ({
   navigateToDetail,
   navigateToInformation,
   navigateToContactos,
+  navigateToHistorial,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -101,6 +102,13 @@ const AfiliadoItem: React.FC<AfiliadoItemProps> = ({
             >
               <Ionicons name="call-outline" size={24} color="#0066cc" />
               <Text style={styles.iconText}>Contactos</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.iconRow}
+              onPress={() => navigateToHistorial(afiliado)}
+            >
+              <Ionicons name="time-outline" size={24} color="#0066cc" />
+              <Text style={styles.iconText}>Historial</Text>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>

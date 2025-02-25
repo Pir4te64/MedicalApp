@@ -9,4 +9,5 @@ export interface AfiliadoItemProps {
   navigateToDetail: (afiliado: Afiliado) => void;
   navigateToInformation: (afiliado: Afiliado) => void;
   navigateToContactos: (afiliado: Afiliado) => void;
+  navigateToHistorial: (afiliado: Afiliado) => void;
 }

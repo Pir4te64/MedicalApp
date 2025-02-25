@@ -71,7 +71,16 @@ const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({
     },
     [router]
   );
-
+  const navigateToHistorial = useCallback(
+    (afiliado: Afiliado) => {
+      router.push(
+        `/home/profile/historial?afiliado=${encodeURIComponent(
+          JSON.stringify(afiliado)
+        )}`
+      );
+    },
+    [router]
+  );
   const navigateToContactos = useCallback(
     (afiliado: Afiliado) => {
       router.push(
@@ -101,6 +110,7 @@ const PerfilSecundario: React.FC<PerfilSecundarioProps> = ({
           navigateToDetail={navigateToDetail}
           navigateToInformation={navigateToInformation}
           navigateToContactos={navigateToContactos}
+          navigateToHistorial={navigateToHistorial}
         />
       ))}
 

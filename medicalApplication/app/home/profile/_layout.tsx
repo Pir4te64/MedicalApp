@@ -31,6 +31,12 @@ const ProfileLayout = () => {
           title: "Contactos", // Título personalizado
         }}
       />
+      <Stack.Screen
+        name="historial" // Pantalla de detalle de la información
+        options={{
+          title: "Historial", // Título personalizado
+        }}
+      />
     </Stack>
   );
 };
