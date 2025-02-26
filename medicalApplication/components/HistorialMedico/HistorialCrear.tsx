@@ -1,10 +1,13 @@
 import React from "react";
-import { Text, TouchableOpacity, TextInput, View, Button } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
+import { Input, Button } from "react-native-elements";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { styles } from "./HistorialStyles";
+import { styles } from "./HistorialStylesCrear";
 import { FormFieldsProps } from "./HistorialInterface";
 import { useHistorialMedicoStore } from "./useHistorialMedicoStore";
 import EditableListField from "./Inputs/HistorialCrearInput";
+import DateListField from "./Inputs/DateListField";
+
 const FormFields: React.FC<FormFieldsProps> = ({
   showForm,
   date,
@@ -45,41 +48,56 @@ const FormFields: React.FC<FormFieldsProps> = ({
     addOrder,
     removeOrder,
   } = useHistorialMedicoStore();
+
   if (!showForm) return null;
 
   return (
-    <>
+    <View style={styles.formContainer}>
       <Text style={styles.label}>Fecha:</Text>
       <TouchableOpacity
         onPress={() => setShowDatePicker(true)}
         style={styles.dateButton}
       >
-        <Text>{date.toLocaleDateString()}</Text>
+        <Text style={styles.dateText}>{date.toLocaleDateString()}</Text>
       </TouchableOpacity>
       {showDatePicker && (
-        <DateTimePicker
-          value={date}
-          mode="date"
-          display="default"
-          onChange={(event, selectedDate) => {
-            setShowDatePicker(false);
-            if (selectedDate) setDate(selectedDate);
-          }}
-        />
+        <View style={styles.datePicker}>
+          <DateTimePicker
+            value={date}
+            mode="date"
+            display="default"
+            onChange={(event, selectedDate) => {
+              setShowDatePicker(false);
+              if (selectedDate) setDate(selectedDate);
+            }}
+          />
+        </View>
       )}
 
-      <TextInput
-        style={styles.input}
-        placeholder="Especialidad"
+      <Input
+        label="Especialidad"
+        placeholder="Ingrese la especialidad"
         value={specialty}
         onChangeText={setSpecialty}
+        containerStyle={styles.inputContainer}
+        inputStyle={styles.input}
+        leftIcon={{
+          type: "font-awesome",
+          name: "stethoscope",
+          color: "#007BFF",
+        }}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Médico tratante"
+
+      <Input
+        label="Médico Tratante"
+        placeholder="Ingrese el médico tratante"
         value={treatingPhysician}
         onChangeText={setTreatingPhysician}
+        containerStyle={styles.inputContainer}
+        inputStyle={styles.input}
+        leftIcon={{ type: "font-awesome", name: "user-md", color: "#007BFF" }}
       />
+
       <EditableListField
         label="Síntomas"
         placeholder="Síntoma"
@@ -98,159 +116,52 @@ const FormFields: React.FC<FormFieldsProps> = ({
         onAddItem={() => addDiagnosis("")}
       />
 
+      <DateListField
+        label="Tratamientos"
+        items={treatments}
+        setItems={setTreatments}
+        addItem={addTreatment}
+        removeItem={removeTreatment}
+        showPicker={showTreatmentPicker}
+        setShowPicker={setShowTreatmentPicker}
+        dateKey="treatmentDate"
+        textKey="urlDocTreatment"
+        placeholder="URL del documento"
+      />
 
-      {/* Tratamientos */}
-      <Text style={styles.label}>Tratamientos:</Text>
-      {treatments.map((treatment, index) => (
-        <View key={`treatment-${index}`} style={{ marginBottom: 12 }}>
-          <Text style={styles.label}>Fecha del tratamiento:</Text>
-          <TouchableOpacity
-            onPress={() => setShowTreatmentPicker(index)}
-            style={styles.dateButton}
-          >
-            <Text>{treatment.treatmentDate.toLocaleDateString()}</Text>
-          </TouchableOpacity>
-          {showTreatmentPicker === index && (
-            <DateTimePicker
-              value={treatment.treatmentDate}
-              mode="date"
-              display="default"
-              onChange={(event, selectedDate) => {
-                setShowTreatmentPicker(null);
-                if (selectedDate)
-                  setTreatments(index, "treatmentDate", selectedDate);
-              }}
-            />
-          )}
-          <TextInput
-            style={styles.input}
-            placeholder="URL del documento"
-            value={treatment.urlDocTreatment}
-            onChangeText={(text) =>
-              setTreatments(index, "urlDocTreatment", text)
-            }
-          />
-          <TouchableOpacity
-            onPress={() => removeTreatment(index)}
-            style={{ marginTop: 4 }}
-          >
-            <Text style={{ color: "red" }}>Eliminar tratamiento</Text>
-          </TouchableOpacity>
-        </View>
-      ))}
-      <TouchableOpacity
-        onPress={() =>
-          addTreatment({
-            treatmentDate: new Date(),
-            urlDocTreatment: "",
-          })
-        }
-        style={{ marginTop: 8 }}
-      >
-        <Text style={{ color: "blue" }}>Agregar tratamiento</Text>
-      </TouchableOpacity>
+      <DateListField
+        label="Seguimientos"
+        items={followUps}
+        setItems={setFollowUps}
+        addItem={addFollowUp}
+        removeItem={removeFollowUp}
+        showPicker={showFollowUpPicker}
+        setShowPicker={setShowFollowUpPicker}
+        dateKey="followUpDate"
+        textKey="followUpNotes"
+        placeholder="Notas del seguimiento"
+      />
 
-      {/* Seguimientos */}
-      <Text style={styles.label}>Seguimientos</Text>
-      {followUps.map((followUp, index) => (
-        <View key={`followUp-${index}`} style={{ marginBottom: 12 }}>
-          <Text style={styles.label}>Fecha del seguimiento:</Text>
-          <TouchableOpacity
-            onPress={() => setShowFollowUpPicker(index)}
-            style={styles.dateButton}
-          >
-            <Text>{followUp.followUpDate.toLocaleDateString()}</Text>
-          </TouchableOpacity>
-          {showFollowUpPicker === index && (
-            <DateTimePicker
-              value={followUp.followUpDate}
-              mode="date"
-              display="default"
-              onChange={(event, selectedDate) => {
-                setShowFollowUpPicker(null);
-                if (selectedDate)
-                  setFollowUps(index, "followUpDate", selectedDate);
-              }}
-            />
-          )}
-          <TextInput
-            style={styles.input}
-            placeholder="Notas del seguimiento"
-            value={followUp.followUpNotes}
-            onChangeText={(text) =>
-              setFollowUps(index, "followUpNotes", text)
-            }
-          />
-          <TouchableOpacity
-            onPress={() => removeFollowUp(index)}
-            style={{ marginTop: 4 }}
-          >
-            <Text style={{ color: "red" }}>Eliminar seguimiento</Text>
-          </TouchableOpacity>
-        </View>
-      ))}
-      <TouchableOpacity
-        onPress={() =>
-          addFollowUp({
-            followUpDate: new Date(),
-            followUpNotes: "",
-          })
-        }
-        style={{ marginTop: 8 }}
-      >
-        <Text style={{ color: "blue" }}>Agregar seguimiento</Text>
-      </TouchableOpacity>
+      <DateListField
+        label="Órdenes"
+        items={orders}
+        setItems={setOrders}
+        addItem={addOrder}
+        removeItem={removeOrder}
+        showPicker={showOrderPicker}
+        setShowPicker={setShowOrderPicker}
+        dateKey="ordersDate"
+        textKey="urlDocOrders"
+        placeholder="URL del documento de la orden"
+      />
 
-
-      {/* Órdenes */}
-      <Text style={styles.label}>Órdenes</Text>
-      {orders.map((order, index) => (
-        <View key={`order-${index}`} style={{ marginBottom: 12 }}>
-          <Text style={styles.label}>Fecha de la orden:</Text>
-          <TouchableOpacity
-            onPress={() => setShowOrderPicker(index)}
-            style={styles.dateButton}
-          >
-            <Text>{order.ordersDate.toLocaleDateString()}</Text>
-          </TouchableOpacity>
-          {showOrderPicker === index && (
-            <DateTimePicker
-              value={order.ordersDate}
-              mode="date"
-              display="default"
-              onChange={(event, selectedDate) => {
-                setShowOrderPicker(null);
-                if (selectedDate)
-                  setOrders(index, "ordersDate", selectedDate);
-              }}
-            />
-          )}
-          <TextInput
-            style={styles.input}
-            placeholder="URL del documento de la orden"
-            value={order.urlDocOrders}
-            onChangeText={(text) => setOrders(index, "urlDocOrders", text)}
-          />
-          <TouchableOpacity
-            onPress={() => removeOrder(index)}
-            style={{ marginTop: 4 }}
-          >
-            <Text style={{ color: "red" }}>Eliminar orden</Text>
-          </TouchableOpacity>
-        </View>
-      ))}
-      <TouchableOpacity
-        onPress={() =>
-          addOrder({ ordersDate: new Date(), urlDocOrders: "" })
-        }
-        style={{ marginTop: 8 }}
-      >
-        <Text style={{ color: "blue" }}>Agregar orden</Text>
-      </TouchableOpacity>
-
-
-      <Button title="Enviar" onPress={handleSubmit} />
-    </>
+      <Button
+        title="Enviar"
+        onPress={handleSubmit}
+        buttonStyle={styles.button}
+        containerStyle={styles.buttonContainer}
+      />
+    </View>
   );
 };
 

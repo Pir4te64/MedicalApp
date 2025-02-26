@@ -2,7 +2,6 @@ const { StyleSheet } = require("react-native");
 
 export const styles = StyleSheet.create({
     container: {
-      padding: 20,
     },
     input: {
       borderWidth: 1,

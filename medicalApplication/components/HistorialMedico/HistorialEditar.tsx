@@ -1,16 +1,26 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, Button, TouchableOpacity, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { styles } from "./HistorialStyles"; // Asegúrate de tener estilos definidos
 import { HistorialPUT } from "./HistorialPUT";
 import { HistorialEditarInterface } from "./HistorialInterface";
-import { deleteHistorial } from "./HistorialEliminar";
+import ListField from "./InputsEditar/ListInput";
 
 interface HistorialEditarProps {
   historial: HistorialEditarInterface;
 }
 
-const HistorialEditar: React.FC<HistorialEditarProps> = ({ historial, handleDelete }) => {
+const HistorialEditar: React.FC<HistorialEditarProps> = ({
+  historial,
+  handleDelete,
+}) => {
   const initialDate = new Date(historial.date);
 
   const [date, setDate] = useState<Date>(initialDate);
@@ -128,7 +138,6 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({ historial, handleDele
     }
   };
 
-
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Fecha:</Text>
@@ -166,75 +175,39 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({ historial, handleDele
         placeholder="Médico tratante"
       />
 
-      <Text style={styles.label}>Síntomas originales:</Text>
-      {originalSymptoms.map((symptom, index) => (
-        <View
-          key={`symptom-${index}`}
-          style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}
-        >
-          <TextInput
-            style={[styles.input, { flex: 1 }]}
-            placeholder="Síntoma"
-            value={symptom}
-            onChangeText={(text) => {
-              const newSymptoms = [...originalSymptoms];
-              newSymptoms[index] = text;
-              setOriginalSymptoms(newSymptoms);
-            }}
-          />
-          <TouchableOpacity
-            onPress={() => {
-              const newSymptoms = originalSymptoms.filter((_, i) => i !== index);
-              setOriginalSymptoms(newSymptoms);
-            }}
-            style={{ marginLeft: 8 }}
-          >
-            <Text style={{ color: "red" }}>Eliminar</Text>
-          </TouchableOpacity>
-        </View>
-      ))}
-      <TouchableOpacity
-        onPress={() => setOriginalSymptoms([...originalSymptoms, ""])}
-        style={{ marginTop: 8 }}
-      >
-        <Text style={{ color: "blue" }}>Agregar síntoma</Text>
-      </TouchableOpacity>
+      <ListField
+        label="Síntomas originales"
+        items={originalSymptoms}
+        setItems={(index, value) => {
+          const updatedSymptoms = [...originalSymptoms];
+          updatedSymptoms[index] = value;
+          setOriginalSymptoms(updatedSymptoms);
+        }}
+        addItem={() => setOriginalSymptoms([...originalSymptoms, ""])}
+        removeItem={(index) => {
+          const updatedSymptoms = originalSymptoms.filter(
+            (_, i) => i !== index
+          );
+          setOriginalSymptoms(updatedSymptoms);
+        }}
+        placeholder="Síntoma"
+      />
 
-
-      <Text style={styles.label}>Diagnósticos:</Text>
-      {diagnoses.map((diagnosis, index) => (
-        <View
-          key={`diagnosis-${index}`}
-          style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}
-        >
-          <TextInput
-            style={[styles.input, { flex: 1 }]}
-            placeholder="Diagnóstico"
-            value={diagnosis}
-            onChangeText={(text) => {
-              const newDiagnoses = [...diagnoses];
-              newDiagnoses[index] = text;
-              setDiagnoses(newDiagnoses);
-            }}
-          />
-          <TouchableOpacity
-            onPress={() => {
-              const newDiagnoses = diagnoses.filter((_, i) => i !== index);
-              setDiagnoses(newDiagnoses);
-            }}
-            style={{ marginLeft: 8 }}
-          >
-            <Text style={{ color: "red" }}>Eliminar</Text>
-          </TouchableOpacity>
-        </View>
-      ))}
-      <TouchableOpacity
-        onPress={() => setDiagnoses([...diagnoses, ""])}
-        style={{ marginTop: 8 }}
-      >
-        <Text style={{ color: "blue" }}>Agregar diagnóstico</Text>
-      </TouchableOpacity>
-
+      <ListField
+        label="Diagnósticos"
+        items={diagnoses}
+        setItems={(index, value) => {
+          const updatedDiagnoses = [...diagnoses];
+          updatedDiagnoses[index] = value;
+          setDiagnoses(updatedDiagnoses);
+        }}
+        addItem={() => setDiagnoses([...diagnoses, ""])}
+        removeItem={(index) => {
+          const updatedDiagnoses = diagnoses.filter((_, i) => i !== index);
+          setDiagnoses(updatedDiagnoses);
+        }}
+        placeholder="Diagnóstico"
+      />
 
       <Text style={styles.label}>Tratamientos:</Text>
       {treatments.map((treatment, index) => (
@@ -247,7 +220,9 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({ historial, handleDele
               setTempDate(convertToDate(treatment.treatmentDate));
             }}
           >
-            <Text>{convertToDate(treatment.treatmentDate).toLocaleDateString()}</Text>
+            <Text>
+              {convertToDate(treatment.treatmentDate).toLocaleDateString()}
+            </Text>
           </TouchableOpacity>
           <Text style={styles.label}>Documento de tratamiento:</Text>
           <TextInput
@@ -262,7 +237,9 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({ historial, handleDele
           />
           <TouchableOpacity
             onPress={() => {
-              const updatedTreatments = treatments.filter((_, i) => i !== index);
+              const updatedTreatments = treatments.filter(
+                (_, i) => i !== index
+              );
               setTreatments(updatedTreatments);
             }}
             style={{ marginTop: 4 }}
@@ -273,14 +250,18 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({ historial, handleDele
       ))}
       <TouchableOpacity
         onPress={() => {
-          setTreatments([...treatments, { treatmentDate: new Date().toISOString().split("T")[0], urlDocTreatment: "" }]);
+          setTreatments([
+            ...treatments,
+            {
+              treatmentDate: new Date().toISOString().split("T")[0],
+              urlDocTreatment: "",
+            },
+          ]);
         }}
         style={{ marginTop: 8 }}
       >
         <Text style={{ color: "blue" }}>Agregar tratamiento</Text>
       </TouchableOpacity>
-
-
 
       <Text style={styles.label}>Seguimientos:</Text>
       {followUps.map((followUp, index) => (
@@ -293,7 +274,9 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({ historial, handleDele
               setTempDate(convertToDate(followUp.followUpDate));
             }}
           >
-            <Text>{convertToDate(followUp.followUpDate).toLocaleDateString()}</Text>
+            <Text>
+              {convertToDate(followUp.followUpDate).toLocaleDateString()}
+            </Text>
           </TouchableOpacity>
           <Text style={styles.label}>Notas de seguimiento:</Text>
           <TextInput
@@ -321,7 +304,10 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({ historial, handleDele
         onPress={() => {
           setFollowUps([
             ...followUps,
-            { followUpDate: new Date().toISOString().split("T")[0], followUpNotes: "" },
+            {
+              followUpDate: new Date().toISOString().split("T")[0],
+              followUpNotes: "",
+            },
           ]);
         }}
         style={{ marginTop: 8 }}
@@ -368,14 +354,16 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({ historial, handleDele
         onPress={() => {
           setOrders([
             ...orders,
-            { ordersDate: new Date().toISOString().split("T")[0], urlDocOrders: "" },
+            {
+              ordersDate: new Date().toISOString().split("T")[0],
+              urlDocOrders: "",
+            },
           ]);
         }}
         style={{ marginTop: 8 }}
       >
         <Text style={{ color: "blue" }}>Agregar orden</Text>
       </TouchableOpacity>
-
 
       {tempDate && (
         <DateTimePicker
