@@ -11,8 +11,6 @@ import DateListField from "./Inputs/DateListField";
 const FormFields: React.FC<FormFieldsProps> = ({
   showForm,
   date,
-  setShowDatePicker,
-  showDatePicker,
   setDate,
   specialty,
   setSpecialty,
@@ -54,25 +52,17 @@ const FormFields: React.FC<FormFieldsProps> = ({
   return (
     <View style={styles.formContainer}>
       <Text style={styles.label}>Fecha:</Text>
-      <TouchableOpacity
-        onPress={() => setShowDatePicker(true)}
-        style={styles.dateButton}
-      >
-        <Text style={styles.dateText}>{date.toLocaleDateString()}</Text>
-      </TouchableOpacity>
-      {showDatePicker && (
-        <View style={styles.datePicker}>
-          <DateTimePicker
-            value={date}
-            mode="date"
-            display="default"
-            onChange={(event, selectedDate) => {
-              setShowDatePicker(false);
-              if (selectedDate) setDate(selectedDate);
-            }}
-          />
-        </View>
-      )}
+      <DateTimePicker
+        value={date}
+        mode="date"
+        display="default"
+        onChange={(event, selectedDate) => {
+          if (selectedDate) {
+            setDate(selectedDate);
+          }
+        }}
+        style={styles.datePicker}
+      />
 
       <Input
         label="Especialidad"
@@ -81,7 +71,7 @@ const FormFields: React.FC<FormFieldsProps> = ({
         onChangeText={setSpecialty}
         containerStyle={styles.inputContainer}
         inputStyle={styles.input}
-        leftIcon={{
+        rightIcon={{
           type: "font-awesome",
           name: "stethoscope",
           color: "#007BFF",
@@ -95,7 +85,7 @@ const FormFields: React.FC<FormFieldsProps> = ({
         onChangeText={setTreatingPhysician}
         containerStyle={styles.inputContainer}
         inputStyle={styles.input}
-        leftIcon={{ type: "font-awesome", name: "user-md", color: "#007BFF" }}
+        rightIcon={{ type: "font-awesome", name: "user-md", color: "#007BFF" }}
       />
 
       <EditableListField
@@ -156,7 +146,7 @@ const FormFields: React.FC<FormFieldsProps> = ({
       />
 
       <Button
-        title="Enviar"
+        title="Enviar Formulario"
         onPress={handleSubmit}
         buttonStyle={styles.button}
         containerStyle={styles.buttonContainer}

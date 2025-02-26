@@ -4,7 +4,6 @@ export const styles = StyleSheet.create({
   formContainer: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#fff", // Fondo blanco para el formulario
     borderRadius: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -41,7 +40,6 @@ export const styles = StyleSheet.create({
   input: {
     fontSize: 16,
     paddingVertical: 10,
-    paddingHorizontal: 15,
     borderRadius: 5,
     borderColor: "#ccc", // Borde gris claro para los campos
   },
