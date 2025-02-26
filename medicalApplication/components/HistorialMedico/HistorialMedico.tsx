@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Button, ScrollView, Text } from "react-native";
+import { View, Button, ScrollView, Text, Alert, ActivityIndicator } from "react-native";
 import { useHistorialMedicoStore } from "./useHistorialMedicoStore";
 import { HistorialData, postHistorialData } from "./HistorialPOST";
 import { getHistorialData, HistorialGETResponse } from "./GetUserData";
@@ -8,6 +8,7 @@ import FormFields from "./HistorialCrear";
 import { styles } from "./HistorialStyles";
 import HistorialEditar from "./HistorialEditar";
 import { Historial } from "./HistorialInterface";
+import { deleteHistorial } from "./HistorialEliminar";
 interface Props {
   afiliado: { id: string };
 }
@@ -41,7 +42,7 @@ const HistorialMedicoForm: React.FC<Props> = ({ afiliado }) => {
   const [userDataId, setUserDataId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [historial, setHistorial] = useState<Historial[] | null>(null);
-
+  const [loading, setLoading] = useState<boolean>(false);
   useEffect(() => {
     const fetchData = async () => {
       const data = await getHistorialData(afiliado.id);
@@ -53,13 +54,29 @@ const HistorialMedicoForm: React.FC<Props> = ({ afiliado }) => {
 
     fetchData();
   }, [afiliado.id]);
-  const handleObtenerDatos = async () => {
-    if (userDataId) {
+  useEffect(() => {
+    const fetchData = async () => {
       const data = await getHistorialByUser(userDataId);
 
+      if (data && data.success) {
+        setHistorial(data);
+      }
+    };
+
+    fetchData();
+    if (userDataId) {
+      handleObtenerDatos();
+
+    }
+  }, [userDataId]);
+  const handleObtenerDatos = async () => {
+    if (userDataId) {
+      setLoading(true);
+      const data = await getHistorialByUser(userDataId);
       if (data) {
         setHistorial(data);
       }
+      setLoading(false);
     }
   };
   const handleSubmit = async () => {
@@ -81,19 +98,26 @@ const HistorialMedicoForm: React.FC<Props> = ({ afiliado }) => {
       followUps,
       orders,
     };
-
+    setShowForm(false);
     await postHistorialData(historialData);
+    await handleObtenerDatos();
+  };
+  const eliminarFormulario = async (id: string) => {
+    try {
+      console.log("eliminando");
+      const result = await deleteHistorial(historial[0].id);
+      console.log("Historial eliminado:", result);
+      Alert.alert("Eliminado", "El historial se ha eliminado correctamente.");
+      await handleObtenerDatos();
+    } catch (error) {
+      console.error("Error al eliminar el historial:", error);
+      Alert.alert("Error", "Hubo un problema al eliminar el historial. Por favor, inténtalo de nuevo.");
+    }
   };
 
   return (
     <ScrollView style={styles.container}>
       <View>
-        <Button
-          title="Obtener datos médicos"
-          onPress={handleObtenerDatos}
-          disabled={!userDataId} // Deshabilitar si userDataId es null
-        />
-
         {showForm && (
           <>
             <FormFields
@@ -133,10 +157,19 @@ const HistorialMedicoForm: React.FC<Props> = ({ afiliado }) => {
           onPress={() => setShowForm(!showForm)}
         />
         <View>
-          {historial &&
+          {loading ? (
+            <ActivityIndicator size="large" color="#0000ff" />
+          ) : historial && historial.length > 0 ? (
             historial.map((historial, index) => (
-              <HistorialEditar key={index} historial={historial} />
-            ))}
+              <HistorialEditar
+                key={index}
+                historial={historial}
+                handleDelete={eliminarFormulario}
+              />
+            ))
+          ) : (
+            <Text>No tiene historial médico</Text>
+          )}
         </View>
       </View>
     </ScrollView>

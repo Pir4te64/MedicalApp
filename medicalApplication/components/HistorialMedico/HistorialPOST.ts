@@ -1,5 +1,6 @@
 import { API } from "@/utils/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Alert } from "react-native";
 
 export interface HistorialData {
   userDataId: string;
@@ -99,8 +100,8 @@ export const postHistorialData = async (data: HistorialData): Promise<void> => {
     }
 
     const responseData = await response.json();
-    console.log("Respuesta de la API:", JSON.stringify(responseData, null, 2));
+    Alert.alert("Éxito", "Los datos se han enviado correctamente.");
   } catch (error) {
-    console.error("Error al enviar los datos:", error);
+    Alert.alert("Error", "Hubo un error al enviar los datos.");
   }
 };

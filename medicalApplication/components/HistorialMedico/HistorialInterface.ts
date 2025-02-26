@@ -75,3 +75,25 @@ export interface HistorialEditarComponentProps {
   }[];
   userDataId: string | null;
 }
+
+export interface HistorialEditarInterface {
+  id: string;
+  date: string;
+  specialty: string;
+  treatingPhysician: string;
+  originalSymptoms: string[];
+  diagnoses: string[];
+  treatments: {
+    treatmentDate: string; // ✅ Solo una fecha en formato string
+    urlDocTreatment: string;
+  }[];
+  followUps: {
+    followUpDate: string; // ✅ Solo una fecha en formato string
+    followUpNotes: string;
+  }[];
+  orders: {
+    ordersDate: string; // ✅ Solo una fecha en formato string
+    urlDocOrders: string;
+  }[];
+  userDataId: string;
+}

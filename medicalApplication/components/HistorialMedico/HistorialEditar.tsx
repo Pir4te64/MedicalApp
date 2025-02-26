@@ -1,36 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, Button, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, Button, TouchableOpacity, Alert } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { styles } from "./HistorialStyles"; // Asegúrate de tener estilos definidos
 import { HistorialPUT } from "./HistorialPUT";
-
-interface Historial {
-  id: string;
-  date: string;
-  specialty: string;
-  treatingPhysician: string;
-  originalSymptoms: string[];
-  diagnoses: string[];
-  treatments: {
-    treatmentDate: string; // ✅ Solo una fecha en formato string
-    urlDocTreatment: string;
-  }[];
-  followUps: {
-    followUpDate: string; // ✅ Solo una fecha en formato string
-    followUpNotes: string;
-  }[];
-  orders: {
-    ordersDate: string; // ✅ Solo una fecha en formato string
-    urlDocOrders: string;
-  }[];
-  userDataId: string;
-}
+import { HistorialEditarInterface } from "./HistorialInterface";
+import { deleteHistorial } from "./HistorialEliminar";
 
 interface HistorialEditarProps {
-  historial: Historial;
+  historial: HistorialEditarInterface;
 }
 
-const HistorialEditar: React.FC<HistorialEditarProps> = ({ historial }) => {
+const HistorialEditar: React.FC<HistorialEditarProps> = ({ historial, handleDelete }) => {
   const initialDate = new Date(historial.date);
 
   const [date, setDate] = useState<Date>(initialDate);
@@ -96,7 +76,7 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({ historial }) => {
       originalSymptoms,
       diagnoses,
       treatments: treatments.map((t) => {
-        const validDate = new Date(t.treatmentDate);
+        const validDate = convertToDate(t.treatmentDate);
         const treatmentDate =
           validDate instanceof Date && !isNaN(validDate.getTime())
             ? validDate.toISOString().split("T")[0]
@@ -108,7 +88,7 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({ historial }) => {
         };
       }),
       followUps: followUps.map((f) => {
-        const validDate = new Date(f.followUpDate);
+        const validDate = convertToDate(f.followUpDate);
         const followUpDate =
           validDate instanceof Date && !isNaN(validDate.getTime())
             ? validDate.toISOString().split("T")[0]
@@ -120,7 +100,7 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({ historial }) => {
         };
       }),
       orders: orders.map((o) => {
-        const validDate = new Date(o.ordersDate);
+        const validDate = convertToDate(o.ordersDate);
         const ordersDate =
           validDate instanceof Date && !isNaN(validDate.getTime())
             ? validDate.toISOString().split("T")[0]
@@ -134,13 +114,20 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({ historial }) => {
     };
 
     try {
-      // Llamada a la función HistorialPUT para enviar el objeto
-      const response = await HistorialPUT(updatedHistorial);
-      console.log("Respuesta del servidor:", response);
+      await HistorialPUT(updatedHistorial);
+
+      Alert.alert(
+        "Actualización exitosa",
+        "El historial se ha actualizado correctamente."
+      );
     } catch (error) {
-      console.error("Error al actualizar el historial:", error);
+      Alert.alert(
+        "Error",
+        "Hubo un problema al actualizar el historial. Por favor, inténtalo de nuevo."
+      );
     }
   };
+
 
   return (
     <View style={styles.container}>
@@ -220,12 +207,22 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({ historial }) => {
               setTempDate(convertToDate(treatment.treatmentDate));
             }}
           >
-            <Text>
-              {convertToDate(treatment.treatmentDate).toLocaleDateString()}
-            </Text>
+            <Text>{convertToDate(treatment.treatmentDate).toLocaleDateString()}</Text>
           </TouchableOpacity>
+          <Text style={styles.label}>Documento de tratamiento:</Text>
+          <TextInput
+            style={styles.input}
+            value={treatment.urlDocTreatment}
+            onChangeText={(text) => {
+              const updatedTreatments = [...treatments];
+              updatedTreatments[index].urlDocTreatment = text;
+              setTreatments(updatedTreatments);
+            }}
+            placeholder="URL del documento de tratamiento"
+          />
         </View>
       ))}
+
 
       <Text style={styles.label}>Seguimientos:</Text>
       {followUps.map((followUp, index) => (
@@ -238,10 +235,19 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({ historial }) => {
               setTempDate(convertToDate(followUp.followUpDate));
             }}
           >
-            <Text>
-              {convertToDate(followUp.followUpDate).toLocaleDateString()}
-            </Text>
+            <Text>{convertToDate(followUp.followUpDate).toLocaleDateString()}</Text>
           </TouchableOpacity>
+          <Text style={styles.label}>Notas de seguimiento:</Text>
+          <TextInput
+            style={styles.input}
+            value={followUp.followUpNotes}
+            onChangeText={(text) => {
+              const updatedFollowUps = [...followUps];
+              updatedFollowUps[index].followUpNotes = text;
+              setFollowUps(updatedFollowUps);
+            }}
+            placeholder="Notas de seguimiento"
+          />
         </View>
       ))}
 
@@ -258,6 +264,17 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({ historial }) => {
           >
             <Text>{convertToDate(order.ordersDate).toLocaleDateString()}</Text>
           </TouchableOpacity>
+          <Text style={styles.label}>Documento de orden:</Text>
+          <TextInput
+            style={styles.input}
+            value={order.urlDocOrders}
+            onChangeText={(text) => {
+              const updatedOrders = [...orders];
+              updatedOrders[index].urlDocOrders = text;
+              setOrders(updatedOrders);
+            }}
+            placeholder="URL del documento de orden"
+          />
         </View>
       ))}
 
@@ -271,6 +288,7 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({ historial }) => {
       )}
 
       <Button title="Guardar cambios" onPress={handleSubmit} />
+      <Button title="Eliminar" onPress={handleDelete} />
     </View>
   );
 };
