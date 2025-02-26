@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Button, ScrollView, Text, Alert, ActivityIndicator } from "react-native";
 import { useHistorialMedicoStore } from "./useHistorialMedicoStore";
 import { HistorialData, postHistorialData } from "./HistorialPOST";
-import { getHistorialData, HistorialGETResponse } from "./GetUserData";
+import { getHistorialData } from "./GetUserData";
 import { getHistorialByUser } from "./getHistorialByUser";
 import FormFields from "./HistorialCrear";
 import { styles } from "./HistorialStyles";
@@ -38,6 +38,7 @@ const HistorialMedicoForm: React.FC<Props> = ({ afiliado }) => {
     setShowTreatmentPicker,
     setShowFollowUpPicker,
     setShowOrderPicker,
+    resetForm
   } = useHistorialMedicoStore();
   const [userDataId, setUserDataId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
@@ -101,6 +102,7 @@ const HistorialMedicoForm: React.FC<Props> = ({ afiliado }) => {
     setShowForm(false);
     await postHistorialData(historialData);
     await handleObtenerDatos();
+    resetForm();
   };
   const eliminarFormulario = async (id: string) => {
     try {

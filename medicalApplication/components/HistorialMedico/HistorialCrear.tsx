@@ -3,7 +3,7 @@ import { Text, TouchableOpacity, TextInput, View, Button } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { styles } from "./HistorialStyles";
 import { FormFieldsProps } from "./HistorialInterface";
-
+import { useHistorialMedicoStore } from "./useHistorialMedicoStore";
 const FormFields: React.FC<FormFieldsProps> = ({
   showForm,
   date,
@@ -32,6 +32,18 @@ const FormFields: React.FC<FormFieldsProps> = ({
   setShowOrderPicker,
   handleSubmit,
 }) => {
+  const {
+    addOriginalSymptom,
+    removeOriginalSymptom,
+    addDiagnosis,
+    removeDiagnosis,
+    addTreatment,
+    removeTreatment,
+    addFollowUp,
+    removeFollowUp,
+    addOrder,
+    removeOrder,
+  } = useHistorialMedicoStore();
   if (!showForm) return null;
 
   return (
@@ -71,31 +83,63 @@ const FormFields: React.FC<FormFieldsProps> = ({
       {/* Síntomas */}
       <Text style={styles.label}>Síntomas:</Text>
       {originalSymptoms.map((symptom, index) => (
-        <TextInput
-          key={`symptom-${index}`}
-          style={styles.input}
-          placeholder="Síntoma"
-          value={symptom}
-          onChangeText={(text) => setOriginalSymptoms(index, text)}
-        />
+        <View key={`symptom-${index}`} style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
+          <TextInput
+            style={[styles.input, { flex: 1 }]}
+            placeholder="Síntoma"
+            value={symptom}
+            onChangeText={(text) => setOriginalSymptoms(index, text)}
+          />
+          <TouchableOpacity
+            onPress={() => removeOriginalSymptom(index)}
+            style={{ marginLeft: 8 }}
+          >
+            <Text style={{ color: "red" }}>Eliminar</Text>
+          </TouchableOpacity>
+        </View>
       ))}
+
+      <TouchableOpacity
+        onPress={() => addOriginalSymptom("")}
+        style={{ marginTop: 8 }}
+      >
+        <Text style={{ color: "blue" }}>Agregar síntoma</Text>
+      </TouchableOpacity>
 
       {/* Diagnósticos */}
       <Text style={styles.label}>Diagnósticos:</Text>
       {diagnoses.map((diagnosis, index) => (
-        <TextInput
+        <View
           key={`diagnosis-${index}`}
-          style={styles.input}
-          placeholder="Diagnóstico"
-          value={diagnosis}
-          onChangeText={(text) => setDiagnoses(index, text)}
-        />
+          style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}
+        >
+          <TextInput
+            style={[styles.input, { flex: 1 }]}
+            placeholder="Diagnóstico"
+            value={diagnosis}
+            onChangeText={(text) => setDiagnoses(index, text)}
+          />
+          <TouchableOpacity
+            onPress={() => removeDiagnosis(index)}
+            style={{ marginLeft: 8 }}
+          >
+            <Text style={{ color: "red" }}>Eliminar</Text>
+          </TouchableOpacity>
+        </View>
       ))}
+
+      <TouchableOpacity
+        onPress={() => addDiagnosis("")}
+        style={{ marginTop: 8 }}
+      >
+        <Text style={{ color: "blue" }}>Agregar diagnóstico</Text>
+      </TouchableOpacity>
+
 
       {/* Tratamientos */}
       <Text style={styles.label}>Tratamientos:</Text>
       {treatments.map((treatment, index) => (
-        <View key={`treatment-${index}`}>
+        <View key={`treatment-${index}`} style={{ marginBottom: 12 }}>
           <Text style={styles.label}>Fecha del tratamiento:</Text>
           <TouchableOpacity
             onPress={() => setShowTreatmentPicker(index)}
@@ -123,13 +167,30 @@ const FormFields: React.FC<FormFieldsProps> = ({
               setTreatments(index, "urlDocTreatment", text)
             }
           />
+          <TouchableOpacity
+            onPress={() => removeTreatment(index)}
+            style={{ marginTop: 4 }}
+          >
+            <Text style={{ color: "red" }}>Eliminar tratamiento</Text>
+          </TouchableOpacity>
         </View>
       ))}
+      <TouchableOpacity
+        onPress={() =>
+          addTreatment({
+            treatmentDate: new Date(),
+            urlDocTreatment: "",
+          })
+        }
+        style={{ marginTop: 8 }}
+      >
+        <Text style={{ color: "blue" }}>Agregar tratamiento</Text>
+      </TouchableOpacity>
 
-      {/* Follow Ups */}
+      {/* Seguimientos */}
       <Text style={styles.label}>Seguimientos</Text>
       {followUps.map((followUp, index) => (
-        <View key={`followUp-${index}`}>
+        <View key={`followUp-${index}`} style={{ marginBottom: 12 }}>
           <Text style={styles.label}>Fecha del seguimiento:</Text>
           <TouchableOpacity
             onPress={() => setShowFollowUpPicker(index)}
@@ -153,15 +214,35 @@ const FormFields: React.FC<FormFieldsProps> = ({
             style={styles.input}
             placeholder="Notas del seguimiento"
             value={followUp.followUpNotes}
-            onChangeText={(text) => setFollowUps(index, "followUpNotes", text)}
+            onChangeText={(text) =>
+              setFollowUps(index, "followUpNotes", text)
+            }
           />
+          <TouchableOpacity
+            onPress={() => removeFollowUp(index)}
+            style={{ marginTop: 4 }}
+          >
+            <Text style={{ color: "red" }}>Eliminar seguimiento</Text>
+          </TouchableOpacity>
         </View>
       ))}
+      <TouchableOpacity
+        onPress={() =>
+          addFollowUp({
+            followUpDate: new Date(),
+            followUpNotes: "",
+          })
+        }
+        style={{ marginTop: 8 }}
+      >
+        <Text style={{ color: "blue" }}>Agregar seguimiento</Text>
+      </TouchableOpacity>
 
-      {/* Orders */}
+
+      {/* Órdenes */}
       <Text style={styles.label}>Órdenes</Text>
       {orders.map((order, index) => (
-        <View key={`order-${index}`}>
+        <View key={`order-${index}`} style={{ marginBottom: 12 }}>
           <Text style={styles.label}>Fecha de la orden:</Text>
           <TouchableOpacity
             onPress={() => setShowOrderPicker(index)}
@@ -176,7 +257,8 @@ const FormFields: React.FC<FormFieldsProps> = ({
               display="default"
               onChange={(event, selectedDate) => {
                 setShowOrderPicker(null);
-                if (selectedDate) setOrders(index, "ordersDate", selectedDate);
+                if (selectedDate)
+                  setOrders(index, "ordersDate", selectedDate);
               }}
             />
           )}
@@ -186,8 +268,23 @@ const FormFields: React.FC<FormFieldsProps> = ({
             value={order.urlDocOrders}
             onChangeText={(text) => setOrders(index, "urlDocOrders", text)}
           />
+          <TouchableOpacity
+            onPress={() => removeOrder(index)}
+            style={{ marginTop: 4 }}
+          >
+            <Text style={{ color: "red" }}>Eliminar orden</Text>
+          </TouchableOpacity>
         </View>
       ))}
+      <TouchableOpacity
+        onPress={() =>
+          addOrder({ ordersDate: new Date(), urlDocOrders: "" })
+        }
+        style={{ marginTop: 8 }}
+      >
+        <Text style={{ color: "blue" }}>Agregar orden</Text>
+      </TouchableOpacity>
+
 
       <Button title="Enviar" onPress={handleSubmit} />
     </>

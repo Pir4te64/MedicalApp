@@ -50,11 +50,37 @@ interface HistorialMedicoState {
   ) => void;
   setOrders: (index: number, field: keyof Order, value: Date | string) => void;
 
+  // Funciones para modificar el array de originalSymptoms
+  addOriginalSymptom: (symptom: string) => void;
+  removeOriginalSymptom: (index: number) => void;
+  setOriginalSymptomsArray: (symptoms: string[]) => void;
+
+  // Funciones para diagnosticos
+  addDiagnosis: (diagnosis: string) => void;
+  removeDiagnosis: (index: number) => void;
+  setDiagnosesArray: (diagnoses: string[]) => void;
+
+  // Funciones para treatments
+  addTreatment: (treatment: Treatment) => void;
+  removeTreatment: (index: number) => void;
+  setTreatmentsArray: (treatments: Treatment[]) => void;
+
+  // Funciones para followUps
+  addFollowUp: (followUp: FollowUp) => void;
+  removeFollowUp: (index: number) => void;
+  setFollowUpsArray: (followUps: FollowUp[]) => void;
+
+  // Funciones para orders
+  addOrder: (order: Order) => void;
+  removeOrder: (index: number) => void;
+  setOrdersArray: (orders: Order[]) => void;
+
   // Funciones para controlar los DateTimePickers
   setShowDatePicker: (value: boolean) => void;
   setShowTreatmentPicker: (index: number | null) => void;
   setShowFollowUpPicker: (index: number | null) => void;
   setShowOrderPicker: (index: number | null) => void;
+  resetForm: () => void;
 }
 
 export const useHistorialMedicoStore = create<HistorialMedicoState>((set) => ({
@@ -114,6 +140,82 @@ export const useHistorialMedicoStore = create<HistorialMedicoState>((set) => ({
       return { orders: updated };
     }),
 
+  // Funciones para modificar el array de originalSymptoms
+  addOriginalSymptom: (symptom: string) =>
+    set((state) => ({
+      originalSymptoms: [...state.originalSymptoms, symptom],
+    })),
+
+  removeOriginalSymptom: (index: number) =>
+    set((state) => ({
+      originalSymptoms: state.originalSymptoms.filter((_, i) => i !== index),
+    })),
+
+  setOriginalSymptomsArray: (symptoms: string[]) =>
+    set({ originalSymptoms: symptoms }),
+
+  // Funciones para diagnosticos
+  addDiagnosis: (diagnosis: string) =>
+    set((state) => ({
+      diagnoses: [...state.diagnoses, diagnosis],
+    })),
+
+  removeDiagnosis: (index: number) =>
+    set((state) => ({
+      diagnoses: state.diagnoses.filter((_, i) => i !== index),
+    })),
+
+  setDiagnosesArray: (diagnoses: string[]) => set({ diagnoses }),
+
+  // Funciones para treatments
+  addTreatment: (treatment: Treatment) =>
+    set((state) => ({
+      treatments: [...state.treatments, treatment],
+    })),
+
+  removeTreatment: (index: number) =>
+    set((state) => ({
+      treatments: state.treatments.filter((_, i) => i !== index),
+    })),
+
+  setTreatmentsArray: (treatments: Treatment[]) => set({ treatments }),
+
+  // Funciones para followUps
+  addFollowUp: (followUp: FollowUp) =>
+    set((state) => ({
+      followUps: [...state.followUps, followUp],
+    })),
+
+  removeFollowUp: (index: number) =>
+    set((state) => ({
+      followUps: state.followUps.filter((_, i) => i !== index),
+    })),
+
+  setFollowUpsArray: (followUps: FollowUp[]) => set({ followUps }),
+
+  // Funciones para orders
+  addOrder: (order: Order) =>
+    set((state) => ({
+      orders: [...state.orders, order],
+    })),
+
+  removeOrder: (index: number) =>
+    set((state) => ({
+      orders: state.orders.filter((_, i) => i !== index),
+    })),
+
+  setOrdersArray: (orders: Order[]) => set({ orders }),
+  resetForm: () =>
+    set({
+      date: new Date(),
+      specialty: "",
+      treatingPhysician: "",
+      originalSymptoms: [""],
+      diagnoses: [""],
+      treatments: [{ treatmentDate: new Date(), urlDocTreatment: "" }],
+      followUps: [{ followUpDate: new Date(), followUpNotes: "" }],
+      orders: [{ ordersDate: new Date(), urlDocOrders: "" }],
+    }),
   // Funciones para controlar los DateTimePickers
   setShowDatePicker: (value) => set({ showDatePicker: value }),
   setShowTreatmentPicker: (index) => set({ showTreatmentPicker: index }),
