@@ -4,6 +4,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { styles } from "./HistorialStyles";
 import { FormFieldsProps } from "./HistorialInterface";
 import { useHistorialMedicoStore } from "./useHistorialMedicoStore";
+import EditableListField from "./Inputs/HistorialCrearInput";
 const FormFields: React.FC<FormFieldsProps> = ({
   showForm,
   date,
@@ -79,61 +80,23 @@ const FormFields: React.FC<FormFieldsProps> = ({
         value={treatingPhysician}
         onChangeText={setTreatingPhysician}
       />
+      <EditableListField
+        label="Síntomas"
+        placeholder="Síntoma"
+        items={originalSymptoms}
+        onChangeItem={(index, value) => setOriginalSymptoms(index, value)}
+        onRemoveItem={removeOriginalSymptom}
+        onAddItem={() => addOriginalSymptom("")}
+      />
 
-      {/* Síntomas */}
-      <Text style={styles.label}>Síntomas:</Text>
-      {originalSymptoms.map((symptom, index) => (
-        <View key={`symptom-${index}`} style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
-          <TextInput
-            style={[styles.input, { flex: 1 }]}
-            placeholder="Síntoma"
-            value={symptom}
-            onChangeText={(text) => setOriginalSymptoms(index, text)}
-          />
-          <TouchableOpacity
-            onPress={() => removeOriginalSymptom(index)}
-            style={{ marginLeft: 8 }}
-          >
-            <Text style={{ color: "red" }}>Eliminar</Text>
-          </TouchableOpacity>
-        </View>
-      ))}
-
-      <TouchableOpacity
-        onPress={() => addOriginalSymptom("")}
-        style={{ marginTop: 8 }}
-      >
-        <Text style={{ color: "blue" }}>Agregar síntoma</Text>
-      </TouchableOpacity>
-
-      {/* Diagnósticos */}
-      <Text style={styles.label}>Diagnósticos:</Text>
-      {diagnoses.map((diagnosis, index) => (
-        <View
-          key={`diagnosis-${index}`}
-          style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}
-        >
-          <TextInput
-            style={[styles.input, { flex: 1 }]}
-            placeholder="Diagnóstico"
-            value={diagnosis}
-            onChangeText={(text) => setDiagnoses(index, text)}
-          />
-          <TouchableOpacity
-            onPress={() => removeDiagnosis(index)}
-            style={{ marginLeft: 8 }}
-          >
-            <Text style={{ color: "red" }}>Eliminar</Text>
-          </TouchableOpacity>
-        </View>
-      ))}
-
-      <TouchableOpacity
-        onPress={() => addDiagnosis("")}
-        style={{ marginTop: 8 }}
-      >
-        <Text style={{ color: "blue" }}>Agregar diagnóstico</Text>
-      </TouchableOpacity>
+      <EditableListField
+        label="Diagnósticos"
+        placeholder="Diagnóstico"
+        items={diagnoses}
+        onChangeItem={(index, value) => setDiagnoses(index, value)}
+        onRemoveItem={removeDiagnosis}
+        onAddItem={() => addDiagnosis("")}
+      />
 
 
       {/* Tratamientos */}
