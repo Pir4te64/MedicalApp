@@ -6,6 +6,8 @@ export const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "#fff",
     borderRadius: 10,
+    boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+    elevation: 3, // Sombra en Android
   },
   scrollContainer: {
     flexGrow: 1, // Permite que el contenido pueda desplazarse completamente
@@ -23,18 +25,17 @@ export const styles = StyleSheet.create({
     marginTop: 10,
   },
   contactCard: {
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "white",
     padding: 15,
     borderRadius: 10,
-    marginVertical: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 3,
+    marginVertical: 10,
+    boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+    elevation: 3, // Sombra en Android
+    borderRadius: 10,
   },
   contactName: {
-    fontSize: 10,
+    fontSize: 8,
+    color: "white",
   },
   formContainer: {
     marginTop: 20,
@@ -117,7 +118,6 @@ export const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 20,
     marginVertical: 10,
-    
   },
   buttonStyle: {
     flex: 1,
@@ -128,5 +128,8 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingVertical: 8,
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    backgroundColor: "#007BFF",
   },
 });

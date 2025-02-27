@@ -63,7 +63,7 @@ const EditableContact: React.FC<EditableContactProps> = ({
         <Icon
           name={isExpanded ? "chevron-up" : "chevron-down"}
           type="feather"
-          color="#007BFF"
+          color="white"
           size={28}
         />
       </TouchableOpacity>
