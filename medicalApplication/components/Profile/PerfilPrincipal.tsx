@@ -15,6 +15,7 @@ interface PerfilPrincipalProps {
 }
 
 const PerfilPrincipal: React.FC<PerfilPrincipalProps> = ({ profile }) => {
+
   return (
     <View style={styles.profileDetails}>
       <View style={styles.profileInfo}>
