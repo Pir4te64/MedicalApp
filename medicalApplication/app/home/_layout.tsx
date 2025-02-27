@@ -1,8 +1,37 @@
-// app/home/layout.tsx
+import { useState, useEffect } from "react";
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { View, ActivityIndicator } from "react-native";
 
 export default function HomeLayout() {
+  const [tipoCuenta, setTipoCuenta] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTipoCuenta = async () => {
+      try {
+        const storedTipo = await AsyncStorage.getItem("tipoCuenta");
+        setTipoCuenta(storedTipo);
+      } catch (error) {
+        console.error("Error al obtener tipoCuenta:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTipoCuenta();
+  }, []);
+
+  // Mostrar un indicador de carga hasta que se obtenga `tipoCuenta`
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#0066cc" />
+      </View>
+    );
+  }
+
   return (
     <Tabs>
       <Tabs.Screen
@@ -15,7 +44,8 @@ export default function HomeLayout() {
           ),
         }}
       />
-      {/* Registrar Dependientes */}
+
+      {/* Solo mostrar esta pestaña si tipoCuenta no es 'D' */}
       <Tabs.Screen
         name="RegistrarDependientes"
         options={{
@@ -24,11 +54,12 @@ export default function HomeLayout() {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person-add" size={size} color={color} />
           ),
+          href: tipoCuenta === "D" ? null : "/home/RegistrarDependientes", // 👈 Se actualiza correctamente
         }}
       />
-      {/* Profile con Stack */}
+
       <Tabs.Screen
-        name="profile" // Asegúrate de usar "profile/index" para que sea la ruta correcta
+        name="profile"
         options={{
           title: "Perfil",
           headerShown: false,
@@ -38,7 +69,6 @@ export default function HomeLayout() {
         }}
       />
 
-      {/* Configuración */}
       <Tabs.Screen
         name="SettingScreen"
         options={{

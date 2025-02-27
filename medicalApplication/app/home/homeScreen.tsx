@@ -1,30 +1,73 @@
-import React from "react";
-import HomeComponent from "@/components/Home/Home"; // Asegúrate de importar el componente correspondiente
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import React, { useState, useCallback } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons"; // Importa los íconos de Ionicons
+import { Ionicons } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native"; // 👈 Importar useFocusEffect
+import HomeComponent from "@/components/Home/Home";
+
 export default function HomeScreen() {
   const router = useRouter();
+  const [tipoCuenta, setTipoCuenta] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Función para obtener el tipo de cuenta
+  const fetchTipoCuenta = async () => {
+    try {
+      const storedTipo = await AsyncStorage.getItem("tipoCuenta");
+      setTipoCuenta(storedTipo);
+    } catch (error) {
+      console.error("Error al obtener tipoCuenta:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Se ejecuta cada vez que la pantalla recibe enfoque
+  useFocusEffect(
+    useCallback(() => {
+      setLoading(true); // Reiniciar el loading cada vez que se ejecuta
+      fetchTipoCuenta();
+    }, [])
+  );
+
+  // Mientras carga, mostrar un spinner
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#005bb5" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      {/* Sección principal: HomeComponent (por ejemplo, la vista azul) */}
+      {/* Sección principal */}
       <View style={styles.content}>
         <HomeComponent />
       </View>
 
-      {/* Sección de botones debajo */}
+      {/* Sección de botones */}
       <View style={styles.buttonsContainer}>
         <View style={styles.miniContainer}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => router.push("/home/RegistrarDependientes")}
-          >
-            <Ionicons name="person-add" size={30} color="#005bb5" />
-            <Text style={styles.buttonText}>Registro</Text>
-          </TouchableOpacity>
+          {/* Botón Registro (solo si tipoCuenta !== "D") */}
+          {tipoCuenta !== "D" && (
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => router.push("/home/RegistrarDependientes")}
+            >
+              <Ionicons name="person-add" size={30} color="#005bb5" />
+              <Text style={styles.buttonText}>Registro</Text>
+            </TouchableOpacity>
+          )}
 
-          {/* Botón para Profile */}
+          {/* Botón Perfil */}
           <TouchableOpacity
             style={styles.button}
             onPress={() => router.push("/home/profile")}
@@ -33,7 +76,7 @@ export default function HomeScreen() {
             <Text style={styles.buttonText}>Perfil</Text>
           </TouchableOpacity>
 
-          {/* Botón para Settings */}
+          {/* Botón Ajustes */}
           <TouchableOpacity
             style={styles.button}
             onPress={() => router.push("/home/SettingScreen")}
@@ -48,14 +91,8 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  // Contenedor principal que ocupa toda la pantalla
-  container: {
-    flex: 1,
-  },
-  // Sección para el contenido principal (HomeComponent)
-  content: {
-    flex: 0.8, // Ocupa el 80% de la pantalla; ajusta según sea necesario
-  },
+  container: { flex: 1 },
+  content: { flex: 0.8 },
   miniContainer: {
     flexDirection: "row",
     justifyContent: "space-evenly",
@@ -63,11 +100,10 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
   },
-  // Sección para los botones, centrados horizontalmente
   buttonsContainer: {
-    flex: 0.2, // Ocupa el 20% restante de la pantalla
-    flexDirection: "row", // Los botones en fila
-    justifyContent: "space-evenly", // Espacio equitativo entre botones
+    flex: 0.2,
+    flexDirection: "row",
+    justifyContent: "space-evenly",
     alignItems: "center",
     padding: 5,
   },
@@ -76,13 +112,18 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 20,
     alignItems: "center",
-    width: 100, // Definir un tamaño fijo para los botones
+    width: 100,
     marginBottom: 15,
   },
   buttonText: {
     fontSize: 12,
-    color: "#005bb5", // Texto blanco para resaltar sobre el fondo azul
+    color: "#005bb5",
     marginTop: 5,
     textAlign: "center",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

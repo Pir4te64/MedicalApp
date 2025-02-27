@@ -1,5 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
-import { View, Text, Animated, ActivityIndicator, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  Animated,
+  ActivityIndicator,
+  StyleSheet,
+} from "react-native";
 import LottieView from "lottie-react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API } from "@/utils/api";
@@ -57,6 +63,19 @@ const HomeComponent = () => {
 
     fetchProfile();
   }, []);
+  useEffect(() => {
+    const saveTipoCuenta = async () => {
+      if (profile?.tipoCuenta) {
+        try {
+          await AsyncStorage.setItem("tipoCuenta", profile.tipoCuenta);
+        } catch (error) {
+          console.error("Error al guardar tipoCuenta en AsyncStorage:", error);
+        }
+      }
+    };
+
+    saveTipoCuenta();
+  }, [profile]);
 
   useEffect(() => {
     // Animación sutil en la imagen al montar el componente
@@ -117,6 +136,14 @@ const styles = StyleSheet.create({
   header: {
     flex: 1,
     width: "100%",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
     overflow: "hidden", // Asegura que los bordes redondeados se apliquen correctamente
@@ -125,7 +152,7 @@ const styles = StyleSheet.create({
   headerContent: {
     flex: 1,
     justifyContent: "center", // Centrado vertical
-    alignItems: "center",     // Centrado horizontal
+    alignItems: "center", // Centrado horizontal
     paddingHorizontal: 20,
   },
   animation: {
