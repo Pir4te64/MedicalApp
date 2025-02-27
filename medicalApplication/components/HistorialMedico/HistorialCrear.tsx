@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View, Platform } from "react-native";
 import { Input, Button } from "react-native-elements";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { styles } from "./HistorialStylesCrear";
@@ -8,6 +8,14 @@ import { useHistorialMedicoStore } from "./useHistorialMedicoStore";
 import EditableListField from "./Inputs/HistorialCrearInput";
 import DateListField from "./Inputs/DateListField";
 import { Ionicons } from "@expo/vector-icons";
+
+// Función para formatear la fecha como DD/MM/YYYY
+const formatDate = (date: Date) => {
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
 
 const FormFields: React.FC<FormFieldsProps> = ({
   showForm,
@@ -49,33 +57,40 @@ const FormFields: React.FC<FormFieldsProps> = ({
   } = useHistorialMedicoStore();
 
   if (!showForm) return null;
+
   const [isFormVisible, setFormVisible] = useState(false);
   const [isSymptomsVisible, setSymptomsVisible] = useState(false);
-  // Toggle visibility function
   const [isDateFieldsVisible, setDateFieldsVisible] = useState(false);
+  // Nuevo estado para controlar la visualización del DateTimePicker en Android
+  const [showPicker, setShowPicker] = useState(false);
 
   const toggleDateFieldsVisibility = () => {
     setDateFieldsVisible(!isDateFieldsVisible);
   };
+
   const toggleVisibility = () => {
     setFormVisible(!isFormVisible);
   };
+
   const toggleSymptomsVisibility = () => {
     setSymptomsVisible(!isSymptomsVisible);
   };
 
-  // Función para manejar el cambio de fecha y limitar a la fecha actual
+  // Manejador de cambio de fecha con validación y límite a la fecha actual
   const handleDateChange = (event, selectedDate) => {
+    if (Platform.OS === "android") {
+      setShowPicker(false);
+    }
     const currentDate = new Date();
-
-    // Si la fecha seleccionada es posterior a la fecha actual, no actualices el estado
+    // Si se selecciona una fecha y es menor o igual a la fecha actual, se usa esa fecha.
+    // De lo contrario, se asigna la fecha actual.
     if (selectedDate && selectedDate <= currentDate) {
       setDate(selectedDate);
     } else {
-      // Si la fecha seleccionada es mayor que la fecha actual, puedes poner la fecha actual
       setDate(currentDate);
     }
   };
+
   const isFormValid = () => {
     return (
       date !== undefined &&
@@ -88,6 +103,7 @@ const FormFields: React.FC<FormFieldsProps> = ({
       orders.length > 0
     );
   };
+
   return (
     <View style={styles.formContainer}>
       <TouchableOpacity
@@ -115,13 +131,43 @@ const FormFields: React.FC<FormFieldsProps> = ({
       {isFormVisible && (
         <>
           <Text style={styles.label}>Fecha:</Text>
-          <DateTimePicker
-            value={date}
-            mode="date"
-            display="default"
-            onChange={handleDateChange}
-            style={styles.datePicker}
-          />
+          {/* En Android, se controla la visualización del DateTimePicker */}
+          {Platform.OS === "android" ? (
+            <>
+              <TouchableOpacity
+                onPress={() => setShowPicker(true)}
+                style={{
+                  padding: 10,
+                  borderWidth: 1,
+                  borderColor: "#ccc",
+                  borderRadius: 4,
+                  marginBottom: 10,
+                }}
+              >
+                <Text>{formatDate(date)}</Text>
+              </TouchableOpacity>
+              {showPicker && (
+                <DateTimePicker
+                  value={date}
+                  mode="date"
+                  display="default"
+                  maximumDate={new Date()}
+                  onChange={handleDateChange}
+                  style={styles.datePicker}
+                />
+              )}
+            </>
+          ) : (
+            // En iOS se muestra siempre inline
+            <DateTimePicker
+              value={date}
+              mode="date"
+              display="default"
+              maximumDate={new Date()}
+              onChange={handleDateChange}
+              style={styles.datePicker}
+            />
+          )}
 
           <Input
             label="Especialidad"
@@ -152,6 +198,7 @@ const FormFields: React.FC<FormFieldsProps> = ({
           />
         </>
       )}
+
       <TouchableOpacity
         onPress={toggleSymptomsVisibility}
         style={{
@@ -168,9 +215,7 @@ const FormFields: React.FC<FormFieldsProps> = ({
           Síntomas y Diagnósticos
         </Text>
         <Ionicons
-          name={
-            isSymptomsVisible ? "chevron-up-outline" : "chevron-down-outline"
-          }
+          name={isSymptomsVisible ? "chevron-up-outline" : "chevron-down-outline"}
           size={24}
           color="white"
         />
@@ -214,9 +259,7 @@ const FormFields: React.FC<FormFieldsProps> = ({
           Tratamientos, Seguimientos y Órdenes
         </Text>
         <Ionicons
-          name={
-            isDateFieldsVisible ? "chevron-up-outline" : "chevron-down-outline"
-          }
+          name={isDateFieldsVisible ? "chevron-up-outline" : "chevron-down-outline"}
           size={24}
           color="white"
         />

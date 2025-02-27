@@ -4,12 +4,14 @@ export const styles = StyleSheet.create({
   formContainer: {
     flex: 1,
     padding: 20,
+    backgroundColor: "#fff", // Color de fondo blanco
     borderRadius: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3, // Para agregar una sombra sutil en dispositivos Android
+    shadowOpacity: 0.9,
+    shadowRadius: 2,
+    elevation: 5, // Para agregar una sombra sutil en dispositivos Android
+    marginBottom: 20, // Espacio debajo del formulario
   },
   title: {
     fontSize: 24,

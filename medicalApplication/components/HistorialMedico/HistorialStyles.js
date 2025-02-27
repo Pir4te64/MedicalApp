@@ -21,8 +21,7 @@ export const styles = StyleSheet.create({
     marginBottom: 10,
     borderWidth: 1,
     borderColor: "#ddd",
-  }
-,  
+  },
   inputContainer: {
     flex: 1,
     marginRight: 10,
@@ -32,7 +31,7 @@ export const styles = StyleSheet.create({
     fontSize: 16,
   },
   dateButton: {
-    backgroundColor: 'blue',
+    backgroundColor: "blue",
     padding: 10,
     borderRadius: 5,
   },
@@ -46,5 +45,17 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
     marginTop: 10,
+  },
+  datePickerContainer: {
+    width: "100%",
+    backgroundColor: "#fff",
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 10,
+    marginVertical: 10,
+  },
+  datePicker: {
+    width: "100%",
   },
 });

@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, Platform, TouchableOpacity } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Input } from "react-native-elements";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -18,12 +18,22 @@ interface DateListFieldProps {
   placeholder: string;
 }
 
+// Función para formatear la fecha como DD/MM/YYYY
+const formatDate = (date: Date) => {
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
 const DateListField: React.FC<DateListFieldProps> = ({
   label,
   items,
   setItems,
   addItem,
   removeItem,
+  showPicker,
+  setShowPicker,
   dateKey,
   textKey,
   placeholder,
@@ -35,14 +45,60 @@ const DateListField: React.FC<DateListFieldProps> = ({
         <View key={`${label}-${index}`} style={styles.itemContainer}>
           {/* Fecha */}
           <Text style={styles.label}>Fecha:</Text>
-          <DateTimePicker
-            value={item[dateKey]}
-            mode="date"
-            display="default"
-            onChange={(event, selectedDate) => {
-              if (selectedDate) setItems(index, dateKey, selectedDate);
-            }}
-          />
+          {Platform.OS === "android" ? (
+            <>
+              <TouchableOpacity
+                onPress={() => setShowPicker(index)}
+                style={{
+                  padding: 10,
+                  borderWidth: 1,
+                  borderColor: "#ccc",
+                  borderRadius: 4,
+                  marginBottom: 10,
+                }}
+              >
+                <Text>{formatDate(new Date(item[dateKey]))}</Text>
+              </TouchableOpacity>
+              {showPicker === index && (
+                <View style={styles.datePickerContainer}>
+                  <DateTimePicker
+                    value={new Date(item[dateKey])}
+                    mode="date"
+                    display="default"
+                    onChange={(event, selectedDate) => {
+                      if (event.type === "set" && selectedDate) {
+                        const today = new Date();
+                        if (selectedDate > today) {
+                          selectedDate = today;
+                        }
+                        setItems(index, dateKey, selectedDate);
+                      }
+                      // Oculta el picker tras seleccionar o cancelar
+                      setShowPicker(null);
+                    }}
+                    style={styles.datePicker}
+                  />
+                </View>
+              )}
+            </>
+          ) : (
+            // En iOS se muestra siempre inline
+            <DateTimePicker
+              value={new Date(item[dateKey])}
+              mode="date"
+              display="default"
+              onChange={(event, selectedDate) => {
+                if (selectedDate) {
+                  const today = new Date();
+                  if (selectedDate > today) {
+                    selectedDate = today;
+                  }
+                  setItems(index, dateKey, selectedDate);
+                }
+              }}
+              style={styles.datePicker}
+            />
+          )}
 
           {/* Input de texto con un ícono a la derecha */}
           <Input
@@ -63,19 +119,19 @@ const DateListField: React.FC<DateListFieldProps> = ({
               marginTop: 4,
             }}
           >
-            {/* Botón de eliminar */}
             <Icon
               name="remove-circle-outline"
               size={24}
               color={items.length > 1 ? "red" : "gray"}
               onPress={items.length > 1 ? () => removeItem(index) : undefined}
             />
-            {/* Botón de agregar */}
             <Icon
               name="add-circle-outline"
               size={24}
               color="green"
-              onPress={() => addItem({ [dateKey]: new Date(), [textKey]: "" })}
+              onPress={() =>
+                addItem({ [dateKey]: new Date(), [textKey]: "" })
+              }
               style={{ marginLeft: 10 }}
             />
           </View>
