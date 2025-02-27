@@ -1,5 +1,5 @@
 // components/ProfileInfo.tsx
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -51,6 +51,7 @@ const ProfileInfo = () => {
       </View>
     );
   }
+
 
   return (
     <View style={{ flex: 1 }}>

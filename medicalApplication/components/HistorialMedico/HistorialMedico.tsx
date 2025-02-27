@@ -104,21 +104,35 @@ const HistorialMedicoForm: React.FC<Props> = ({ afiliado }) => {
     await handleObtenerDatos();
     resetForm();
   };
-  const eliminarFormulario = async (id: string) => {
-    try {
-      console.log("eliminando");
-      const result = await deleteHistorial(historial[0].id);
-      console.log("Historial eliminado:", result);
-      Alert.alert("Eliminado", "El historial se ha eliminado correctamente.");
-      await handleObtenerDatos();
-    } catch (error) {
-      console.error("Error al eliminar el historial:", error);
-      Alert.alert(
-        "Error",
-        "Hubo un problema al eliminar el historial. Por favor, inténtalo de nuevo."
-      );
-    }
+  const eliminarFormulario = (id: string) => {
+    Alert.alert(
+      "Confirmación",
+      "¿Está seguro de que desea eliminar el historial médico?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Eliminar",
+          onPress: async () => {
+            try {
+              const result = await deleteHistorial(historial[0].id);
+              Alert.alert("Eliminado", "El historial se ha eliminado correctamente.");
+              await handleObtenerDatos();
+            } catch (error) {
+              Alert.alert(
+                "Error",
+                "Hubo un problema al eliminar el historial. Por favor, inténtalo de nuevo."
+              );
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
   };
+
 
   return (
     <ScrollView>

@@ -22,4 +22,6 @@ export const API = {
   HISTORAL_CLINICO_GET_BY_USER: `${BASE_URL}/medical-histories/all/`,
   HISTORAL_CLINICO_PUT: `${BASE_URL}/medical-histories`,
   HISTORAL_CLINICO_DELETE: `${BASE_URL}/medical-histories`,
+  FILES_UPLOAD: `${BASE_URL}/files/upload`,
+  CHATGPT: `${BASE_URL}/api/openai/analyze`,
 };

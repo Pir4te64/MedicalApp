@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { View, Text } from "react-native";
 import { useRouter } from "expo-router";
 import { styles } from "../Profile.styles";

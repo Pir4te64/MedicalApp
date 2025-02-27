@@ -2,8 +2,6 @@ import { API } from "@/utils/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const deleteHistorial = async (id: string) => {
-  console.log("Eliminando historial con id:", id);
-
   try {
     const authToken = await AsyncStorage.getItem("authToken");
     const response = await fetch(`${API.HISTORAL_CLINICO_DELETE}/${id}`, {

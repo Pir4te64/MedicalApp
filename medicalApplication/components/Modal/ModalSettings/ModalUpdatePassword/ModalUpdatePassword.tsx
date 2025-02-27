@@ -45,7 +45,6 @@ const ModalUpdatePassword: React.FC<ModalUpdatePasswordProps> = ({
         afiliado.seudonimo,
         passwordsMatch
       );
-      console.log("Resultado de la actualización:", result);
 
       // Mostrar alerta de éxito con icono y mensaje mejorado
       Alert.alert(

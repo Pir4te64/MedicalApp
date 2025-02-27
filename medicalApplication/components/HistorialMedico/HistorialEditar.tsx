@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Alert } from "react-native";
+import { View, Text, TouchableOpacity, Alert, Platform } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { HistorialPUT } from "./HistorialPUT";
 import { HistorialEditarInterface } from "./HistorialInterface";
@@ -12,7 +12,16 @@ import Icon from "react-native-vector-icons/Ionicons";
 
 interface HistorialEditarProps {
   historial: HistorialEditarInterface;
+  handleDelete: () => void;
 }
+
+// Función para formatear la fecha como DD/MM/YYYY
+const formatDate = (date: Date) => {
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
 
 const HistorialEditar: React.FC<HistorialEditarProps> = ({
   historial,
@@ -33,29 +42,33 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({
   const [followUps, setFollowUps] = useState(historial.followUps);
   const [orders, setOrders] = useState(historial.orders);
 
-  // Estados para las fechas seleccionadas
+  // Estados para el DateTimePicker
+  // Para los pickers en campos de grupos (tratamientos, seguimientos y órdenes)
   const [selectedIndex, setSelectedIndex] = useState<{
     type: string;
     index: number;
   } | null>(null);
-  const [tempDate, setTempDate] = useState<Date | null>(null);
+  // Para el picker del campo "Fecha" principal
+  const [showMainPicker, setShowMainPicker] = useState(false);
+
   const [showDetails, setShowDetails] = useState(false);
   const [showSimtDiag, setSimtDiag] = useState(false);
   const [showMasdatos, setMasDatos] = useState(false);
+
   const convertToDate = (date: string | number[]) => {
     if (typeof date === "string") {
-      return new Date(date); // ✅ Convertir string "YYYY-MM-DD" a Date
+      return new Date(date);
     } else if (Array.isArray(date) && date.length === 3) {
-      return new Date(date[0], date[1] - 1, date[2]); // Si aún hay arrays en los datos
+      return new Date(date[0], date[1] - 1, date[2]);
     }
-    return new Date(); // Valor por defecto en caso de error
+    return new Date();
   };
 
   const handleSubmit = async () => {
     const updatedHistorial = {
       id: historial.id,
       userDataId: historial.userDataId,
-      date: date.toISOString().split("T")[0], // Formato YYYY-MM-DD
+      date: date.toISOString().split("T")[0],
       specialty,
       treatingPhysician,
       originalSymptoms,
@@ -65,8 +78,7 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({
         const treatmentDate =
           validDate instanceof Date && !isNaN(validDate.getTime())
             ? validDate.toISOString().split("T")[0]
-            : ""; // Valor vacío si la fecha no es válida
-
+            : "";
         return {
           treatmentDate,
           urlDocTreatment: t.urlDocTreatment,
@@ -77,8 +89,7 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({
         const followUpDate =
           validDate instanceof Date && !isNaN(validDate.getTime())
             ? validDate.toISOString().split("T")[0]
-            : ""; // Valor vacío si la fecha no es válida
-
+            : "";
         return {
           followUpDate,
           followUpNotes: f.followUpNotes,
@@ -89,8 +100,7 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({
         const ordersDate =
           validDate instanceof Date && !isNaN(validDate.getTime())
             ? validDate.toISOString().split("T")[0]
-            : ""; // Valor vacío si la fecha no es válida
-
+            : "";
         return {
           ordersDate,
           urlDocOrders: o.urlDocOrders,
@@ -100,7 +110,6 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({
 
     try {
       await HistorialPUT(updatedHistorial);
-
       Alert.alert(
         "Actualización exitosa",
         "El historial se ha actualizado correctamente."
@@ -116,6 +125,8 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Editar historial médico</Text>
+
+      {/* Sección Datos */}
       <TouchableOpacity
         style={{
           backgroundColor: "#007BFF",
@@ -137,17 +148,56 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({
           color="white"
         />
       </TouchableOpacity>
+
       {showDetails && (
         <>
           <Text style={styles.label}>Fecha:</Text>
-          <DateTimePicker
-            value={date}
-            mode="date"
-            display="default"
-            onChange={(event, selectedDate) => {
-              if (selectedDate) setDate(selectedDate);
-            }}
-          />
+          {Platform.OS === "android" ? (
+            <>
+              <TouchableOpacity
+                onPress={() => setShowMainPicker(true)}
+                style={{
+                  padding: 10,
+                  borderWidth: 1,
+                  borderColor: "#ccc",
+                  borderRadius: 4,
+                  marginBottom: 10,
+                }}
+              >
+                <Text>{formatDate(date)}</Text>
+              </TouchableOpacity>
+              {showMainPicker && (
+                <DateTimePicker
+                  value={date}
+                  mode="date"
+                  display="default"
+                  maximumDate={new Date()}
+                  onChange={(event, selectedDate) => {
+                    if (event.type === "set" && selectedDate) {
+                      const today = new Date();
+                      if (selectedDate > today) selectedDate = today;
+                      setDate(selectedDate);
+                    }
+                    setShowMainPicker(false);
+                  }}
+                />
+              )}
+            </>
+          ) : (
+            <DateTimePicker
+              value={date}
+              mode="date"
+              display="default"
+              maximumDate={new Date()}
+              onChange={(event, selectedDate) => {
+                if (selectedDate) {
+                  const today = new Date();
+                  if (selectedDate > today) selectedDate = today;
+                  setDate(selectedDate);
+                }
+              }}
+            />
+          )}
 
           <InputField
             label="Especialidad"
@@ -164,6 +214,8 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({
           />
         </>
       )}
+
+      {/* Sección Detalles (Síntomas y Diagnósticos) */}
       <TouchableOpacity
         style={{
           backgroundColor: "#007BFF",
@@ -185,22 +237,21 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({
           color="white"
         />
       </TouchableOpacity>
+
       {showSimtDiag && (
         <>
           <ListField
             label="Síntomas originales"
             items={originalSymptoms}
             setItems={(index, value) => {
-              const updatedSymptoms = [...originalSymptoms];
-              updatedSymptoms[index] = value;
-              setOriginalSymptoms(updatedSymptoms);
+              const updated = [...originalSymptoms];
+              updated[index] = value;
+              setOriginalSymptoms(updated);
             }}
             addItem={() => setOriginalSymptoms([...originalSymptoms, ""])}
             removeItem={(index) => {
-              const updatedSymptoms = originalSymptoms.filter(
-                (_, i) => i !== index
-              );
-              setOriginalSymptoms(updatedSymptoms);
+              const updated = originalSymptoms.filter((_, i) => i !== index);
+              setOriginalSymptoms(updated);
             }}
             placeholder="Síntoma"
           />
@@ -209,19 +260,21 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({
             label="Diagnósticos"
             items={diagnoses}
             setItems={(index, value) => {
-              const updatedDiagnoses = [...diagnoses];
-              updatedDiagnoses[index] = value;
-              setDiagnoses(updatedDiagnoses);
+              const updated = [...diagnoses];
+              updated[index] = value;
+              setDiagnoses(updated);
             }}
             addItem={() => setDiagnoses([...diagnoses, ""])}
             removeItem={(index) => {
-              const updatedDiagnoses = diagnoses.filter((_, i) => i !== index);
-              setDiagnoses(updatedDiagnoses);
+              const updated = diagnoses.filter((_, i) => i !== index);
+              setDiagnoses(updated);
             }}
             placeholder="Diagnóstico"
           />
         </>
       )}
+
+      {/* Sección Más detalles (Tratamientos, Seguimientos y Órdenes) */}
       <TouchableOpacity
         style={{
           backgroundColor: "#007BFF",
@@ -243,6 +296,7 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({
           color="white"
         />
       </TouchableOpacity>
+
       {showMasdatos && (
         <>
           {/* Tratamientos */}
@@ -251,26 +305,74 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({
             {treatments.map((treatment, index) => (
               <View key={`treatment-${index}`}>
                 <Text style={styles.label}>Fecha de tratamiento:</Text>
-                <DateTimePicker
-                  value={convertToDate(treatment.treatmentDate)}
-                  mode="date"
-                  display="default"
-                  onChange={(event, date) => {
-                    if (date) {
-                      const updatedTreatments = [...treatments];
-                      updatedTreatments[index].treatmentDate =
-                        date.toISOString();
-                      setTreatments(updatedTreatments);
-                    }
-                  }}
-                />
+                {Platform.OS === "android" ? (
+                  <>
+                    <TouchableOpacity
+                      onPress={() =>
+                        setSelectedIndex({ type: "treatment", index })
+                      }
+                      style={{
+                        padding: 10,
+                        borderWidth: 1,
+                        borderColor: "#ccc",
+                        borderRadius: 4,
+                        marginBottom: 10,
+                      }}
+                    >
+                      <Text>
+                        {formatDate(
+                          convertToDate(treatment.treatmentDate)
+                        )}
+                      </Text>
+                    </TouchableOpacity>
+                    {selectedIndex &&
+                      selectedIndex.type === "treatment" &&
+                      selectedIndex.index === index && (
+                        <DateTimePicker
+                          value={convertToDate(treatment.treatmentDate)}
+                          mode="date"
+                          display="default"
+                          maximumDate={new Date()}
+                          onChange={(event, selectedDate) => {
+                            if (event.type === "set" && selectedDate) {
+                              const today = new Date();
+                              if (selectedDate > today)
+                                selectedDate = today;
+                              const updated = [...treatments];
+                              updated[index].treatmentDate =
+                                selectedDate.toISOString();
+                              setTreatments(updated);
+                            }
+                            setSelectedIndex(null);
+                          }}
+                        />
+                      )}
+                  </>
+                ) : (
+                  <DateTimePicker
+                    value={convertToDate(treatment.treatmentDate)}
+                    mode="date"
+                    display="default"
+                    maximumDate={new Date()}
+                    onChange={(event, selectedDate) => {
+                      if (selectedDate) {
+                        const today = new Date();
+                        if (selectedDate > today) selectedDate = today;
+                        const updated = [...treatments];
+                        updated[index].treatmentDate =
+                          selectedDate.toISOString();
+                        setTreatments(updated);
+                      }
+                    }}
+                  />
+                )}
                 <Input
                   placeholder="URL del documento de tratamiento"
                   value={treatment.urlDocTreatment}
                   onChangeText={(text) => {
-                    const updatedTreatments = [...treatments];
-                    updatedTreatments[index].urlDocTreatment = text;
-                    setTreatments(updatedTreatments);
+                    const updated = [...treatments];
+                    updated[index].urlDocTreatment = text;
+                    setTreatments(updated);
                   }}
                   containerStyle={styles.inputContainer}
                   inputStyle={styles.inputText}
@@ -306,31 +408,81 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({
               />
             </View>
           </View>
+
           {/* Seguimientos */}
           <Text style={styles.label}>Seguimientos:</Text>
           <View style={styles.formContainer}>
             {followUps.map((followUp, index) => (
               <View key={`followUp-${index}`} style={styles.itemContainer}>
                 <Text style={styles.label}>Fecha de seguimiento:</Text>
-                <DateTimePicker
-                  value={convertToDate(followUp.followUpDate)}
-                  mode="date"
-                  display="default"
-                  onChange={(event, date) => {
-                    if (date) {
-                      const updatedFollowUps = [...followUps];
-                      updatedFollowUps[index].followUpDate = date.toISOString();
-                      setFollowUps(updatedFollowUps);
-                    }
-                  }}
-                />
+                {Platform.OS === "android" ? (
+                  <>
+                    <TouchableOpacity
+                      onPress={() =>
+                        setSelectedIndex({ type: "followUp", index })
+                      }
+                      style={{
+                        padding: 10,
+                        borderWidth: 1,
+                        borderColor: "#ccc",
+                        borderRadius: 4,
+                        marginBottom: 10,
+                      }}
+                    >
+                      <Text>
+                        {formatDate(
+                          convertToDate(followUp.followUpDate)
+                        )}
+                      </Text>
+                    </TouchableOpacity>
+                    {selectedIndex &&
+                      selectedIndex.type === "followUp" &&
+                      selectedIndex.index === index && (
+                        <DateTimePicker
+                          value={convertToDate(followUp.followUpDate)}
+                          mode="date"
+                          display="default"
+                          maximumDate={new Date()}
+                          onChange={(event, selectedDate) => {
+                            if (event.type === "set" && selectedDate) {
+                              const today = new Date();
+                              if (selectedDate > today)
+                                selectedDate = today;
+                              const updated = [...followUps];
+                              updated[index].followUpDate =
+                                selectedDate.toISOString();
+                              setFollowUps(updated);
+                            }
+                            setSelectedIndex(null);
+                          }}
+                        />
+                      )}
+                  </>
+                ) : (
+                  <DateTimePicker
+                    value={convertToDate(followUp.followUpDate)}
+                    mode="date"
+                    display="default"
+                    maximumDate={new Date()}
+                    onChange={(event, selectedDate) => {
+                      if (selectedDate) {
+                        const today = new Date();
+                        if (selectedDate > today) selectedDate = today;
+                        const updated = [...followUps];
+                        updated[index].followUpDate =
+                          selectedDate.toISOString();
+                        setFollowUps(updated);
+                      }
+                    }}
+                  />
+                )}
                 <Input
                   placeholder="URL del documento de tratamiento"
                   value={followUp.description}
                   onChangeText={(text) => {
-                    const updatedFollowUps = [...followUps];
-                    updatedFollowUps[index].description = text;
-                    setFollowUps(updatedFollowUps);
+                    const updated = [...followUps];
+                    updated[index].description = text;
+                    setFollowUps(updated);
                   }}
                   containerStyle={styles.inputContainer}
                   inputStyle={styles.inputText}
@@ -355,38 +507,89 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({
                 onPress={() =>
                   setFollowUps([
                     ...followUps,
-                    { followUpDate: new Date().toISOString(), description: "" },
+                    {
+                      followUpDate: new Date().toISOString(),
+                      description: "",
+                    },
                   ])
                 }
                 style={{ marginLeft: 10 }}
               />
             </View>
           </View>
+
           {/* Órdenes */}
           <Text style={styles.label}>Órdenes:</Text>
           <View style={styles.formContainer}>
             {orders.map((order, index) => (
               <View key={`order-${index}`} style={styles.itemContainer}>
                 <Text style={styles.label}>Fecha de orden:</Text>
-                <DateTimePicker
-                  value={convertToDate(order.ordersDate)}
-                  mode="date"
-                  display="default"
-                  onChange={(event, date) => {
-                    if (date) {
-                      const updatedOrders = [...orders];
-                      updatedOrders[index].ordersDate = date.toISOString();
-                      setOrders(updatedOrders);
-                    }
-                  }}
-                />
+                {Platform.OS === "android" ? (
+                  <>
+                    <TouchableOpacity
+                      onPress={() =>
+                        setSelectedIndex({ type: "order", index })
+                      }
+                      style={{
+                        padding: 10,
+                        borderWidth: 1,
+                        borderColor: "#ccc",
+                        borderRadius: 4,
+                        marginBottom: 10,
+                      }}
+                    >
+                      <Text>
+                        {formatDate(convertToDate(order.ordersDate))}
+                      </Text>
+                    </TouchableOpacity>
+                    {selectedIndex &&
+                      selectedIndex.type === "order" &&
+                      selectedIndex.index === index && (
+                        <DateTimePicker
+                          value={convertToDate(order.ordersDate)}
+                          mode="date"
+                          display="default"
+                          maximumDate={new Date()}
+                          onChange={(event, selectedDate) => {
+                            if (event.type === "set" && selectedDate) {
+                              const today = new Date();
+                              if (selectedDate > today)
+                                selectedDate = today;
+                              const updated = [...orders];
+                              updated[index].ordersDate =
+                                selectedDate.toISOString();
+                              setOrders(updated);
+                            }
+                            setSelectedIndex(null);
+                          }}
+                        />
+                      )}
+                  </>
+                ) : (
+                  <DateTimePicker
+                    value={convertToDate(order.ordersDate)}
+                    mode="date"
+                    display="default"
+                    maximumDate={new Date()}
+                    onChange={(event, selectedDate) => {
+                      if (selectedDate) {
+                        const today = new Date();
+                        if (selectedDate > today) selectedDate = today;
+                        const updated = [...orders];
+                        updated[index].ordersDate =
+                          selectedDate.toISOString();
+                        setOrders(updated);
+                      }
+                    }}
+                  />
+                )}
                 <Input
                   placeholder="URL del documento de tratamiento"
                   value={order.details}
                   onChangeText={(text) => {
-                    const updatedOrders = [...orders];
-                    updatedOrders[index].details = text;
-                    setOrders(updatedOrders);
+                    const updated = [...orders];
+                    updated[index].details = text;
+                    setOrders(updated);
                   }}
                   containerStyle={styles.inputContainer}
                   inputStyle={styles.inputText}
@@ -411,7 +614,7 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({
                 onPress={() =>
                   setOrders([
                     ...orders,
-                    { orderDate: new Date().toISOString(), details: "" },
+                    { ordersDate: new Date().toISOString(), details: "" },
                   ])
                 }
                 style={{ marginLeft: 10 }}
@@ -420,6 +623,7 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({
           </View>
         </>
       )}
+
       <View style={styles.buttonContainer}>
         <Button
           title="Guardar cambios"
