@@ -1,19 +1,14 @@
-import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  Button,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity, Alert } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { styles } from "./HistorialStyles"; // Asegúrate de tener estilos definidos
 import { HistorialPUT } from "./HistorialPUT";
 import { HistorialEditarInterface } from "./HistorialInterface";
 import ListField from "./InputsEditar/ListInput";
 import { InputField } from "./InputsEditar/InputField";
 import { Ionicons } from "@expo/vector-icons";
+import { styles } from "./HistorialEditar.styles";
+import { Button, Input } from "react-native-elements";
+import Icon from "react-native-vector-icons/Ionicons";
 
 interface HistorialEditarProps {
   historial: HistorialEditarInterface;
@@ -120,6 +115,7 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Editar historial médico</Text>
       <TouchableOpacity
         style={{
           backgroundColor: "#007BFF",
@@ -249,126 +245,193 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({
       </TouchableOpacity>
       {showMasdatos && (
         <>
+          {/* Tratamientos */}
           <Text style={styles.label}>Tratamientos:</Text>
-          {treatments.map((treatment, index) => (
-            <View key={`treatment-${index}`} style={{ marginBottom: 12 }}>
-              <Text style={styles.label}>Fecha de tratamiento:</Text>
-              <DateTimePicker
-                value={convertToDate(treatment.treatmentDate)}
-                mode="date"
-                display="default"
-                onChange={(event, date) => {
-                  if (date) {
+          <View style={styles.formContainer}>
+            {treatments.map((treatment, index) => (
+              <View key={`treatment-${index}`}>
+                <Text style={styles.label}>Fecha de tratamiento:</Text>
+                <DateTimePicker
+                  value={convertToDate(treatment.treatmentDate)}
+                  mode="date"
+                  display="default"
+                  onChange={(event, date) => {
+                    if (date) {
+                      const updatedTreatments = [...treatments];
+                      updatedTreatments[index].treatmentDate =
+                        date.toISOString();
+                      setTreatments(updatedTreatments);
+                    }
+                  }}
+                />
+                <Input
+                  placeholder="URL del documento de tratamiento"
+                  value={treatment.urlDocTreatment}
+                  onChangeText={(text) => {
                     const updatedTreatments = [...treatments];
-                    updatedTreatments[index].treatmentDate = date.toISOString();
+                    updatedTreatments[index].urlDocTreatment = text;
                     setTreatments(updatedTreatments);
-                  }
-                }}
+                  }}
+                  containerStyle={styles.inputContainer}
+                  inputStyle={styles.inputText}
+                  rightIcon={<Icon name="link" size={20} color="gray" />}
+                />
+              </View>
+            ))}
+            <View style={styles.iconContainer}>
+              <Icon
+                name="remove-circle-outline"
+                size={24}
+                color={treatments.length > 1 ? "red" : "gray"}
+                onPress={
+                  treatments.length > 1
+                    ? () => setTreatments(treatments.slice(0, -1))
+                    : undefined
+                }
               />
-
-              <Text style={styles.label}>Documento de tratamiento:</Text>
-              <TextInput
-                style={styles.input}
-                value={treatment.urlDocTreatment}
-                onChangeText={(text) => {
-                  const updatedTreatments = [...treatments];
-                  updatedTreatments[index].urlDocTreatment = text;
-                  setTreatments(updatedTreatments);
-                }}
-                placeholder="URL del documento de tratamiento"
+              <Icon
+                name="add-circle-outline"
+                size={24}
+                color="green"
+                onPress={() =>
+                  setTreatments([
+                    ...treatments,
+                    {
+                      treatmentDate: new Date().toISOString(),
+                      urlDocTreatment: "",
+                    },
+                  ])
+                }
+                style={{ marginLeft: 10 }}
               />
-              <TouchableOpacity
-                onPress={() => {
-                  const updatedTreatments = treatments.filter(
-                    (_, i) => i !== index
-                  );
-                  setTreatments(updatedTreatments);
-                }}
-                style={{ marginTop: 4 }}
-              >
-                <Text style={{ color: "red" }}>Eliminar tratamiento</Text>
-              </TouchableOpacity>
             </View>
-          ))}
-
-          {/* Botón para agregar tratamiento */}
-          <TouchableOpacity
-            onPress={() => {
-              setTreatments([
-                ...treatments,
-                {
-                  treatmentDate: new Date().toISOString().split("T")[0],
-                  urlDocTreatment: "",
-                },
-              ]);
-            }}
-            style={{ marginTop: 8 }}
-          >
-            <Text style={{ color: "blue" }}>Agregar tratamiento</Text>
-          </TouchableOpacity>
-
+          </View>
+          {/* Seguimientos */}
           <Text style={styles.label}>Seguimientos:</Text>
-          {followUps.map((followUp, index) => (
-            <View key={`followUp-${index}`} style={{ marginBottom: 12 }}>
-              <Text style={styles.label}>Fecha de seguimiento:</Text>
-              <DateTimePicker
-                value={convertToDate(followUp.followUpDate)}
-                mode="date"
-                display="default"
-                onChange={(event, date) => {
-                  if (date) {
+          <View style={styles.formContainer}>
+            {followUps.map((followUp, index) => (
+              <View key={`followUp-${index}`} style={styles.itemContainer}>
+                <Text style={styles.label}>Fecha de seguimiento:</Text>
+                <DateTimePicker
+                  value={convertToDate(followUp.followUpDate)}
+                  mode="date"
+                  display="default"
+                  onChange={(event, date) => {
+                    if (date) {
+                      const updatedFollowUps = [...followUps];
+                      updatedFollowUps[index].followUpDate = date.toISOString();
+                      setFollowUps(updatedFollowUps);
+                    }
+                  }}
+                />
+                <Input
+                  placeholder="URL del documento de tratamiento"
+                  value={followUp.description}
+                  onChangeText={(text) => {
                     const updatedFollowUps = [...followUps];
-                    updatedFollowUps[index].followUpDate = date.toISOString();
+                    updatedFollowUps[index].description = text;
                     setFollowUps(updatedFollowUps);
-                  }
-                }}
+                  }}
+                  containerStyle={styles.inputContainer}
+                  inputStyle={styles.inputText}
+                />
+              </View>
+            ))}
+            <View style={styles.iconContainer}>
+              <Icon
+                name="remove-circle-outline"
+                size={24}
+                color={followUps.length > 1 ? "red" : "gray"}
+                onPress={
+                  followUps.length > 1
+                    ? () => setFollowUps(followUps.slice(0, -1))
+                    : undefined
+                }
               />
-
-              <Text style={styles.label}>Notas de seguimiento:</Text>
-              <TextInput
-                style={styles.input}
-                value={followUp.followUpNotes}
-                onChangeText={(text) => {
-                  const updatedFollowUps = [...followUps];
-                  updatedFollowUps[index].followUpNotes = text;
-                  setFollowUps(updatedFollowUps);
-                }}
-                placeholder="Notas de seguimiento"
+              <Icon
+                name="add-circle-outline"
+                size={24}
+                color="green"
+                onPress={() =>
+                  setFollowUps([
+                    ...followUps,
+                    { followUpDate: new Date().toISOString(), description: "" },
+                  ])
+                }
+                style={{ marginLeft: 10 }}
               />
-              <TouchableOpacity
-                onPress={() => {
-                  const updatedFollowUps = followUps.filter(
-                    (_, i) => i !== index
-                  );
-                  setFollowUps(updatedFollowUps);
-                }}
-                style={{ marginTop: 4 }}
-              >
-                <Text style={{ color: "red" }}>Eliminar seguimiento</Text>
-              </TouchableOpacity>
             </View>
-          ))}
-
-          {/* Botón para agregar seguimiento */}
-          <TouchableOpacity
-            onPress={() => {
-              setFollowUps([
-                ...followUps,
-                {
-                  followUpDate: new Date().toISOString().split("T")[0],
-                  followUpNotes: "",
-                },
-              ]);
-            }}
-            style={{ marginTop: 8 }}
-          >
-            <Text style={{ color: "blue" }}>Agregar seguimiento</Text>
-          </TouchableOpacity>
+          </View>
+          {/* Órdenes */}
+          <Text style={styles.label}>Órdenes:</Text>
+          <View style={styles.formContainer}>
+            {orders.map((order, index) => (
+              <View key={`order-${index}`} style={styles.itemContainer}>
+                <Text style={styles.label}>Fecha de orden:</Text>
+                <DateTimePicker
+                  value={convertToDate(order.ordersDate)}
+                  mode="date"
+                  display="default"
+                  onChange={(event, date) => {
+                    if (date) {
+                      const updatedOrders = [...orders];
+                      updatedOrders[index].ordersDate = date.toISOString();
+                      setOrders(updatedOrders);
+                    }
+                  }}
+                />
+                <Input
+                  placeholder="URL del documento de tratamiento"
+                  value={order.details}
+                  onChangeText={(text) => {
+                    const updatedOrders = [...orders];
+                    updatedOrders[index].details = text;
+                    setOrders(updatedOrders);
+                  }}
+                  containerStyle={styles.inputContainer}
+                  inputStyle={styles.inputText}
+                />
+              </View>
+            ))}
+            <View style={styles.iconContainer}>
+              <Icon
+                name="remove-circle-outline"
+                size={24}
+                color={orders.length > 1 ? "red" : "gray"}
+                onPress={
+                  orders.length > 1
+                    ? () => setOrders(orders.slice(0, -1))
+                    : undefined
+                }
+              />
+              <Icon
+                name="add-circle-outline"
+                size={24}
+                color="green"
+                onPress={() =>
+                  setOrders([
+                    ...orders,
+                    { orderDate: new Date().toISOString(), details: "" },
+                  ])
+                }
+                style={{ marginLeft: 10 }}
+              />
+            </View>
+          </View>
         </>
       )}
-
-      <Button title="Guardar cambios" onPress={handleSubmit} />
-      <Button title="Eliminar" onPress={handleDelete} />
+      <View style={styles.buttonContainer}>
+        <Button
+          title="Guardar cambios"
+          onPress={handleSubmit}
+          buttonStyle={styles.saveButton}
+        />
+        <Button
+          title="Eliminar"
+          onPress={handleDelete}
+          buttonStyle={styles.deleteButton}
+        />
+      </View>
     </View>
   );
 };

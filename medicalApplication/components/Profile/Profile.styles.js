@@ -7,12 +7,16 @@ export const styles = StyleSheet.create({
     borderRadius: 12,
   },
   profileDetails: {
-    marginVertical: 15,
+    marginVertical: 10,
+    flexDirection: "row", // Acomoda los elementos en fila
+    alignItems: "center", // Alinea verticalmente
+    justifyContent: "space-between", // Espacia los elementos
+    gap: 10, // Espaciado entre elementos (opcional)
   },
+
   profileInfo: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
   },
   profileText: {
     fontSize: 18,
@@ -130,9 +134,8 @@ export const styles = StyleSheet.create({
     alignItems: "flex-start",
     justifyContent: "center",
   },
-  
+
   iconStyle: {
     fontSize: 24, // Ajusta el tamaño si es necesario
   },
-  
 });

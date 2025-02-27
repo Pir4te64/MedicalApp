@@ -121,7 +121,7 @@ const HistorialMedicoForm: React.FC<Props> = ({ afiliado }) => {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView>
       <View>
         {showForm && (
           <>
@@ -167,6 +167,7 @@ const HistorialMedicoForm: React.FC<Props> = ({ afiliado }) => {
             width: "90%",
             alignSelf: "center",
             marginBottom: 10,
+            borderRadius: 10,
           }}
         />
 
@@ -182,7 +183,9 @@ const HistorialMedicoForm: React.FC<Props> = ({ afiliado }) => {
               />
             ))
           ) : (
-            <Text>No tiene historial médico</Text>
+            <Text style={{ textAlign: "center", marginTop: 20 }}>
+              No tiene historial médico
+            </Text>
           )}
         </View>
       </View>
