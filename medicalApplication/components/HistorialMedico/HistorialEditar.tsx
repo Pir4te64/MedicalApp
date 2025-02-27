@@ -12,6 +12,8 @@ import { styles } from "./HistorialStyles"; // Asegúrate de tener estilos defin
 import { HistorialPUT } from "./HistorialPUT";
 import { HistorialEditarInterface } from "./HistorialInterface";
 import ListField from "./InputsEditar/ListInput";
+import { InputField } from "./InputsEditar/InputField";
+import { Ionicons } from "@expo/vector-icons";
 
 interface HistorialEditarProps {
   historial: HistorialEditarInterface;
@@ -24,7 +26,6 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({
   const initialDate = new Date(historial.date);
 
   const [date, setDate] = useState<Date>(initialDate);
-  const [showDatePicker, setShowDatePicker] = useState(false);
   const [specialty, setSpecialty] = useState(historial.specialty);
   const [treatingPhysician, setTreatingPhysician] = useState(
     historial.treatingPhysician
@@ -43,7 +44,9 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({
     index: number;
   } | null>(null);
   const [tempDate, setTempDate] = useState<Date | null>(null);
-
+  const [showDetails, setShowDetails] = useState(false);
+  const [showSimtDiag, setSimtDiag] = useState(false);
+  const [showMasdatos, setMasDatos] = useState(false);
   const convertToDate = (date: string | number[]) => {
     if (typeof date === "string") {
       return new Date(date); // ✅ Convertir string "YYYY-MM-DD" a Date
@@ -51,29 +54,6 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({
       return new Date(date[0], date[1] - 1, date[2]); // Si aún hay arrays en los datos
     }
     return new Date(); // Valor por defecto en caso de error
-  };
-
-  const handleDateChange = (event: any, selectedDate?: Date | undefined) => {
-    if (selectedDate && selectedIndex) {
-      const { type, index } = selectedIndex;
-      const formattedDate = selectedDate.toISOString().split("T")[0]; // "YYYY-MM-DD"
-
-      if (type === "treatment") {
-        const updatedTreatments = [...treatments];
-        updatedTreatments[index].treatmentDate = formattedDate; // ✅ String en formato correcto
-        setTreatments(updatedTreatments);
-      } else if (type === "followUp") {
-        const updatedFollowUps = [...followUps];
-        updatedFollowUps[index].followUpDate = formattedDate; // ✅ String en formato correcto
-        setFollowUps(updatedFollowUps);
-      } else if (type === "order") {
-        const updatedOrders = [...orders];
-        updatedOrders[index].ordersDate = formattedDate; // ✅ String en formato correcto
-        setOrders(updatedOrders);
-      }
-    }
-    setTempDate(null);
-    setSelectedIndex(null);
   };
 
   const handleSubmit = async () => {
@@ -140,238 +120,251 @@ const HistorialEditar: React.FC<HistorialEditarProps> = ({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Fecha:</Text>
       <TouchableOpacity
-        style={styles.dateButton}
-        onPress={() => setShowDatePicker(true)}
+        style={{
+          backgroundColor: "#007BFF",
+          padding: 10,
+          borderRadius: 8,
+          marginBottom: 10,
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+        onPress={() => setShowDetails(!showDetails)}
       >
-        <Text>{date.toLocaleDateString()}</Text>
-      </TouchableOpacity>
-      {showDatePicker && (
-        <DateTimePicker
-          value={date}
-          mode="date"
-          display="default"
-          onChange={(event, selectedDate) => {
-            setShowDatePicker(false);
-            if (selectedDate) setDate(selectedDate);
-          }}
+        <Text style={{ color: "white", marginRight: 10, fontSize: 16 }}>
+          Datos
+        </Text>
+        <Ionicons
+          name={showDetails ? "chevron-up-outline" : "chevron-down-outline"}
+          size={24}
+          color="white"
         />
-      )}
-
-      <Text style={styles.label}>Especialidad:</Text>
-      <TextInput
-        style={styles.input}
-        value={specialty}
-        onChangeText={setSpecialty}
-        placeholder="Especialidad"
-      />
-
-      <Text style={styles.label}>Médico tratante:</Text>
-      <TextInput
-        style={styles.input}
-        value={treatingPhysician}
-        onChangeText={setTreatingPhysician}
-        placeholder="Médico tratante"
-      />
-
-      <ListField
-        label="Síntomas originales"
-        items={originalSymptoms}
-        setItems={(index, value) => {
-          const updatedSymptoms = [...originalSymptoms];
-          updatedSymptoms[index] = value;
-          setOriginalSymptoms(updatedSymptoms);
-        }}
-        addItem={() => setOriginalSymptoms([...originalSymptoms, ""])}
-        removeItem={(index) => {
-          const updatedSymptoms = originalSymptoms.filter(
-            (_, i) => i !== index
-          );
-          setOriginalSymptoms(updatedSymptoms);
-        }}
-        placeholder="Síntoma"
-      />
-
-      <ListField
-        label="Diagnósticos"
-        items={diagnoses}
-        setItems={(index, value) => {
-          const updatedDiagnoses = [...diagnoses];
-          updatedDiagnoses[index] = value;
-          setDiagnoses(updatedDiagnoses);
-        }}
-        addItem={() => setDiagnoses([...diagnoses, ""])}
-        removeItem={(index) => {
-          const updatedDiagnoses = diagnoses.filter((_, i) => i !== index);
-          setDiagnoses(updatedDiagnoses);
-        }}
-        placeholder="Diagnóstico"
-      />
-
-      <Text style={styles.label}>Tratamientos:</Text>
-      {treatments.map((treatment, index) => (
-        <View key={`treatment-${index}`} style={{ marginBottom: 12 }}>
-          <Text style={styles.label}>Fecha de tratamiento:</Text>
-          <TouchableOpacity
-            style={styles.dateButton}
-            onPress={() => {
-              setSelectedIndex({ type: "treatment", index });
-              setTempDate(convertToDate(treatment.treatmentDate));
+      </TouchableOpacity>
+      {showDetails && (
+        <>
+          <Text style={styles.label}>Fecha:</Text>
+          <DateTimePicker
+            value={date}
+            mode="date"
+            display="default"
+            onChange={(event, selectedDate) => {
+              if (selectedDate) setDate(selectedDate);
             }}
-          >
-            <Text>
-              {convertToDate(treatment.treatmentDate).toLocaleDateString()}
-            </Text>
-          </TouchableOpacity>
-          <Text style={styles.label}>Documento de tratamiento:</Text>
-          <TextInput
-            style={styles.input}
-            value={treatment.urlDocTreatment}
-            onChangeText={(text) => {
-              const updatedTreatments = [...treatments];
-              updatedTreatments[index].urlDocTreatment = text;
-              setTreatments(updatedTreatments);
-            }}
-            placeholder="URL del documento de tratamiento"
           />
-          <TouchableOpacity
-            onPress={() => {
-              const updatedTreatments = treatments.filter(
+
+          <InputField
+            label="Especialidad"
+            value={specialty}
+            onChangeText={setSpecialty}
+            placeholder="Especialidad"
+          />
+
+          <InputField
+            label="Médico tratante"
+            value={treatingPhysician}
+            onChangeText={setTreatingPhysician}
+            placeholder="Médico tratante"
+          />
+        </>
+      )}
+      <TouchableOpacity
+        style={{
+          backgroundColor: "#007BFF",
+          padding: 10,
+          borderRadius: 8,
+          marginBottom: 10,
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+        onPress={() => setSimtDiag(!showSimtDiag)}
+      >
+        <Text style={{ color: "white", marginRight: 10, fontSize: 16 }}>
+          Detalles
+        </Text>
+        <Ionicons
+          name={showSimtDiag ? "chevron-up-outline" : "chevron-down-outline"}
+          size={24}
+          color="white"
+        />
+      </TouchableOpacity>
+      {showSimtDiag && (
+        <>
+          <ListField
+            label="Síntomas originales"
+            items={originalSymptoms}
+            setItems={(index, value) => {
+              const updatedSymptoms = [...originalSymptoms];
+              updatedSymptoms[index] = value;
+              setOriginalSymptoms(updatedSymptoms);
+            }}
+            addItem={() => setOriginalSymptoms([...originalSymptoms, ""])}
+            removeItem={(index) => {
+              const updatedSymptoms = originalSymptoms.filter(
                 (_, i) => i !== index
               );
-              setTreatments(updatedTreatments);
+              setOriginalSymptoms(updatedSymptoms);
             }}
-            style={{ marginTop: 4 }}
-          >
-            <Text style={{ color: "red" }}>Eliminar tratamiento</Text>
-          </TouchableOpacity>
-        </View>
-      ))}
-      <TouchableOpacity
-        onPress={() => {
-          setTreatments([
-            ...treatments,
-            {
-              treatmentDate: new Date().toISOString().split("T")[0],
-              urlDocTreatment: "",
-            },
-          ]);
-        }}
-        style={{ marginTop: 8 }}
-      >
-        <Text style={{ color: "blue" }}>Agregar tratamiento</Text>
-      </TouchableOpacity>
-
-      <Text style={styles.label}>Seguimientos:</Text>
-      {followUps.map((followUp, index) => (
-        <View key={`followUp-${index}`} style={{ marginBottom: 12 }}>
-          <Text style={styles.label}>Fecha de seguimiento:</Text>
-          <TouchableOpacity
-            style={styles.dateButton}
-            onPress={() => {
-              setSelectedIndex({ type: "followUp", index });
-              setTempDate(convertToDate(followUp.followUpDate));
-            }}
-          >
-            <Text>
-              {convertToDate(followUp.followUpDate).toLocaleDateString()}
-            </Text>
-          </TouchableOpacity>
-          <Text style={styles.label}>Notas de seguimiento:</Text>
-          <TextInput
-            style={styles.input}
-            value={followUp.followUpNotes}
-            onChangeText={(text) => {
-              const updatedFollowUps = [...followUps];
-              updatedFollowUps[index].followUpNotes = text;
-              setFollowUps(updatedFollowUps);
-            }}
-            placeholder="Notas de seguimiento"
+            placeholder="Síntoma"
           />
-          <TouchableOpacity
-            onPress={() => {
-              const updatedFollowUps = followUps.filter((_, i) => i !== index);
-              setFollowUps(updatedFollowUps);
-            }}
-            style={{ marginTop: 4 }}
-          >
-            <Text style={{ color: "red" }}>Eliminar seguimiento</Text>
-          </TouchableOpacity>
-        </View>
-      ))}
-      <TouchableOpacity
-        onPress={() => {
-          setFollowUps([
-            ...followUps,
-            {
-              followUpDate: new Date().toISOString().split("T")[0],
-              followUpNotes: "",
-            },
-          ]);
-        }}
-        style={{ marginTop: 8 }}
-      >
-        <Text style={{ color: "blue" }}>Agregar seguimiento</Text>
-      </TouchableOpacity>
 
-      <Text style={styles.label}>Órdenes:</Text>
-      {orders.map((order, index) => (
-        <View key={`order-${index}`} style={{ marginBottom: 12 }}>
-          <Text style={styles.label}>Fecha de orden:</Text>
-          <TouchableOpacity
-            style={styles.dateButton}
-            onPress={() => {
-              setSelectedIndex({ type: "order", index });
-              setTempDate(convertToDate(order.ordersDate));
+          <ListField
+            label="Diagnósticos"
+            items={diagnoses}
+            setItems={(index, value) => {
+              const updatedDiagnoses = [...diagnoses];
+              updatedDiagnoses[index] = value;
+              setDiagnoses(updatedDiagnoses);
             }}
-          >
-            <Text>{convertToDate(order.ordersDate).toLocaleDateString()}</Text>
-          </TouchableOpacity>
-          <Text style={styles.label}>Documento de orden:</Text>
-          <TextInput
-            style={styles.input}
-            value={order.urlDocOrders}
-            onChangeText={(text) => {
-              const updatedOrders = [...orders];
-              updatedOrders[index].urlDocOrders = text;
-              setOrders(updatedOrders);
+            addItem={() => setDiagnoses([...diagnoses, ""])}
+            removeItem={(index) => {
+              const updatedDiagnoses = diagnoses.filter((_, i) => i !== index);
+              setDiagnoses(updatedDiagnoses);
             }}
-            placeholder="URL del documento de orden"
+            placeholder="Diagnóstico"
           />
-          <TouchableOpacity
-            onPress={() => {
-              const updatedOrders = orders.filter((_, i) => i !== index);
-              setOrders(updatedOrders);
-            }}
-            style={{ marginTop: 4 }}
-          >
-            <Text style={{ color: "red" }}>Eliminar orden</Text>
-          </TouchableOpacity>
-        </View>
-      ))}
+        </>
+      )}
       <TouchableOpacity
-        onPress={() => {
-          setOrders([
-            ...orders,
-            {
-              ordersDate: new Date().toISOString().split("T")[0],
-              urlDocOrders: "",
-            },
-          ]);
+        style={{
+          backgroundColor: "#007BFF",
+          padding: 10,
+          borderRadius: 8,
+          marginBottom: 10,
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
         }}
-        style={{ marginTop: 8 }}
+        onPress={() => setMasDatos(!showMasdatos)}
       >
-        <Text style={{ color: "blue" }}>Agregar orden</Text>
-      </TouchableOpacity>
-
-      {tempDate && (
-        <DateTimePicker
-          value={tempDate}
-          mode="date"
-          display="default"
-          onChange={handleDateChange}
+        <Text style={{ color: "white", marginRight: 10, fontSize: 16 }}>
+          Mas detalles
+        </Text>
+        <Ionicons
+          name={showMasdatos ? "chevron-up-outline" : "chevron-down-outline"}
+          size={24}
+          color="white"
         />
+      </TouchableOpacity>
+      {showMasdatos && (
+        <>
+          <Text style={styles.label}>Tratamientos:</Text>
+          {treatments.map((treatment, index) => (
+            <View key={`treatment-${index}`} style={{ marginBottom: 12 }}>
+              <Text style={styles.label}>Fecha de tratamiento:</Text>
+              <DateTimePicker
+                value={convertToDate(treatment.treatmentDate)}
+                mode="date"
+                display="default"
+                onChange={(event, date) => {
+                  if (date) {
+                    const updatedTreatments = [...treatments];
+                    updatedTreatments[index].treatmentDate = date.toISOString();
+                    setTreatments(updatedTreatments);
+                  }
+                }}
+              />
+
+              <Text style={styles.label}>Documento de tratamiento:</Text>
+              <TextInput
+                style={styles.input}
+                value={treatment.urlDocTreatment}
+                onChangeText={(text) => {
+                  const updatedTreatments = [...treatments];
+                  updatedTreatments[index].urlDocTreatment = text;
+                  setTreatments(updatedTreatments);
+                }}
+                placeholder="URL del documento de tratamiento"
+              />
+              <TouchableOpacity
+                onPress={() => {
+                  const updatedTreatments = treatments.filter(
+                    (_, i) => i !== index
+                  );
+                  setTreatments(updatedTreatments);
+                }}
+                style={{ marginTop: 4 }}
+              >
+                <Text style={{ color: "red" }}>Eliminar tratamiento</Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+
+          {/* Botón para agregar tratamiento */}
+          <TouchableOpacity
+            onPress={() => {
+              setTreatments([
+                ...treatments,
+                {
+                  treatmentDate: new Date().toISOString().split("T")[0],
+                  urlDocTreatment: "",
+                },
+              ]);
+            }}
+            style={{ marginTop: 8 }}
+          >
+            <Text style={{ color: "blue" }}>Agregar tratamiento</Text>
+          </TouchableOpacity>
+
+          <Text style={styles.label}>Seguimientos:</Text>
+          {followUps.map((followUp, index) => (
+            <View key={`followUp-${index}`} style={{ marginBottom: 12 }}>
+              <Text style={styles.label}>Fecha de seguimiento:</Text>
+              <DateTimePicker
+                value={convertToDate(followUp.followUpDate)}
+                mode="date"
+                display="default"
+                onChange={(event, date) => {
+                  if (date) {
+                    const updatedFollowUps = [...followUps];
+                    updatedFollowUps[index].followUpDate = date.toISOString();
+                    setFollowUps(updatedFollowUps);
+                  }
+                }}
+              />
+
+              <Text style={styles.label}>Notas de seguimiento:</Text>
+              <TextInput
+                style={styles.input}
+                value={followUp.followUpNotes}
+                onChangeText={(text) => {
+                  const updatedFollowUps = [...followUps];
+                  updatedFollowUps[index].followUpNotes = text;
+                  setFollowUps(updatedFollowUps);
+                }}
+                placeholder="Notas de seguimiento"
+              />
+              <TouchableOpacity
+                onPress={() => {
+                  const updatedFollowUps = followUps.filter(
+                    (_, i) => i !== index
+                  );
+                  setFollowUps(updatedFollowUps);
+                }}
+                style={{ marginTop: 4 }}
+              >
+                <Text style={{ color: "red" }}>Eliminar seguimiento</Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+
+          {/* Botón para agregar seguimiento */}
+          <TouchableOpacity
+            onPress={() => {
+              setFollowUps([
+                ...followUps,
+                {
+                  followUpDate: new Date().toISOString().split("T")[0],
+                  followUpNotes: "",
+                },
+              ]);
+            }}
+            style={{ marginTop: 8 }}
+          >
+            <Text style={{ color: "blue" }}>Agregar seguimiento</Text>
+          </TouchableOpacity>
+        </>
       )}
 
       <Button title="Guardar cambios" onPress={handleSubmit} />

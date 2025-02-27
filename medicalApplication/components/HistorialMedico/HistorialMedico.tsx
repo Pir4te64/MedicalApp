@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Button, ScrollView, Text, Alert, ActivityIndicator } from "react-native";
+import { View, ScrollView, Text, Alert, ActivityIndicator } from "react-native";
 import { useHistorialMedicoStore } from "./useHistorialMedicoStore";
 import { HistorialData, postHistorialData } from "./HistorialPOST";
 import { getHistorialData } from "./GetUserData";
@@ -9,6 +9,7 @@ import { styles } from "./HistorialStyles";
 import HistorialEditar from "./HistorialEditar";
 import { Historial } from "./HistorialInterface";
 import { deleteHistorial } from "./HistorialEliminar";
+import { Button } from "react-native-elements";
 interface Props {
   afiliado: { id: string };
 }
@@ -38,7 +39,7 @@ const HistorialMedicoForm: React.FC<Props> = ({ afiliado }) => {
     setShowTreatmentPicker,
     setShowFollowUpPicker,
     setShowOrderPicker,
-    resetForm
+    resetForm,
   } = useHistorialMedicoStore();
   const [userDataId, setUserDataId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
@@ -67,7 +68,6 @@ const HistorialMedicoForm: React.FC<Props> = ({ afiliado }) => {
     fetchData();
     if (userDataId) {
       handleObtenerDatos();
-
     }
   }, [userDataId]);
   const handleObtenerDatos = async () => {
@@ -113,7 +113,10 @@ const HistorialMedicoForm: React.FC<Props> = ({ afiliado }) => {
       await handleObtenerDatos();
     } catch (error) {
       console.error("Error al eliminar el historial:", error);
-      Alert.alert("Error", "Hubo un problema al eliminar el historial. Por favor, inténtalo de nuevo.");
+      Alert.alert(
+        "Error",
+        "Hubo un problema al eliminar el historial. Por favor, inténtalo de nuevo."
+      );
     }
   };
 
@@ -157,7 +160,16 @@ const HistorialMedicoForm: React.FC<Props> = ({ afiliado }) => {
             showForm ? "Ocultar formulario" : "Crear nuevo historial médico"
           }
           onPress={() => setShowForm(!showForm)}
+          buttonStyle={{
+            backgroundColor: showForm ? "#FF5733" : "#007BFF", // Color para cuando está visible y oculto
+          }}
+          containerStyle={{
+            width: "90%",
+            alignSelf: "center",
+            marginBottom: 10,
+          }}
         />
+
         <View>
           {loading ? (
             <ActivityIndicator size="large" color="#0000ff" />
