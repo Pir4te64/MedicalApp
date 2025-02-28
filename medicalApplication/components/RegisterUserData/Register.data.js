@@ -18,9 +18,11 @@ export const handleSubmit = async (
       throw new Error("No se encontró el token de autenticación");
     }
 
-    const dateObj = birthDate instanceof Date ? birthDate : new Date(birthDate);
+    if (!afiliado?.id) {
+      throw new Error("El ID del afiliado es nulo o indefinido.");
+    }
 
-    // Formatear la fecha a YYYY-MM-DD
+    const dateObj = birthDate instanceof Date ? birthDate : new Date(birthDate);
     const formattedDate = `${dateObj.getFullYear()}-${(dateObj.getMonth() + 1)
       .toString()
       .padStart(2, "0")}-${dateObj.getDate().toString().padStart(2, "0")}`;
@@ -33,8 +35,8 @@ export const handleSubmit = async (
       : [];
 
     const formData = {
-      userId: afiliado?.id || 0,
-      birthDate: formattedDate, // Asegúrate de usar formattedDate aquí
+      userDataId: afiliado.id, // Ahora estamos seguros de que no es null
+      birthDate: formattedDate,
       weight,
       height,
       bloodType,
@@ -44,6 +46,8 @@ export const handleSubmit = async (
       otherAllergiesUsers: Array.isArray(otherAllergies) ? otherAllergies : [],
       chronicDiseasesUsers: formattedChronicDiseases,
     };
+
+    console.log("📡 Enviando datos:", JSON.stringify(formData, null, 2));
 
     const response = await fetch(API.DATA_REGISTER, {
       method: "POST",
@@ -55,21 +59,23 @@ export const handleSubmit = async (
     });
 
     if (!response.ok) {
-      
+      const errorData = await response.json(); // Obtener error en JSON
       throw new Error(
-        `Error en la petición: ${response.status} - ${response.statusText}`
+        `Error en la petición: ${response.status} - ${
+          errorData.message || "Error desconocido"
+        }`
       );
     }
 
     const responseData = await response.json();
+    console.log("✅ Respuesta exitosa:", responseData);
 
     Alert.alert("✅ Éxito", "Los datos se enviaron correctamente.", [
-      { text: "Aceptar",  },
+      { text: "Aceptar" },
     ]);
-    
+
     return responseData;
   } catch (error) {
-    // Mostrar alerta de error
     Alert.alert(
       "Error",
       error.message || "Ocurrió un error al enviar los datos."

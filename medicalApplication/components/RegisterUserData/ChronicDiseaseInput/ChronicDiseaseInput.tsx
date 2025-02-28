@@ -94,7 +94,7 @@ const ChronicDiseaseInput: React.FC<ChronicDiseaseInputProps> = ({
       <View style={styles.diseasesList}>
         {chronicDiseases.map((diseaseData, index) => (
           <ChronicDiseaseItem
-            key={diseaseData.id}
+            key={index}
             index={index}
             diseaseData={diseaseData}
             onUpdate={onUpdateChronicDisease} // Aquí se pasa la función

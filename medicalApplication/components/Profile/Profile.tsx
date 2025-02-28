@@ -52,7 +52,6 @@ const ProfileInfo = () => {
     );
   }
 
-
   return (
     <View style={{ flex: 1 }}>
       <ScrollView
@@ -63,7 +62,7 @@ const ProfileInfo = () => {
         }
       >
         <View style={styles.profileContainer}>
-          <PerfilPrincipal profile={profile} />
+          <PerfilPrincipal profile={profile} reloadProfile={fetchProfile} />
           <PerfilSecundario
             perfilSuper={profile.tipoCuenta}
             afiliados={profile.afiliados || []}

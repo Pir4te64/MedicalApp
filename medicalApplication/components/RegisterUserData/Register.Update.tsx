@@ -1,6 +1,6 @@
 export const getUpdatedInfo = (afiliado: { id: number }, formData: any) => {
   return {
-    userId: afiliado.id, // ID del afiliado
+    userDataId: afiliado.id, // ID del afiliado
     birthDate: formData.birthDate.toISOString().split("T")[0], // Formatear la fecha correctamente
     weight: formData.weight,
     height: formData.height,

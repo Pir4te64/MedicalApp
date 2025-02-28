@@ -4,7 +4,10 @@ import * as Yup from "yup";
 export const validationSchema = Yup.object().shape({
   document: Yup.string()
     .required("El documento es obligatorio")
-    .matches(/^\d+$/, "El documento debe ser numérico")
+    .matches(
+      /^[\d-]+$/,
+      "El documento debe ser numérico y puede contener guiones"
+    )
     .min(6, "El documento debe tener al menos 6 caracteres")
     .max(12, "El documento no puede tener más de 12 caracteres"),
   name: Yup.string()

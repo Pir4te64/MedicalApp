@@ -46,7 +46,6 @@ const RegisterDataForm: React.FC<RegisterDataFormProps> = ({ afiliado }) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      // Al enfocarse en la pantalla, reseteamos el formulario.
       resetForm();
     }, [])
   );
@@ -79,6 +78,7 @@ const RegisterDataForm: React.FC<RegisterDataFormProps> = ({ afiliado }) => {
   const handleUpdateInfo = async () => {
     const currentState = useRegisterStore.getState();
     const updatedInfo = getUpdatedInfo(afiliado, currentState);
+    console.log("updatedInfo", JSON.stringify(updatedInfo, null, 2));
 
     try {
       await GuardarInfoActualizada(updatedInfo);

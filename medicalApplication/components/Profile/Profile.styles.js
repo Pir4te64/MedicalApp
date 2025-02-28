@@ -8,8 +8,8 @@ export const styles = StyleSheet.create({
   },
   profileDetails: {
     marginVertical: 10,
-    flexDirection: "row", // Acomoda los elementos en fila
-    alignItems: "center", // Alinea verticalmente
+    flexDirection: "col", // Acomoda los elementos en fila
+    alignItems: "flex-start", // Alinea verticalmente
     justifyContent: "space-between", // Espacia los elementos
     gap: 10, // Espaciado entre elementos (opcional)
   },
@@ -22,7 +22,10 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     color: "#ffffff",
     marginLeft: 10,
+    flexWrap: "wrap", // Permite que el texto se divida en varias líneas
+    maxWidth: "100%", // Asegura que el texto ocupe todo el ancho disponible
   },
+
   afiliadosSection: {
     marginTop: 30,
     padding: 20,
@@ -137,5 +140,17 @@ export const styles = StyleSheet.create({
 
   iconStyle: {
     fontSize: 24, // Ajusta el tamaño si es necesario
+  },
+  updateButton: {
+    marginTop: 10,
+    backgroundColor: "#3498db",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
