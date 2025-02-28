@@ -9,16 +9,14 @@ import {
 import { Button, Text } from "react-native-elements";
 import * as DocumentPicker from "expo-document-picker";
 import RNPickerSelect from "react-native-picker-select";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import postRequest from "@/components/Lector/FilePickerPOST";
-import { Link, router } from "expo-router"; // Importar el componente Link
-
+import { router, useNavigation } from "expo-router"; // Importar el componente Link
+import handleSubmitIA from "@/components/Detalles/indexPOST"; // Importar la función de envío
 export default function Lector() {
   const [selectedOption, setSelectedOption] = useState("LABORATORY");
   const [pdfFile, setPdfFile] = useState(null);
   const [pdfFileName, setPdfFileName] = useState("");
   const [loading, setLoading] = useState(false); // Nuevo estado para manejar el loader
-
+  const navigation = useNavigation();
   const handleFilePick = async () => {
     try {
       let result = await DocumentPicker.getDocumentAsync({
@@ -41,61 +39,14 @@ export default function Lector() {
     }
   };
 
-  const handleSubmit = async () => {
-    if (!pdfFile) {
-      Alert.alert("Error", "No has seleccionado un archivo.");
-      return;
-    }
-
-    if (!selectedOption) {
-      Alert.alert("Error", "Por favor selecciona una opción.");
-      return;
-    }
-
-    setLoading(true); // Inicia el loader
-
-    try {
-      const token = await AsyncStorage.getItem("authToken");
-
-      if (!token) {
-        Alert.alert("Error", "No se encontró el token de autenticación.");
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append("file", {
-        uri: pdfFile,
-        type: "application/pdf",
-        name: pdfFileName,
-      });
-
-      const queryParams = `tipoAnalisis=${selectedOption}`;
-      const response = await postRequest(formData, queryParams);
-
-      console.log("Respuesta del servidor:", response);
-
-      // Mostrar la alerta de éxito con un botón para volver a la pantalla anterior
-      Alert.alert("Éxito", "El archivo fue enviado correctamente.", [
-        {
-          text: "OK",
-          onPress: () => navigation.goBack(), // Volver a la pantalla anterior
-        },
-      ]);
-    } catch (error) {
-      console.error("Error al enviar la solicitud:", error);
-      Alert.alert("Error", "Hubo un problema al enviar el archivo.");
-    } finally {
-      setLoading(false); // Finaliza el loader
-    }
-  };
-
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.innerContainer}>
         <Text h4 style={styles.headerText}>
-          Selecciona una opción:
+          Envio de Datos:
         </Text>
         <RNPickerSelect
+          placeholder={{ label: "Selecciona una opción...", value: null }}
           onValueChange={(value) => setSelectedOption(value)}
           items={[
             { label: "LABORATORY", value: "LABORATORY" },
@@ -126,9 +77,17 @@ export default function Lector() {
         ) : (
           <Button
             title="Enviar"
-            onPress={handleSubmit}
+            onPress={() =>
+              handleSubmitIA(
+                pdfFile,
+                pdfFileName,
+                selectedOption,
+                setLoading,
+                navigation
+              )
+            }
             buttonStyle={styles.submitButton}
-            disabled={!pdfFile || loading} // Desactivar el botón mientras se está enviando el archivo
+            disabled={!pdfFile || loading}
           />
         )}
 
@@ -138,6 +97,7 @@ export default function Lector() {
 
         {/* Usando el componente Link para ir a la pantalla de detalles */}
         <Button
+          containerStyle={{ alignItems: "center" }}
           title="Ir a Detalles"
           buttonStyle={styles.detailsButton}
           onPress={() => {
@@ -186,6 +146,7 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     backgroundColor: "#ff7f50", // Puedes ajustar el color
     borderRadius: 10,
+    width: "50%",
   },
   fileText: {
     textAlign: "center",
