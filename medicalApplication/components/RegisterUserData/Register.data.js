@@ -35,7 +35,8 @@ export const handleSubmit = async (
       : [];
 
     const formData = {
-      userDataId: afiliado.id, // Ahora estamos seguros de que no es null
+      userId: afiliado.id,
+      userDataId: "", // Ahora estamos seguros de que no es null
       birthDate: formattedDate,
       weight,
       height,

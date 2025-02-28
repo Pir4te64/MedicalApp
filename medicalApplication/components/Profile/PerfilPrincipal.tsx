@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { styles } from "./Profile.styles";
 import ModalUpdateUser from "../Modal/ModalSettings/ModalUpdateUser/ModalUpdateUser";
 import ModalUpdatePassword from "../Modal/ModalSettings/ModalUpdatePassword/ModalUpdatePassword";
-import { useFocusEffect, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
+import ProfileActions, { Action } from "./ProfileActions";
 
 interface PerfilPrincipalProps {
   profile: {
@@ -31,7 +32,7 @@ const PerfilPrincipal: React.FC<PerfilPrincipalProps> = ({
     setNombre(profile.nombre);
   }, [profile]);
 
-  // Función para navegar a la pantalla de información
+  // Funciones de navegación
   const navigateToInformation = useCallback(() => {
     router.push(
       `/home/profile/informacion?afiliado=${encodeURIComponent(
@@ -39,6 +40,44 @@ const PerfilPrincipal: React.FC<PerfilPrincipalProps> = ({
       )}`
     );
   }, [router, profile]);
+
+  const navigateToDetails = useCallback(() => {
+    router.push(
+      `/home/profile/detalle?afiliado=${encodeURIComponent(
+        JSON.stringify(profile)
+      )}`
+    );
+  }, [router, profile]);
+
+  const navigateToContactos = useCallback(() => {
+    router.push(
+      `/home/profile/contactos?afiliado=${encodeURIComponent(
+        JSON.stringify(profile)
+      )}`
+    );
+  }, [router, profile]);
+
+  const navigateToHistorial = useCallback(() => {
+    router.push(
+      `/home/profile/historial?afiliado=${encodeURIComponent(
+        JSON.stringify(profile)
+      )}`
+    );
+  }, [router, profile]);
+
+  // Definimos las acciones a pasar al componente de botones
+  const actions: Action[] = [
+    { label: "Actualizar Nombre", onPress: () => setIsNameModalVisible(true) },
+    {
+      label: "Actualizar Contraseña",
+      onPress: () => setIsPasswordModalVisible(true),
+    },
+    { label: "Información", onPress: navigateToInformation },
+    { label: "Detalle", onPress: navigateToDetails },
+    { label: "Contactos", onPress: navigateToContactos },
+    { label: "Historial", onPress: navigateToHistorial },
+  ];
+
   return (
     <View style={styles.profileDetails}>
       <View style={styles.profileInfo}>
@@ -50,29 +89,9 @@ const PerfilPrincipal: React.FC<PerfilPrincipalProps> = ({
         <Text style={styles.profileText}>{profile.documento}</Text>
       </View>
 
-      {/* Botón para actualizar nombre */}
-      <TouchableOpacity
-        style={styles.updateButton}
-        onPress={() => setIsNameModalVisible(true)}
-      >
-        <Text style={styles.buttonText}>Actualizar Nombre</Text>
-      </TouchableOpacity>
+      {/* Renderizamos el componente con los botones */}
+      <ProfileActions actions={actions} />
 
-      {/* Botón para actualizar contraseña */}
-      <TouchableOpacity
-        style={styles.updateButton}
-        onPress={() => setIsPasswordModalVisible(true)}
-      >
-        <Text style={styles.buttonText}>Actualizar Contraseña</Text>
-      </TouchableOpacity>
-
-      {/* Nuevo Botón de Información (no hace nada) */}
-      <TouchableOpacity
-        style={styles.updateButton} // Asegúrate de definir este estilo en tu archivo de estilos
-        onPress={navigateToInformation}
-      >
-        <Text style={styles.buttonText}>Información</Text>
-      </TouchableOpacity>
       {/* Modal para actualizar nombre */}
       <ModalUpdateUser
         visible={isNameModalVisible}

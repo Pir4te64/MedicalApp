@@ -44,7 +44,6 @@ export const getHistorialByUser = async (userDataId: string) => {
       throw new Error("Error en la respuesta");
     }
   } catch (error) {
-    console.error("Error al obtener los datos:", error);
     return null; // Devolver null en caso de error
   }
 };
