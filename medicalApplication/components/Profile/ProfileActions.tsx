@@ -76,10 +76,12 @@ const styles = StyleSheet.create({
   },
   updateButton: {
     padding: 10,
-    backgroundColor: "#28A745", // Color del botón de acción
-    marginBottom: 5,
-    borderRadius: 5,
+    backgroundColor: "transparent", // Color del botón de acción
+    marginVertical: 5,
+    borderRadius: 50,
     alignItems: "center",
+    borderColor: "white",
+    borderWidth: 2,
   },
   buttonText: {
     color: "white",
