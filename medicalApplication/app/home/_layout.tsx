@@ -70,7 +70,7 @@ export default function HomeLayout() {
         }}
       />
       <Tabs.Screen
-        name="LectorIA"
+        name="lector"
         options={{
           title: "Cargar Archivo",
           headerShown: false,

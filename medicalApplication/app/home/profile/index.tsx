@@ -1,31 +1,39 @@
-import React, { useEffect, useState } from "react";
-import {
-  View,
-  ScrollView,
-  BackHandler,
-  StyleSheet,
-  Button,
-} from "react-native";
+import React, { useEffect, useState, useContext } from "react";
+import { View, ScrollView, BackHandler, StyleSheet, Alert } from "react-native";
 import ProfileInfo from "@/components/Profile/Profile"; // Asegúrate de importar el componente correctamente
-import CustomAlert from "@/components/Modal/Modal"; // Asegúrate de importar CustomAlert correctamente
+import { AuthContext } from "@/utils/AuthProvider";
+import { router } from "expo-router";
 
 export default function ProfileScreen() {
-  const [alertVisible, setAlertVisible] = useState(false);
+  const { logout } = useContext(AuthContext); // Accedemos a la función logout del contexto
 
-  // Mostrar el CustomAlert
+  // Función para mostrar el alert cuando se presione el botón de atrás
   const showAlert = () => {
-    setAlertVisible(true);
-  };
-
-  // Cerrar el CustomAlert
-  const hideAlert = () => {
-    setAlertVisible(false);
+    Alert.alert(
+      "Salir", // Título del alert
+      "¿Quieres cerrar la app?", // Mensaje
+      [
+        {
+          text: "Cancelar", // Botón Cancelar
+          onPress: () => console.log("Cancelar presionado"), // Acción al presionar "Cancelar"
+          style: "cancel", // Estilo de cancelación
+        },
+        {
+          text: "Aceptar", // Botón Aceptar
+          onPress: () => {
+            logout(); // Ejecutar logout
+            router.push("/"); // Redirigir a la pantalla de login
+          },
+        },
+      ],
+      { cancelable: false } // No permite cerrar el alert tocando fuera de él
+    );
   };
 
   useEffect(() => {
     const backAction = () => {
-      showAlert(); // Mostrar el alert personalizado cuando se presione el botón de atrás
-      return true;
+      showAlert(); // Mostrar el alert cuando se presione el botón de atrás
+      return true; // Impide que la app se cierre automáticamente sin preguntar
     };
 
     const backHandler = BackHandler.addEventListener(
@@ -46,15 +54,6 @@ export default function ProfileScreen() {
       >
         <ProfileInfo />
       </ScrollView>
-
-      {/* CustomAlert con los parámetros adecuados */}
-      <CustomAlert
-        visible={alertVisible}
-        onClose={hideAlert}
-        title="Salir"
-        message="¿Quieres cerrar la app?"
-        type="error" // Tipo "error" para botón rojo
-      />
     </View>
   );
 }
@@ -63,11 +62,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  // Asignamos flex: 1 para que el ScrollView ocupe toda la pantalla
   scrollView: {
     flex: 1,
   },
-  // Solo aplicamos padding; eliminamos el centrado vertical/horizontal para permitir el scroll natural
   scrollContent: {
     padding: 20,
   },
