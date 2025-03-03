@@ -38,6 +38,28 @@ export default function Lector() {
       Alert.alert("Error", "Ocurrió un problema al seleccionar el archivo.");
     }
   };
+  const handleSend = async () => {
+    setLoading(true);
+    try {
+      // handleSubmitIA returns true on success.
+      const success = await handleSubmitIA(
+        pdfFile,
+        pdfFileName,
+        selectedOption,
+        setLoading,
+        navigation
+      );
+      if (success) {
+        // Limpia los campos al enviar exitosamente
+        setPdfFile(null);
+        setPdfFileName("");
+      }
+    } catch (error) {
+      Alert.alert("Error", "Ocurrió un error al enviar los datos.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -77,15 +99,7 @@ export default function Lector() {
         ) : (
           <Button
             title="Enviar"
-            onPress={() =>
-              handleSubmitIA(
-                pdfFile,
-                pdfFileName,
-                selectedOption,
-                setLoading,
-                navigation
-              )
-            }
+            onPress={handleSend}
             buttonStyle={styles.submitButton}
             disabled={!pdfFile || loading}
           />
@@ -95,13 +109,12 @@ export default function Lector() {
           <Text style={styles.loadingText}>Petición en curso...</Text>
         )}
 
-        {/* Usando el componente Link para ir a la pantalla de detalles */}
         <Button
           containerStyle={{ alignItems: "center" }}
           title="Ir a Detalles"
           buttonStyle={styles.detailsButton}
           onPress={() => {
-            router.push("/home/lector/detalles"); // Navegar a la pantalla de detalles
+            router.push("/home/lector/detalles");
           }}
         />
       </View>

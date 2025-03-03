@@ -47,6 +47,8 @@ const handleSubmitIA = async (
         onPress: () => navigation.goBack(),
       },
     ]);
+
+    return response;
   } catch (error) {
     console.error("Error al enviar la solicitud:", error);
     Alert.alert("Error", "Hubo un problema al enviar el archivo.");

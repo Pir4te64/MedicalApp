@@ -29,7 +29,6 @@ export default function LoginComponent() {
       refreshToken: string;
     };
   }
-
   const handleLogin = async (values: LoginValues) => {
     setIsSubmitting(true);
     try {
@@ -63,7 +62,12 @@ export default function LoginComponent() {
           setAlertVisible(true);
         }
       } else {
-        setAlertMessage(data.message || "Credenciales incorrectas");
+        // Validamos el mensaje de error para mostrar el mensaje en español
+        const errorMsg =
+          data.message === "Bad credentials"
+            ? "Usuario y/o contraseña incorrecto"
+            : data.message || "Credenciales incorrectas";
+        setAlertMessage(errorMsg);
         setAlertVisible(true);
       }
     } catch (error) {
