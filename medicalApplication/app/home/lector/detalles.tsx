@@ -69,6 +69,7 @@ const Detalles = () => {
     }
 
     const url = `${BASE_URL}${endpoint}?${params.toString()}`;
+    console.log("URL de la consulta:", url);
 
     try {
       const authToken = await AsyncStorage.getItem("authToken");
@@ -89,10 +90,9 @@ const Detalles = () => {
 
       Alert.alert(
         response.ok ? "Consulta exitosa" : "Error en la consulta",
-        `Opción: ${selectedOption}\nFecha: ${
-          selectedOption === "LABORATORY"
-            ? selectedDate.toLocaleDateString()
-            : "No aplica"
+        `Opción: ${selectedOption}\nFecha: ${selectedOption === "LABORATORY"
+          ? selectedDate.toLocaleDateString()
+          : "No aplica"
         }\nRespuesta: ${data.message || "Consulta realizada correctamente."}`
       );
     } catch (error) {
@@ -123,9 +123,11 @@ const Detalles = () => {
 
       {selectedOption === "LABORATORY" && (
         <View style={styles.datePickerContainer}>
+          <Text style={styles.headerText}>Selecciona una fecha:</Text>
+
           <Button
             buttonStyle={styles.button}
-            title="Seleccionar fecha"
+            title="Fecha en la que se realizó el estudio"
             onPress={() => setShowDatePicker(true)}
           />
           {showDatePicker && (
