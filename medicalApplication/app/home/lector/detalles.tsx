@@ -2,7 +2,7 @@ import { useProfileStore } from "@/components/Profile/profileStore";
 import { getUserData } from "@/components/RegisterUserData/Register.fetch";
 import { useFocusEffect } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
-import { StyleSheet, Text, View, Alert, TouchableOpacity } from "react-native";
+import { Text, View, Alert, TouchableOpacity } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Button } from "react-native-elements";
@@ -10,7 +10,10 @@ import { BASE_URL } from "@/utils/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import PatientResults from "@/components/Detalles/TestItem";
 import Ionicons from "react-native-vector-icons/Ionicons";
-
+import {
+  styles,
+  pickerSelectStyles,
+} from "@/components/Detalles/Detalles.styles";
 const Detalles = () => {
   const { fetchProfile, profile } = useProfileStore();
   const [userData, setUserData] = useState(null);
@@ -81,37 +84,38 @@ const Detalles = () => {
     }
 
     const url = `${BASE_URL}${endpoint}?${params.toString()}`;
+    console.log("URL:", url);
 
-    try {
-      const authToken = await AsyncStorage.getItem("authToken");
-      if (!authToken) {
-        Alert.alert("Error", "No se encontró un token de autenticación.");
-        return;
-      }
+    // try {
+    //   const authToken = await AsyncStorage.getItem("authToken");
+    //   if (!authToken) {
+    //     Alert.alert("Error", "No se encontró un token de autenticación.");
+    //     return;
+    //   }
 
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
+    //   const response = await fetch(url, {
+    //     method: "GET",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //       Authorization: `Bearer ${authToken}`,
+    //     },
+    //   });
 
-      const data = await response.json();
+    //   const data = await response.json();
 
-      setConsultaResult(data);
+    //   setConsultaResult(data);
 
-      Alert.alert(
-        response.ok ? "Consulta exitosa" : "Error en la consulta",
-        `Opción: ${selectedOption}\nRango de fechas: ${
-          selectedOption === "LABORATORY"
-            ? `${selectedStartDate.toLocaleDateString()} - ${selectedEndDate.toLocaleDateString()}`
-            : "No aplica"
-        }\nMensaje: ${data.message || "Consulta realizada correctamente."}`
-      );
-    } catch (error) {
-      Alert.alert("Error", "Hubo un problema con la consulta.");
-    }
+    //   Alert.alert(
+    //     response.ok ? "Consulta exitosa" : "Error en la consulta",
+    //     `Opción: ${selectedOption}\nRango de fechas: ${
+    //       selectedOption === "LABORATORY"
+    //         ? `${selectedStartDate.toLocaleDateString()} - ${selectedEndDate.toLocaleDateString()}`
+    //         : "No aplica"
+    //     }\nMensaje: ${data.message || "Consulta realizada correctamente."}`
+    //   );
+    // } catch (error) {
+    //   Alert.alert("Error", "Hubo un problema con la consulta.");
+    // }
   };
 
   return (
@@ -150,7 +154,9 @@ const Detalles = () => {
             <View style={styles.datePickerContainer}>
               {/* Selector de fecha Desde */}
               <Button
-                title="Desde"
+                containerStyle={styles.buttonContainer}
+                buttonStyle={styles.button}
+                title="Fecha Desde"
                 onPress={() => setShowStartDatePicker(true)}
               />
               {showStartDatePicker && (
@@ -164,11 +170,19 @@ const Detalles = () => {
                   }}
                 />
               )}
-              <Text>Desde: {selectedStartDate.toLocaleDateString()}</Text>
+              <Text
+                style={{
+                  marginVertical: 10,
+                }}
+              >
+                Desde: {selectedStartDate.toLocaleDateString()}
+              </Text>
 
               {/* Selector de fecha Hasta */}
               <Button
-                title="Hasta"
+                containerStyle={styles.buttonContainer}
+                buttonStyle={styles.button}
+                title="Fecha Hasta"
                 onPress={() => setShowEndDatePicker(true)}
               />
               {showEndDatePicker && (
@@ -182,7 +196,13 @@ const Detalles = () => {
                   }}
                 />
               )}
-              <Text>Hasta: {selectedEndDate.toLocaleDateString()}</Text>
+              <Text
+                style={{
+                  marginVertical: 10,
+                }}
+              >
+                Hasta: {selectedEndDate.toLocaleDateString()}
+              </Text>
             </View>
           )}
 
@@ -205,81 +225,4 @@ const Detalles = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "flex-start",
-    alignItems: "center",
-    padding: 10,
-    backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  headerText: {
-    fontSize: 18,
-    marginVertical: 10,
-  },
-  collapsibleHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: "80%",
-    padding: 10,
-    backgroundColor: "#007bff",
-    borderRadius: 10,
-    marginBottom: 10,
-  },
-  collapsibleHeaderText: {
-    fontSize: 18,
-    color: "#fff",
-  },
-  queryContainer: {
-    width: "80%",
-    alignItems: "center",
-  },
-  datePickerContainer: {
-    alignItems: "center",
-    borderRadius: 10,
-  },
-  buttonContainer: {
-    marginTop: 20,
-    width: "100%",
-    borderRadius: 10,
-  },
-  button: {
-    borderRadius: 10,
-    backgroundColor: "#007bff",
-  },
-  resultContainer: {
-    marginTop: 20,
-    width: "100%",
-  },
-});
-const pickerSelectStyles = {
-  inputIOS: {
-    fontSize: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 10,
-    color: "#333",
-    backgroundColor: "#fff",
-    marginBottom: 20,
-  },
-  inputAndroid: {
-    fontSize: 16,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 10,
-    color: "#333",
-    backgroundColor: "#fff",
-    marginBottom: 20,
-  },
-};
 export default Detalles;
