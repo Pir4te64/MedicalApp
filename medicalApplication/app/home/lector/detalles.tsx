@@ -15,8 +15,10 @@ const Detalles = () => {
   const { fetchProfile, profile } = useProfileStore();
   const [userData, setUserData] = useState(null);
   const [selectedOption, setSelectedOption] = useState("LABORATORY");
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedStartDate, setSelectedStartDate] = useState(new Date());
+  const [selectedEndDate, setSelectedEndDate] = useState(new Date());
+  const [showStartDatePicker, setShowStartDatePicker] = useState(false);
+  const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   const [consultaResult, setConsultaResult] = useState(null);
   const [isQueryCollapsed, setIsQueryCollapsed] = useState(false);
 
@@ -67,13 +69,18 @@ const Detalles = () => {
     const userDataId = userData?.userDataId;
     const params = new URLSearchParams({ userDataId });
 
-    if (selectedOption === "LABORATORY" && selectedDate) {
-      const formattedDate = selectedDate.toISOString().split("T")[0];
-      params.append("date", formattedDate);
+    if (
+      selectedOption === "LABORATORY" &&
+      selectedStartDate &&
+      selectedEndDate
+    ) {
+      const formattedStartDate = selectedStartDate.toISOString().split("T")[0];
+      const formattedEndDate = selectedEndDate.toISOString().split("T")[0];
+      params.append("startDate", formattedStartDate);
+      params.append("endDate", formattedEndDate);
     }
 
     const url = `${BASE_URL}${endpoint}?${params.toString()}`;
-    console.log("URL de la consulta:", url);
 
     try {
       const authToken = await AsyncStorage.getItem("authToken");
@@ -91,31 +98,25 @@ const Detalles = () => {
       });
 
       const data = await response.json();
-      console.log("Respuesta de la consulta:", data);
 
       setConsultaResult(data);
 
       Alert.alert(
         response.ok ? "Consulta exitosa" : "Error en la consulta",
-        `Opción: ${selectedOption}\nFecha: ${selectedOption === "LABORATORY"
-          ? selectedDate.toLocaleDateString()
-          : "No aplica"
+        `Opción: ${selectedOption}\nRango de fechas: ${
+          selectedOption === "LABORATORY"
+            ? `${selectedStartDate.toLocaleDateString()} - ${selectedEndDate.toLocaleDateString()}`
+            : "No aplica"
         }\nMensaje: ${data.message || "Consulta realizada correctamente."}`
       );
     } catch (error) {
-      console.error("Error al hacer la consulta:", error);
       Alert.alert("Error", "Hubo un problema con la consulta.");
     }
   };
 
-  const handleDateChange = (event, date) => {
-    setShowDatePicker(false);
-    setSelectedDate(date || new Date());
-  };
-
   return (
     <View style={styles.container}>
-      {/* Header colapsable para la sección de consulta */}
+      {/* Header colapsable */}
       <TouchableOpacity
         onPress={() => setIsQueryCollapsed(!isQueryCollapsed)}
         style={styles.collapsibleHeader}
@@ -123,16 +124,13 @@ const Detalles = () => {
         <Text style={styles.collapsibleHeaderText}>Consulta</Text>
         <Ionicons
           name={
-            isQueryCollapsed
-              ? "chevron-down-outline"
-              : "chevron-up-outline"
+            isQueryCollapsed ? "chevron-down-outline" : "chevron-up-outline"
           }
           size={24}
           color="white"
         />
       </TouchableOpacity>
 
-      {/* Contenido de la consulta */}
       {!isQueryCollapsed && (
         <View style={styles.queryContainer}>
           <Text style={styles.headerText}>Selecciona una opción:</Text>
@@ -150,20 +148,41 @@ const Detalles = () => {
 
           {selectedOption === "LABORATORY" && (
             <View style={styles.datePickerContainer}>
-              <Text style={styles.headerText}>Selecciona una fecha:</Text>
+              {/* Selector de fecha Desde */}
               <Button
-                buttonStyle={styles.button}
-                title="Fecha en la que se realizó el estudio"
-                onPress={() => setShowDatePicker(true)}
+                title="Desde"
+                onPress={() => setShowStartDatePicker(true)}
               />
-              {showDatePicker && (
+              {showStartDatePicker && (
                 <DateTimePicker
-                  value={selectedDate}
+                  value={selectedStartDate}
                   mode="date"
                   display="default"
-                  onChange={handleDateChange}
+                  onChange={(event, date) => {
+                    setShowStartDatePicker(false);
+                    if (date) setSelectedStartDate(date);
+                  }}
                 />
               )}
+              <Text>Desde: {selectedStartDate.toLocaleDateString()}</Text>
+
+              {/* Selector de fecha Hasta */}
+              <Button
+                title="Hasta"
+                onPress={() => setShowEndDatePicker(true)}
+              />
+              {showEndDatePicker && (
+                <DateTimePicker
+                  value={selectedEndDate}
+                  mode="date"
+                  display="default"
+                  onChange={(event, date) => {
+                    setShowEndDatePicker(false);
+                    if (date) setSelectedEndDate(date);
+                  }}
+                />
+              )}
+              <Text>Hasta: {selectedEndDate.toLocaleDateString()}</Text>
             </View>
           )}
 
@@ -177,7 +196,7 @@ const Detalles = () => {
       )}
 
       {/* Resultados de la consulta */}
-      {consultaResult && consultaResult.body && consultaResult.body.length > 0 && (
+      {consultaResult?.body?.length > 0 && (
         <View style={styles.resultContainer}>
           <PatientResults data={consultaResult} />
         </View>
@@ -209,7 +228,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     width: "80%",
     padding: 10,
-    backgroundColor: "#0066cc",
+    backgroundColor: "#007bff",
     borderRadius: 10,
     marginBottom: 10,
   },
@@ -231,15 +250,14 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   button: {
-    backgroundColor: "#007bff",
     borderRadius: 10,
+    backgroundColor: "#007bff",
   },
   resultContainer: {
     marginTop: 20,
     width: "100%",
   },
 });
-
 const pickerSelectStyles = {
   inputIOS: {
     fontSize: 16,
@@ -264,5 +282,4 @@ const pickerSelectStyles = {
     marginBottom: 20,
   },
 };
-
 export default Detalles;

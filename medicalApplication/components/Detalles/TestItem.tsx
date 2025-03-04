@@ -1,6 +1,6 @@
 import React, { memo } from "react";
 import { View, Text, FlatList, StyleSheet, Linking } from "react-native";
-
+import { ActivityIndicator } from "react-native";
 // Función para formatear la fecha a dd/mm/yyyy
 const parseDate = (dateArray) => {
   if (!dateArray || dateArray.length < 3) return "";
@@ -19,10 +19,7 @@ const TestItem = memo(({ item }) => (
       Rango: {item.referenceMin} {item.referenceMax && `- ${item.referenceMax}`}
     </Text>
     {item.urlRecipe && (
-      <Text
-        style={styles.link}
-        onPress={() => Linking.openURL(item.urlRecipe)}
-      >
+      <Text style={styles.link} onPress={() => Linking.openURL(item.urlRecipe)}>
         Ver receta
       </Text>
     )}
@@ -33,25 +30,35 @@ const PatientResults = ({ data }) => {
   if (!data || !data.body) {
     return <Text>No hay resultados disponibles</Text>;
   }
-
-  // Si la altura de cada ítem es aproximadamente fija (por ejemplo, 100), se puede usar getItemLayout.
-  const getItemLayout = (data, index) => ({
-    length: 100,
-    offset: 100 * index,
-    index,
-  });
+  const [visibleData, setVisibleData] = React.useState(data.body.slice(0, 50));
+  const [loading, setLoading] = React.useState(false);
+  const loadMore = () => {
+    if (loading || visibleData.length >= data.body.length) return;
+    setLoading(true);
+    setTimeout(() => {
+      setVisibleData((prevData) => [
+        ...prevData,
+        ...data.body.slice(prevData.length, prevData.length + 50),
+      ]);
+      setLoading(false);
+    }, 1000); // Simula tiempo de carga
+  };
+  const renderItem = React.useCallback(
+    ({ item }) => <TestItem item={item} />,
+    []
+  );
 
   return (
     <FlatList
-      data={data.body}
+      data={visibleData}
       keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => <TestItem item={item} />}
+      renderItem={renderItem}
+      onEndReached={loadMore}
+      onEndReachedThreshold={0.1}
       contentContainerStyle={styles.listContainer}
-      initialNumToRender={10}      // Número de elementos iniciales a renderizar
-      maxToRenderPerBatch={10}     // Número máximo a renderizar en cada lote
-      windowSize={21}              // Tamaño de la ventana de renderizado
-      removeClippedSubviews={true} // Remueve elementos fuera de la pantalla
-      getItemLayout={getItemLayout} // Si los ítems tienen altura fija
+      ListFooterComponent={
+        loading ? <ActivityIndicator size="large" color="#0066cc" /> : null
+      }
     />
   );
 };
