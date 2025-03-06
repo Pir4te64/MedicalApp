@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import React from "react";
+import { View, TouchableOpacity } from "react-native";
 import { CheckBox } from "react-native-elements";
 
 const options = [
@@ -10,10 +10,7 @@ const options = [
 
 const SingleChoiceCheckbox = ({ selectedOption, onSelect }) => {
   return (
-    <View>
-      <Text style={{ fontSize: 18, fontWeight: "bold", marginBottom: 10 }}>
-        Selecciona una opción:
-      </Text>
+    <View style={{ marginVertical: 10, width: "100%" }}>
       {options.map((option) => (
         <TouchableOpacity
           key={option.value}
@@ -25,6 +22,7 @@ const SingleChoiceCheckbox = ({ selectedOption, onSelect }) => {
             onPress={() => onSelect(option.value)}
             checkedIcon="dot-circle-o"
             uncheckedIcon="circle-o"
+            textStyle={{ fontSize: 16 }}
           />
         </TouchableOpacity>
       ))}

@@ -2,14 +2,13 @@ import { useProfileStore } from "@/components/Profile/profileStore";
 import { getUserData } from "@/components/RegisterUserData/Register.fetch";
 import { useFocusEffect } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
-import { Text, View, Alert, TouchableOpacity } from "react-native";
+import { Text, View, Alert, TouchableOpacity, StyleSheet } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Button } from "react-native-elements";
 import { BASE_URL } from "@/utils/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import PatientResults from "@/components/Detalles/TestItem";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { styles } from "@/components/Detalles/Detalles.styles";
 import SingleChoiceCheckbox from "@/components/Detalles/SingleCheck";
 
 const Detalles = () => {
@@ -44,6 +43,15 @@ const Detalles = () => {
       fetchAndSaveUserData();
     }
   }, [profile]);
+
+  // Función para formatear una fecha como "DD/MM"
+  const formatDateDDMM = (dateInput) => {
+    const date = new Date(dateInput);
+    if (isNaN(date.getTime())) return "";
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    return `${day}/${month}`;
+  };
 
   const handleConsultas = async () => {
     if (!selectedOption) {
@@ -99,15 +107,15 @@ const Detalles = () => {
       });
 
       const data = await response.json();
-      console.log(data);
-
       setConsultaResult(data);
 
       Alert.alert(
         response.ok ? "Consulta exitosa" : "Error en la consulta",
         `Opción: ${selectedOption}\nRango de fechas: ${
           selectedOption === "LABORATORY"
-            ? `${selectedStartDate.toLocaleDateString()} - ${selectedEndDate.toLocaleDateString()}`
+            ? `${formatDateDDMM(selectedStartDate)} - ${formatDateDDMM(
+                selectedEndDate
+              )}`
             : "No aplica"
         }\nMensaje: ${data.message || "Consulta realizada correctamente."}`
       );
@@ -145,7 +153,8 @@ const Detalles = () => {
               <Button
                 containerStyle={styles.buttonContainer}
                 buttonStyle={styles.button}
-                title="Fecha Desde"
+                titleStyle={styles.buttonTitle}
+                title={`Fecha Desde: ${formatDateDDMM(selectedStartDate)}`}
                 onPress={() => setShowStartDatePicker(true)}
               />
               {showStartDatePicker && (
@@ -163,7 +172,12 @@ const Detalles = () => {
               <Button
                 containerStyle={styles.buttonContainer}
                 buttonStyle={styles.button}
-                title="Fecha Hasta"
+                titleStyle={styles.buttonTitle}
+                title={
+                  selectedEndDate
+                    ? `Fecha Hasta: ${formatDateDDMM(selectedEndDate)}`
+                    : "Fecha Hasta"
+                }
                 onPress={() => setShowEndDatePicker(true)}
               />
               {showEndDatePicker && (
@@ -197,5 +211,61 @@ const Detalles = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#F0F4F8",
+    padding: 16,
+  },
+  collapsibleHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#007AFF",
+    padding: 12,
+    borderRadius: 8,
+  },
+  collapsibleHeaderText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  queryContainer: {
+    marginTop: 16,
+    backgroundColor: "white",
+    padding: 16,
+    borderRadius: 8,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  headerText: {
+    fontSize: 16,
+    marginBottom: 12,
+    color: "#333",
+    fontWeight: "500",
+  },
+  datePickerContainer: {
+    marginBottom: 16,
+  },
+  buttonContainer: {
+    marginVertical: 6,
+  },
+  button: {
+    borderRadius: 30,
+    padding: 12,
+    backgroundColor: "#007AFF",
+  },
+  buttonTitle: {
+    fontSize: 16,
+    fontWeight: "500",
+    textAlign: "center",
+  },
+  resultContainer: {
+    marginTop: 16,
+  },
+});
 
 export default Detalles;

@@ -51,11 +51,16 @@ export const styles = StyleSheet.create({
   buttonContainer: {
     marginTop: 20,
     width: "100%",
-    borderRadius: 10,
   },
   button: {
-    borderRadius: 10,
+    borderRadius: 30,
+    width: "100%",
+    padding: 10,
     backgroundColor: "#007bff",
+  },
+  buttonTitle: {
+    textAlign: "center",
+    width: "100%", // Asegura que ocupe todo el ancho para que se centre correctamente
   },
   resultContainer: {
     marginTop: 20,
