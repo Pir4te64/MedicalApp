@@ -1,57 +1,98 @@
-import React, { memo } from "react";
-import { View, Text, FlatList, StyleSheet, Linking } from "react-native";
-import { ActivityIndicator } from "react-native";
+import React, { memo, useState, useCallback, useMemo } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  Linking,
+  ActivityIndicator,
+} from "react-native";
+
 // Función para formatear la fecha a dd/mm/yyyy
 const parseDate = (dateArray) => {
-  if (!dateArray || dateArray.length < 3) return "";
+  if (!Array.isArray(dateArray) || dateArray.length < 3)
+    return "Fecha no disponible";
   const [year, month, day] = dateArray;
   return `${day}/${month}/${year}`;
 };
 
-// Componente memorizado para cada ítem de la lista
-const TestItem = memo(({ item }) => (
+// Agrupa los datos por "test"
+const groupByTest = (data) => {
+  const grouped = {};
+  data.forEach((item) => {
+    if (!grouped[item.test]) {
+      grouped[item.test] = [];
+    }
+    grouped[item.test].push(item);
+  });
+  return Object.entries(grouped).map(([test, records]) => ({ test, records }));
+};
+
+// Componente memorizado para cada grupo de tests
+const TestGroup = memo(({ group }) => (
   <View style={styles.itemContainer}>
-    <Text style={styles.testName}>{item.test}</Text>
-    <Text>Fecha: {parseDate(item.date)}</Text>
-    <Text>Laboratorio: {item.laboratory}</Text>
-    <Text>Resultado: {item.result}</Text>
-    <Text>
-      Rango: {item.referenceMin} {item.referenceMax && `- ${item.referenceMax}`}
-    </Text>
-    {item.urlRecipe && (
-      <Text style={styles.link} onPress={() => Linking.openURL(item.urlRecipe)}>
-        Ver receta
-      </Text>
-    )}
+    <Text style={styles.testName}>{group.test}</Text>
+    {group.records.map((item, index) => (
+      <View key={index} style={styles.testDetails}>
+        <Text>Fecha: {parseDate(item.date)}</Text>
+        <Text>Laboratorio: {item.laboratory || "No especificado"}</Text>
+        <Text>Resultado: {item.result || "No disponible"}</Text>
+        <Text>
+          Rango: {item.referenceMin}{" "}
+          {item.referenceMax ? `- ${item.referenceMax}` : ""}
+        </Text>
+        {item.urlRecipe && (
+          <Text
+            style={styles.link}
+            onPress={() => Linking.openURL(item.urlRecipe)}
+          >
+            Ver receta
+          </Text>
+        )}
+      </View>
+    ))}
   </View>
 ));
 
 const PatientResults = ({ data }) => {
-  if (!data || !data.body) {
-    return <Text>No hay resultados disponibles</Text>;
-  }
-  const [visibleData, setVisibleData] = React.useState(data.body.slice(0, 50));
-  const [loading, setLoading] = React.useState(false);
+  // Validación estricta: data.body debe ser un array con al menos un elemento
+  const validData = useMemo(
+    () => Array.isArray(data?.body) && data.body.length > 0,
+    [data]
+  );
+
+  // Agrupar datos si son válidos
+  const groupedData = useMemo(
+    () => (validData ? groupByTest(data.body) : []),
+    [validData, data]
+  );
+
+  const [visibleData, setVisibleData] = useState(groupedData.slice(0, 10)); // Se carga en grupos
+  const [loading, setLoading] = useState(false);
+
   const loadMore = () => {
-    if (loading || visibleData.length >= data.body.length) return;
+    if (loading || !validData || visibleData.length >= groupedData.length)
+      return;
     setLoading(true);
     setTimeout(() => {
       setVisibleData((prevData) => [
         ...prevData,
-        ...data.body.slice(prevData.length, prevData.length + 50),
+        ...groupedData.slice(prevData.length, prevData.length + 10),
       ]);
       setLoading(false);
     }, 1000); // Simula tiempo de carga
   };
-  const renderItem = React.useCallback(
-    ({ item }) => <TestItem item={item} />,
-    []
-  );
+
+  const renderItem = useCallback(({ item }) => <TestGroup group={item} />, []);
+
+  if (!validData) {
+    return <Text style={styles.noDataText}>No hay resultados disponibles</Text>;
+  }
 
   return (
     <FlatList
       data={visibleData}
-      keyExtractor={(item) => item.id.toString()}
+      keyExtractor={(item) => item.test}
       renderItem={renderItem}
       onEndReached={loadMore}
       onEndReachedThreshold={0.1}
@@ -78,14 +119,27 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   testName: {
-    fontSize: 18,
+    fontSize: 20,
     color: "#0066cc",
     marginBottom: 8,
+    fontWeight: "bold",
+  },
+  testDetails: {
+    marginBottom: 10,
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
   },
   link: {
     color: "blue",
     marginTop: 8,
     textDecorationLine: "underline",
+  },
+  noDataText: {
+    textAlign: "center",
+    marginTop: 20,
+    fontSize: 16,
+    color: "gray",
   },
 });
 

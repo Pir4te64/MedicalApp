@@ -3,17 +3,15 @@ import { getUserData } from "@/components/RegisterUserData/Register.fetch";
 import { useFocusEffect } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import { Text, View, Alert, TouchableOpacity } from "react-native";
-import RNPickerSelect from "react-native-picker-select";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Button } from "react-native-elements";
 import { BASE_URL } from "@/utils/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import PatientResults from "@/components/Detalles/TestItem";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import {
-  styles,
-  pickerSelectStyles,
-} from "@/components/Detalles/Detalles.styles";
+import { styles } from "@/components/Detalles/Detalles.styles";
+import SingleChoiceCheckbox from "@/components/Detalles/SingleCheck";
+
 const Detalles = () => {
   const { fetchProfile, profile } = useProfileStore();
   const [userData, setUserData] = useState(null);
@@ -79,48 +77,47 @@ const Detalles = () => {
     ) {
       const formattedStartDate = selectedStartDate.toISOString().split("T")[0];
       const formattedEndDate = selectedEndDate.toISOString().split("T")[0];
-      params.append("startDate", formattedStartDate);
-      params.append("endDate", formattedEndDate);
+      params.append("dateFrom", formattedStartDate);
+      params.append("dateTo", formattedEndDate);
     }
 
     const url = `${BASE_URL}${endpoint}?${params.toString()}`;
-    console.log("URL:", url);
 
-    // try {
-    //   const authToken = await AsyncStorage.getItem("authToken");
-    //   if (!authToken) {
-    //     Alert.alert("Error", "No se encontró un token de autenticación.");
-    //     return;
-    //   }
+    try {
+      const authToken = await AsyncStorage.getItem("authToken");
+      if (!authToken) {
+        Alert.alert("Error", "No se encontró un token de autenticación.");
+        return;
+      }
 
-    //   const response = await fetch(url, {
-    //     method: "GET",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       Authorization: `Bearer ${authToken}`,
-    //     },
-    //   });
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
 
-    //   const data = await response.json();
+      const data = await response.json();
+      console.log(data);
 
-    //   setConsultaResult(data);
+      setConsultaResult(data);
 
-    //   Alert.alert(
-    //     response.ok ? "Consulta exitosa" : "Error en la consulta",
-    //     `Opción: ${selectedOption}\nRango de fechas: ${
-    //       selectedOption === "LABORATORY"
-    //         ? `${selectedStartDate.toLocaleDateString()} - ${selectedEndDate.toLocaleDateString()}`
-    //         : "No aplica"
-    //     }\nMensaje: ${data.message || "Consulta realizada correctamente."}`
-    //   );
-    // } catch (error) {
-    //   Alert.alert("Error", "Hubo un problema con la consulta.");
-    // }
+      Alert.alert(
+        response.ok ? "Consulta exitosa" : "Error en la consulta",
+        `Opción: ${selectedOption}\nRango de fechas: ${
+          selectedOption === "LABORATORY"
+            ? `${selectedStartDate.toLocaleDateString()} - ${selectedEndDate.toLocaleDateString()}`
+            : "No aplica"
+        }\nMensaje: ${data.message || "Consulta realizada correctamente."}`
+      );
+    } catch (error) {
+      Alert.alert("Error", "Hubo un problema con la consulta.");
+    }
   };
 
   return (
     <View style={styles.container}>
-      {/* Header colapsable */}
       <TouchableOpacity
         onPress={() => setIsQueryCollapsed(!isQueryCollapsed)}
         style={styles.collapsibleHeader}
@@ -138,21 +135,13 @@ const Detalles = () => {
       {!isQueryCollapsed && (
         <View style={styles.queryContainer}>
           <Text style={styles.headerText}>Selecciona una opción:</Text>
-          <RNPickerSelect
-            placeholder={{ label: "Selecciona una opción...", value: null }}
-            onValueChange={(value) => setSelectedOption(value)}
-            items={[
-              { label: "LABORATORY", value: "LABORATORY" },
-              { label: "RECIPE", value: "RECIPE" },
-              { label: "IMAGENOLOGY", value: "IMAGENOLOGY" },
-            ]}
-            value={selectedOption}
-            style={pickerSelectStyles}
+          <SingleChoiceCheckbox
+            selectedOption={selectedOption}
+            onSelect={setSelectedOption}
           />
 
           {selectedOption === "LABORATORY" && (
             <View style={styles.datePickerContainer}>
-              {/* Selector de fecha Desde */}
               <Button
                 containerStyle={styles.buttonContainer}
                 buttonStyle={styles.button}
@@ -170,15 +159,7 @@ const Detalles = () => {
                   }}
                 />
               )}
-              <Text
-                style={{
-                  marginVertical: 10,
-                }}
-              >
-                Desde: {selectedStartDate.toLocaleDateString()}
-              </Text>
 
-              {/* Selector de fecha Hasta */}
               <Button
                 containerStyle={styles.buttonContainer}
                 buttonStyle={styles.button}
@@ -196,13 +177,6 @@ const Detalles = () => {
                   }}
                 />
               )}
-              <Text
-                style={{
-                  marginVertical: 10,
-                }}
-              >
-                Hasta: {selectedEndDate.toLocaleDateString()}
-              </Text>
             </View>
           )}
 
@@ -215,7 +189,6 @@ const Detalles = () => {
         </View>
       )}
 
-      {/* Resultados de la consulta */}
       {consultaResult?.body?.length > 0 && (
         <View style={styles.resultContainer}>
           <PatientResults data={consultaResult} />
