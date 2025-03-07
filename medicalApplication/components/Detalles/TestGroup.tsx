@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
   itemContainer: {
     backgroundColor: "#fff",
     marginVertical: 12,
-    padding: 16,
+    padding: 10,
     borderRadius: 12,
     shadowColor: "#000",
     shadowOpacity: 0.1,

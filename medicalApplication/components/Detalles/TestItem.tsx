@@ -69,7 +69,7 @@ const PatientResults = ({ data }) => {
 
 const styles = StyleSheet.create({
   listContainer: {
-    padding: 16,
+    padding: 10,
     paddingBottom: 32,
   },
   emptyContainer: {

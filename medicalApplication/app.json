@@ -12,7 +12,10 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.danistry28.medicalApplication",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true
+        }
       }
     },
     "android": {
@@ -23,7 +26,8 @@
       "package": "com.danistry28.medicalApplication",
       "permissions": [
         "android.permission.RECORD_AUDIO"
-      ]
+      ],
+      "usesCleartextTraffic": true
     },
     "web": {
       "bundler": "metro",
