@@ -30,6 +30,8 @@ export default function LoginComponent() {
     };
   }
   const handleLogin = async (values: LoginValues) => {
+    console.log("values", values);
+
     setIsSubmitting(true);
     try {
       const response = await fetch(API.LOGIN, {
@@ -71,6 +73,8 @@ export default function LoginComponent() {
         setAlertVisible(true);
       }
     } catch (error) {
+      console.log("Error en la conexión: ", error);
+
       setAlertMessage("Hubo un problema con la conexión.");
       setAlertVisible(true);
     }

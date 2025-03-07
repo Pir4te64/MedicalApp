@@ -35,6 +35,7 @@
       "favicon": "./assets/images/medical.png"
     },
     "plugins": [
+        "./withNetworkSecurityConfig",
       "expo-router",
       [
         "expo-splash-screen",
