@@ -9,10 +9,13 @@ import {
 } from "react-native";
 import { parseDate } from "./utils";
 import { LineChart } from "react-native-chart-kit";
+import Ionicons from "react-native-vector-icons/Ionicons"; // Importa Ionicons
 
 const TestGroup = memo(({ group }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const screenWidth = Dimensions.get("window").width;
+  const [containerWidth, setContainerWidth] = useState(
+    Dimensions.get("window").width - 32
+  );
 
   const toggleExpand = () => setIsExpanded((prev) => !prev);
 
@@ -68,12 +71,24 @@ const TestGroup = memo(({ group }) => {
     <TouchableOpacity onPress={toggleExpand} style={styles.itemContainer}>
       <View style={styles.headerContainer}>
         <Text style={styles.testName}>{group.test}</Text>
+        {/* Ícono de Ionicons que cambia según el estado */}
+        <Ionicons
+          name={isExpanded ? "chevron-up" : "chevron-down"}
+          size={24}
+          color="#007AFF"
+        />
       </View>
       {isExpanded && (
-        <View style={styles.expandedContainer}>
+        <View
+          style={styles.expandedContainer}
+          onLayout={(event) => {
+            const { width } = event.nativeEvent.layout;
+            setContainerWidth(width);
+          }}
+        >
           <LineChart
             data={lineChartData}
-            width={screenWidth - 32}
+            width={containerWidth}
             height={220}
             chartConfig={chartConfig}
             bezier
@@ -131,16 +146,14 @@ const styles = StyleSheet.create({
     color: "#007AFF",
     fontWeight: "600",
   },
-  toggleText: {
-    fontSize: 14,
-    color: "#888",
-  },
   expandedContainer: {
     marginTop: 12,
+    overflow: "hidden", // Evita que se desborde el contenido
   },
   chart: {
     marginVertical: 8,
     borderRadius: 12,
+    alignSelf: "center", // Centra el gráfico dentro del contenedor
   },
   recordContainer: {
     marginTop: 12,
