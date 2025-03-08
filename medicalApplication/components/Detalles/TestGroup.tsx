@@ -129,8 +129,8 @@ const styles = StyleSheet.create({
   itemContainer: {
     backgroundColor: "#fff",
     marginVertical: 12,
-    padding: 10,
-    borderRadius: 12,
+    padding: 16,
+    borderRadius: 8,
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -148,6 +148,7 @@ const styles = StyleSheet.create({
   },
   expandedContainer: {
     marginTop: 12,
+    padding: 8,
     overflow: "hidden", // Evita que se desborde el contenido
   },
   chart: {

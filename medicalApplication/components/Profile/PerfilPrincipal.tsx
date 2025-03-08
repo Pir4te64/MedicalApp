@@ -87,7 +87,6 @@ const PerfilPrincipal: React.FC<PerfilPrincipalProps> = ({
       <View style={styles.profileInfo}>
         <Ionicons name="card" size={16} color="#ffffff" />
         <Text style={styles.profileText}>{profile.documento}</Text>
-        <Text style={styles.profileText}>{profile.tipoCuenta}</Text>
       </View>
 
       {/* Renderizamos el componente con los botones */}

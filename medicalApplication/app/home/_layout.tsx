@@ -12,7 +12,6 @@ export default function HomeLayout() {
     const fetchTipoCuenta = async () => {
       try {
         const storedTipo = await AsyncStorage.getItem("tipoCuenta");
-        console.log("Tipo de cuenta recuperado:", storedTipo);
         setTipoCuenta(storedTipo);
       } catch (error) {
         console.error("Error al obtener tipoCuenta:", error);

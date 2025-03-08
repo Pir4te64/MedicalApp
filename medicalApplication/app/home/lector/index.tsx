@@ -11,6 +11,7 @@ import * as DocumentPicker from "expo-document-picker";
 import RNPickerSelect from "react-native-picker-select";
 import { router, useNavigation } from "expo-router"; // Importar el componente Link
 import handleSubmitIA from "@/components/Detalles/indexPOST"; // Importar la función de envío
+import { Ionicons } from "@expo/vector-icons";
 export default function Lector() {
   const [selectedOption, setSelectedOption] = useState("LABORATORY");
   const [pdfFile, setPdfFile] = useState(null);
@@ -110,12 +111,20 @@ export default function Lector() {
         )}
 
         <Button
-          containerStyle={{ alignItems: "center" }}
-          title="Ir a Detalles"
+          containerStyle={{ alignItems: "center", width: "100%" }}
+          title="Información detallada"
           buttonStyle={styles.detailsButton}
           onPress={() => {
             router.push("/home/lector/detalles");
           }}
+          icon={{
+            name: "chevron-forward",
+            type: "ionicon",
+            size: 20,
+            color: "#fff",
+            style: { marginLeft: 10 },
+          }}
+          iconRight
         />
       </View>
     </ScrollView>
@@ -157,9 +166,10 @@ const styles = StyleSheet.create({
   },
   detailsButton: {
     marginVertical: 20,
+
     backgroundColor: "#ff7f50", // Puedes ajustar el color
     borderRadius: 10,
-    width: "50%",
+    width: "100%",
   },
   fileText: {
     textAlign: "center",

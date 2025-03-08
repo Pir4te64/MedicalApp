@@ -26,7 +26,7 @@ const ProfileActions: React.FC<ProfileActionsProps> = ({ actions }) => {
         onPress={toggleExpand}
       >
         <Text style={styles.toggleText}>
-          {isExpanded ? "Ocultar acciones" : "Mostrar acciones"}
+          {isExpanded ? "Ocultar funciones" : "Mostrar funciones"}
         </Text>
         {/* Icono de flecha dependiendo del estado */}
         <Ionicons

@@ -105,20 +105,18 @@ const Detalles = () => {
           Authorization: `Bearer ${authToken}`,
         },
       });
-
       const data = await response.json();
-      setConsultaResult(data);
 
-      Alert.alert(
-        response.ok ? "Consulta exitosa" : "Error en la consulta",
-        `Opción: ${selectedOption}\nRango de fechas: ${
-          selectedOption === "LABORATORY"
-            ? `${formatDateDDMM(selectedStartDate)} - ${formatDateDDMM(
-                selectedEndDate
-              )}`
-            : "No aplica"
-        }\nMensaje: ${data.message || "Consulta realizada correctamente."}`
-      );
+      // Verifica si data.body existe, es un array y está vacío
+      if (data.body && Array.isArray(data.body) && data.body.length === 0) {
+        Alert.alert(
+          "Consulta exitosa",
+          "No hay datos disponibles en esas fechas."
+        );
+        setConsultaResult(data); // o setConsultaResult([]) si prefieres guardar un array vacío
+      } else {
+        setConsultaResult(data);
+      }
     } catch (error) {
       Alert.alert("Error", "Hubo un problema con la consulta.");
     }
